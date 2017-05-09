@@ -1,0 +1,4 @@
+<properties xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oxf="http://www.orbeon.com/oxf/processors">
+  <!-- The value here, prefixed with 'jdbc/', is what the JNDI datasource in META-INF/context.xml must be named. -->
+  <property as="xs:string" name="oxf.fr.persistence.provider.*.*.*" value="postgresql"/>
+</properties>
