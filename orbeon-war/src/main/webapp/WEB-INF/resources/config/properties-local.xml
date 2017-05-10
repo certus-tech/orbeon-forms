@@ -5,4 +5,6 @@
   <property as="xs:string" name="oxf.fr.detail.button.summary.visible.*.*" value="false"/>
   <property as="xs:string" name="oxf.fr.detail.button.clear.visible.*.*" value="false"/>
   <property as="xs:string" name="oxf.fr.detail.button.review.visible.*.*" value="false"/>
+  <!-- This allows RESTful service calls to be made from anywhere. Note that, like the app itself, this has no auth. -->
+  <property as="xs:string" processor-name="oxf:page-flow" name="service-public-methods" value="GET HEAD POST PUT"/>
 </properties>
