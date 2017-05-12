@@ -12,3 +12,4 @@ resources-local/
 node_modules/
 tmp
 *~
+/nbproject/private/
