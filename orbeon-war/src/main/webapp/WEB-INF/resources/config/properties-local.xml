@@ -9,4 +9,10 @@
   <property as="xs:string" processor-name="oxf:page-flow" name="service-public-methods" value="GET HEAD POST PUT"/>
   <!-- Set default date format d/m/yyyy -->
   <property as="xs:string" name="oxf.xforms.format.input.date" value="[D]/[M]/[Y]"/>
+  <property as="xs:string"  name="oxf.fr.detail.process.require-valid.*.*">
+    visit-all
+    then captcha
+    then validate("error")
+    recover (visit-all then expand-all then error-message("form-validation-error") then success)
+  </property>
 </properties>
