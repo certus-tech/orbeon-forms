@@ -16,4 +16,6 @@
     then validate("error")
     recover (visit-all then expand-all then success)
   </property>
+  <!-- Show the top error summary (options are top, bottom, both; default is bottom) -->
+  <property as="xs:string"  name="oxf.fr.detail.error-summary.*.*">top</property>
 </properties>
