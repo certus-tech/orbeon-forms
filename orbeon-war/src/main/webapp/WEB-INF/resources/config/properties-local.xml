@@ -9,7 +9,10 @@
   <property as="xs:string" processor-name="oxf:page-flow" name="service-public-methods" value="GET HEAD POST PUT"/>
   <!-- Set default date format d/m/yyyy -->
   <property as="xs:string" name="oxf.xforms.format.input.date" value="[D]/[M]/[Y]"/>
-  <!-- Error message dialog has been removed from this process, so it is not shown on validation errs. -->
+  <!-- 
+  Error message dialog has been removed from this process, so it is not shown on validation errs. 
+  Custom process to scroll to top on validation errors has been added.
+  -->
   <property as="xs:string"  name="oxf.fr.detail.process.require-valid.*.*">
     visit-all
     then captcha
@@ -17,8 +20,13 @@
     recover (
       visit-all 
       then expand-all 
+      then process("scroll-to-top") 
       then success
     )
+  </property>
+  <!-- Custom process used to scroll to top on validation errors. -->
+  <property as="xs:string"  name="oxf.fr.detail.process.scroll-to-top.*.*">
+    navigate(uri = "javascript:document.getElementById('error-summary-control-top').scrollIntoView()")
   </property>
   <!-- Show the top error summary (options are top, bottom, both; default is bottom) -->
   <property as="xs:string"  name="oxf.fr.detail.error-summary.*.*">top</property>
