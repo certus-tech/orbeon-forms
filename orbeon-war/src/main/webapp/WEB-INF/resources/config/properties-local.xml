@@ -7,8 +7,9 @@
   <property as="xs:string" name="oxf.fr.detail.button.review.visible.*.*" value="false"/>
   <!-- This allows RESTful service calls to be made from anywhere. Note that, like the app itself, this has no auth. -->
   <property as="xs:string" processor-name="oxf:page-flow" name="service-public-methods" value="GET HEAD POST PUT"/>
-  <!-- Set default date format d/m/yyyy -->
-  <property as="xs:string" name="oxf.xforms.format.input.date" value="[D]/[M]/[Y]"/>
+  <!-- Set UK date format.
+       See https://doc.orbeon.com/configuration/properties/xforms.html#for-xfinput -->
+  <property as="xs:string" name="oxf.xforms.format.input.date" value="[D01]/[M01]/[Y]"/>
   <!-- 
   Error message dialog has been removed from this process, so it is not shown on validation errs. 
   Custom process to scroll to top on validation errors has been added.
