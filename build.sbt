@@ -16,7 +16,7 @@ val JodaConvertVersion            = "1.2"
 val ServletApiVersion             = "3.0.1"
 val PortletApiVersion             = "2.0"
 val Slf4jVersion                  = "1.7.25"
-val HttpComponentsVersion         = "4.3.5"  // 4.5.2
+val HttpComponentsVersion         = "4.5.5"
 val Log4jVersion                  = "1.2.17"
 val CommonsIoVersion              = "2.0.1"  // 2.5
 val EnumeratumVersion             = "1.5.6"
@@ -50,7 +50,7 @@ val CoreLibraryDependencies = Seq(
   "org.apache.httpcomponents"   % "httpclient-cache"                % HttpComponentsVersion,
   "org.apache.httpcomponents"   % "httpmime"                        % HttpComponentsVersion,
   "org.apache.httpcomponents"   % "fluent-hc"                       % HttpComponentsVersion,
-  "org.apache.httpcomponents"   % "httpcore"                        % "4.3.2",
+  "org.apache.httpcomponents"   % "httpcore"                        % "4.4.9",
   "org.slf4j"                   % "jcl-over-slf4j"                  % Slf4jVersion,
   "org.slf4j"                   % "slf4j-api"                       % Slf4jVersion,
   "org.slf4j"                   % "slf4j-log4j12"                   % Slf4jVersion,
