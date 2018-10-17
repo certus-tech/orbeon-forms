@@ -79,6 +79,18 @@
                     </resource>
                 </resources>
             </xf:instance>
+            
+            <!-- History data -->
+            <!-- TODO: Can this be factored out of the main template.xml and inserted via some extension mechanism? -->
+            <xf:instance id="cta-form-history-instance" xxf:readonly="true" xxf:exclude-result-prefixes="#all">
+                <history>
+                    <form date="2010-01-01">
+                        <section-1>
+                            <control-1/>
+                        </section-1>
+                    </form>
+                </history>
+            </xf:instance>
 
         </xf:model>
     </xh:head>
