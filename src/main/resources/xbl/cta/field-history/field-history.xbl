@@ -1,5 +1,15 @@
 <!--
-  Certus Field History component. Provides a list of options for picking the values previously entered on a field.
+  This software is provided by the copyright holders "as is"
+  and any express or implied warranties, including, but not limited to, the
+  implied warranties of merchantability and fitness for a particular purpose
+  are disclaimed. in no event shall the regents be liable for any
+  direct, indirect, incidental, special, exemplary, or consequential damages
+  (including, but not limited to, procurement of substitute goods or services;
+  loss of use, data, or profits; or business interruption) however caused and
+  on any theory of liability, whether in contract, strict liability, or tort
+  (including negligence or otherwise) arising in any way out of the use of this
+  software, even if advised of the possibility of such damage.
+ 
   Copyright (c) 2000-2018 Certus Technology Associates Limited. All Rights Reserved.
 -->
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
@@ -24,27 +34,27 @@
       </icon>
       <templates>
         <view>
-          <cta:field-history control="" bind="" modelpath="section-1"/>
+          <cta:field-history control="" bind="" modelpath=""/>
         </view>
       </templates>
     </metadata>
     
-    <!--<xbl:resources>
+    <xbl:resources>
       <xbl:style src="/xbl/cta/field-history/field-history.css"/>
-    </xbl:resources>-->        
+    </xbl:resources>
     
     <xbl:template xxbl:transform="oxf:xslt">
       <xsl:transform version="2.0">
         <xsl:template match="/*">
-          <xsl:variable name="sep">&#187;</xsl:variable>
           <!-- XSL variable for the full path to the field's value in the models -->
           <!-- something like section-1/section-2/control-1 -->
+          <!-- TODO: This approach can be revised. We could ditch modelpath and assume a flat model using control IDs.
+               In this case the modelpath attribute on the bound element is not required, nor is $modelpath. -->
           <xsl:variable name="modelpath" select="string-join((@modelpath, @control), '/')"/>
-          <!-- XSL variable for the generated binding for the history value. -->
-          <!-- something like cta-form-history»section-1»section-2»control-1-bind -->
-          <xsl:variable name="modelbind"
-                        select="concat(translate(string-join(('cta-form-history', $modelpath), '/'), '/', $sep), '-bind')"/>
-          <xf:group id="cta-history-group" class="cta-history-transform-container">              
+          <xf:group id="cta-history-group" class="cta-history-transform-container">
+            
+            <!-- This model is in the template and not in the xbl:implementation (omitted), following the example of
+                 autocomplete.xbl -->
             <xf:model id="cta-history-internal">
               <!-- This instance must exist else xxf:instance appears to fail to find the (external) history. -->
               <xf:instance id="notused">
@@ -52,32 +62,24 @@
               </xf:instance>
               <xf:bind id="cta-form-history-forms-bind" ref="xxf:instance('cta-form-history-instance')/form">
                 <!-- The binds cannot be nested any further -->
-                <xf:bind id="cta-form-historymeta»id-bind" ref="@id"/>
-                <xf:bind id="cta-form-historymeta»date-bind" ref="@date"/>
-                <xf:bind>
-                  <xsl:attribute name="id" select="$modelbind"/>
+                <xf:bind id="cta-form-historymeta-id-bind" ref="@id"/>
+                <xf:bind id="cta-form-historymeta-date-bind" ref="@date"/>
+                <xf:bind id="cta-form-history-field-bind">
                   <xsl:attribute name="ref" select="$modelpath"/>
                 </xf:bind>
               </xf:bind>
             </xf:model>
             
-            <xh:div class="cta-history-transform-container">              
+            <xh:div class="cta-history-transform-container">
               <xh:ul class="history">
-                <xf:repeat bind="cta-form-history-forms-bind">
-                  <xsl:attribute name="id">
-                    <xsl:text>cta-history-</xsl:text>
-                    <xsl:value-of select="@control"/>
-                    <xsl:text>-repeat</xsl:text>
-                  </xsl:attribute>
+                <xf:repeat bind="cta-form-history-forms-bind" id="cta-history-field-repeat">
                   <xh:li>
                     <xf:trigger>
-                      <xf:label>Re-apply</xf:label>    
+                      <xf:label>Re-apply</xf:label>
                       <xf:action event="DOMActivate">
                         <xf:setvalue ref="xxf:binding('cta-field-history')">
                           <xsl:attribute name="value">
-                            <xsl:text>xxf:context('cta-history-</xsl:text>
-                            <xsl:value-of select="@control"/>
-                            <xsl:text>-repeat')/</xsl:text>
+                            <xsl:text>xxf:context('cta-history-field-repeat')/</xsl:text>
                             <xsl:value-of select="$modelpath"/>
                           </xsl:attribute>
                         </xf:setvalue>
@@ -85,12 +87,10 @@
                     </xf:trigger>
                     <xh:div class="history-entry">
                       <xh:span class="history-date">
-                        <xf:output bind="cta-form-historymeta»date-bind"/>
+                        <xf:output bind="cta-form-historymeta-date-bind"/>
                       </xh:span>
                       <xh:span class="history-value">
-                        <xf:output>
-                          <xsl:attribute name="bind" select="$modelbind"/>
-                        </xf:output>
+                        <xf:output bind="cta-form-history-field-bind"/>
                       </xh:span>
                     </xh:div>
                   </xh:li>
@@ -98,10 +98,8 @@
               </xh:ul>
             </xh:div>
           </xf:group>
-        </xsl:template>      
+        </xsl:template>
       </xsl:transform>
-    </xbl:template>   
-  
+    </xbl:template>
   </xbl:binding>
-
 </xbl:xbl>
