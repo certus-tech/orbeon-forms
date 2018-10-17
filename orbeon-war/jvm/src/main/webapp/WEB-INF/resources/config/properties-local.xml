@@ -35,4 +35,6 @@
   <!-- Uncomment this if you want un-uglified/minified JS in your local app.
   <property as="xs:boolean" name="oxf.xforms.minimal-resources" value="false"/>
   -->
+  <!-- Add a custom mapping for the namespace used by custom components -->
+  <property as="xs:string" name="oxf.xforms.xbl.mapping.cta">http://www.certus-tech.com/xbl</property>
 </properties>
