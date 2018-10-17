@@ -31,4 +31,6 @@
   </property>
   <!-- Show the top error summary (options are top, bottom, both; default is bottom) -->
   <property as="xs:string"  name="oxf.fr.detail.error-summary.*.*">top</property>
+  <!-- Add a custom mapping for the namespace used by custom components -->
+  <property as="xs:string" name="oxf.xforms.xbl.mapping.cta">http://www.certus-tech.com/xbl</property>
 </properties>
