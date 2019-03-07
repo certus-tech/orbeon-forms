@@ -36,8 +36,11 @@ object FormRunnerPrivateAPI {
   private val Message = "You may lose some unsaved changes."
 
   private val NewPathSuffix = "/new"
+  
+  private var _dataSafe = false
 
-  def setDataStatus(safe: Boolean): Unit =
+  def setDataStatus(safe: Boolean): Unit = {
+    _dataSafe = safe
     if (safe)
       $(global).off(
         ListenerEvents
@@ -47,6 +50,9 @@ object FormRunnerPrivateAPI {
         ListenerEvents,
         ((_: JQueryEventObject) ⇒ Message): js.Function
       )
+  }
+
+  def dataSafe = _dataSafe
 
   def submitLogin(
     username    : String,
