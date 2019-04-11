@@ -105,13 +105,13 @@
         http://orbeon.org/oxf/xml/form-builder
     </property>
 
-    <property as="xs:boolean" name="oxf.fb.menu.schema"                                         value="true"/>
-    <property as="xs:boolean" name="oxf.fb.menu.pdf"                                            value="true"/>
+    <property as="xs:boolean" name="oxf.fb.menu.schema"                                         value="false"/>
+    <property as="xs:boolean" name="oxf.fb.menu.pdf"                                            value="false"/>
     <property as="xs:boolean" name="oxf.fb.menu.edit-source"                                    value="true"/>
-    <property as="xs:boolean" name="oxf.fb.menu.permissions"                                    value="true"/>
-    <property as="xs:boolean" name="oxf.fb.menu.services.http"                                  value="true"/>
-    <property as="xs:boolean" name="oxf.fb.menu.services.database"                              value="true"/>
-    <property as="xs:boolean" name="oxf.fb.menu.actions"                                        value="true"/>
+    <property as="xs:boolean" name="oxf.fb.menu.permissions"                                    value="false"/>
+    <property as="xs:boolean" name="oxf.fb.menu.services.http"                                  value="false"/>
+    <property as="xs:boolean" name="oxf.fb.menu.services.database"                              value="false"/>
+    <property as="xs:boolean" name="oxf.fb.menu.actions"                                        value="false"/>
 
     <property as="xs:string"  name="oxf.fb.publish.buttons"                                     value="new summary"/>
 
