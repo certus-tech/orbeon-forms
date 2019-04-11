@@ -157,7 +157,7 @@
 
     <property as="xs:integer" name="oxf.xforms.xbl.fr.autocomplete.max-results-displayed"   value="10"/>
 
-    <property as="xs:string"  name="oxf.xforms.xbl.fr.currency.prefix"                      value="$"/>
+    <property as="xs:string"  name="oxf.xforms.xbl.fr.currency.prefix"                      value="£"/>
     <property as="xs:string"  name="oxf.xforms.xbl.fr.currency.suffix"                      value=""/>
     <property as="xs:string"  name="oxf.xforms.xbl.fr.currency.digits-after-decimal"        value="2"/>
     <property as="xs:string"  name="oxf.xforms.xbl.fr.currency.decimal-separator"           value="."/>

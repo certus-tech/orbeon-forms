@@ -41,7 +41,7 @@
             <display-name lang="nl">Valuta</display-name>
             <display-name lang="pt">Moeda</display-name>
             <icon>
-                <icon-class>fa fa-fw fa-dollar-sign fa-usd</icon-class>
+                <icon-class>fa fa-fw fa-gbp</icon-class>
             </icon>
             <templates>
                 <bind type="xf:decimal" constraint="xxf:fraction-digits(2)"/>
