@@ -113,7 +113,8 @@
     <property as="xs:boolean" name="oxf.fb.menu.services.database"                              value="false"/>
     <property as="xs:boolean" name="oxf.fb.menu.actions"                                        value="false"/>
 
-    <property as="xs:string"  name="oxf.fb.publish.buttons"                                     value="new summary"/>
+    <!-- default: value="new summary" -->
+    <property as="xs:string"  name="oxf.fb.publish.buttons"                                     value=""/>
 
 
     <property as="xs:boolean" name="oxf.fb.metadata.logo"                                       value="true"/>
