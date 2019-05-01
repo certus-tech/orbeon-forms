@@ -31,4 +31,7 @@
   </property>
   <!-- Show the top error summary (options are top, bottom, both; default is bottom) -->
   <property as="xs:string"  name="oxf.fr.detail.error-summary.*.*">top</property>
+  <!-- Uncomment this if you want un-uglified/minified JS in your local app.
+  <property as="xs:boolean" name="oxf.xforms.minimal-resources" value="false"/>
+  -->
 </properties>
