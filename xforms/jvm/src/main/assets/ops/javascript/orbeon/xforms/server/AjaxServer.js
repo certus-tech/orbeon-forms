@@ -2045,8 +2045,15 @@
                                         requestForm.target = target;
 
                                     if (action == null) {
+                                      if (typeof (ORBEON.xforms.Globals.xfSubmissionHref) === "undefined") {
                                         // Reset as this may have been changed before by asyncAjaxRequest
                                         requestForm.removeAttribute("action");
+                                      } else {
+                                        // This global should be set in embedded environment. as posting to current
+                                        // window location is never going to reach the orbeon application. Set this to 
+                                        // the URL of something that can proxy these requests to Orbeon.
+                                        requestForm.action = ORBEON.xforms.Globals.xfSubmissionHref;
+                                      }
                                     } else {
                                         // Set the requested target
                                         requestForm.action = action;
