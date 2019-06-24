@@ -23,6 +23,15 @@
         <param-name>oxf.resources.factory</param-name>
         <param-value>org.orbeon.oxf.resources.PriorityResourceManagerFactory</param-value>
     </context-param>
+    <!-- External config resource manager -->
+    <context-param>
+        <param-name>oxf.resources.priority.0</param-name>
+        <param-value>org.orbeon.oxf.resources.FilesystemResourceManagerFactory</param-value>
+    </context-param>
+    <context-param>
+        <param-name>oxf.resources.priority.0.oxf.resources.filesystem.sandbox-directory</param-name>
+        <param-value>${user.home}/.application/orbeon</param-value>
+    </context-param>
     <!--Web application resource manager for resources-->
     <context-param>
         <param-name>oxf.resources.priority.2</param-name>
