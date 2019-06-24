@@ -1,0 +1,5 @@
+<properties xmlns:xs="http://www.w3.org/2001/XMLSchema"
+            xmlns:oxf="http://www.orbeon.com/oxf/processors"
+            xmlns:xi="http://www.w3.org/2001/XInclude">
+  <!-- Do not add properties to this file, override the whole file via a higher-priority resource manager. -->
+</properties>
