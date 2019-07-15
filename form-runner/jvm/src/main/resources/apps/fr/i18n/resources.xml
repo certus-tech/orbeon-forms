@@ -38,7 +38,7 @@
             <!-- Standard process buttons -->
             <save>&lt;i class="fa fa-fw fa-hdd-o"/&gt; Save</save>
             <save-final>&lt;i class="fa fa-fw fa-hdd-o"/&gt; Save</save-final>
-            <save-draft>&lt;i class="icon-inbox"/&gt; Save</save-draft>
+            <save-draft>&lt;i class="icon-inbox"/&gt; Save draft</save-draft>
             <edit>&lt;i class="fa fa-fw fa-arrow-left"/&gt; Edit</edit>
             <send>&lt;i class="icon-arrow-right"/&gt; Send</send>
             <email>&lt;i class="fa fa-fw fa-envelope"/&gt; Email</email>
