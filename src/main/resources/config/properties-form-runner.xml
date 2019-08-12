@@ -308,7 +308,7 @@
         recover error-message("database-error")
     </property>
     <property as="xs:string"  name="oxf.fr.detail.process.save-draft.*.*">
-        save
+        save(draft = "true")
         then new-to-edit
         then success-message("save-draft-success")
         recover error-message("database-error")
