@@ -309,6 +309,8 @@
     </property>
     <property as="xs:string"  name="oxf.fr.detail.process.save-draft.*.*">
         save(draft = "true")
+        <!-- we must manually set the data to safe (clean) because save as draft consciously chooses not to do this. -->
+        then set-data-status(safe = "true")
         then new-to-edit
         then success-message("save-draft-success")
         recover error-message("database-error")
