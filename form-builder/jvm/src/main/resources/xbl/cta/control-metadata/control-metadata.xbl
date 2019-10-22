@@ -3,19 +3,20 @@
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
          xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
          xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
          xmlns:xbl="http://www.w3.org/ns/xbl"
          xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
          xmlns:ev="http://www.w3.org/2001/xml-events"
          xmlns:cta="http://www.certus-tech.com/xbl"
          xmlns:ctao="http://www.certus-tech.com/orbeon">
   <!--
-  Custom control metadata component. Allows arbitrary string key/value pairs to be defined on the form and controls 
+  Custom control metadata component. Allows arbitrary string key/value pairs to be defined on the form and controls
   inside. May be used for both oxf.fb.extension.form-settings and oxf.fb.extension.control-settings.
   Properties are added to the fr-instance-
   -->
   <xbl:binding element="cta|control-metadata" id="cta-control-metadata">
     <xbl:handlers>
-      <!-- 
+      <!--
         On load, clear the local model instance and copy the target's properties from the form metadata into it.
       -->
       <xbl:handler event="fb-initialize" phase="target">
@@ -23,11 +24,14 @@
         <!-- original-control-name is absent from the event when this component is initialized for form's settings. -->
         <xf:var name="for" value="(event('original-control-name'), 'form')[1]"/>
         <xf:setvalue ref="xf:instance('cta-meta-internal')/meta/for" value="$for"/>
-        <xf:insert context="xf:instance('cta-meta-internal')/properties" 
+        <xf:delete ref="xf:instance('cta-meta-internal')/properties/ctao:property"/>
+        <xf:insert context="xf:instance('cta-meta-internal')/properties"
+                   origin="xf:instance('cta-property-iteration')"/>
+        <xf:insert context="xf:instance('cta-meta-internal')/properties"
                    origin="$form//metadata/ctao:property[@for=$for]"/>
       </xbl:handler>
-      
-      <!-- 
+
+      <!--
         On apply, replace the properties in the form metadata with updated versions from the local model instance.
       -->
       <xbl:handler event="fb-apply" phase="target">
@@ -39,12 +43,12 @@
         <xf:setvalue ref="xf:instance('cta-meta-internal')/meta/for" value="$newFor"/>
         <xf:recalculate xxf:defaults="true"/>
         <!-- Only non-empty keys are kept, allowing rows to be deleted by clearing the key. -->
-        <xf:insert context="$form//metadata" 
+        <xf:insert context="$form//metadata"
                    origin="xf:instance('cta-meta-internal')/properties/ctao:property[not(@key='')]"/>
         <xf:delete ref="xf:instance('cta-meta-internal')/properties/ctao:property"/>
       </xbl:handler>
     </xbl:handlers>
-    
+
     <xbl:implementation>
       <xf:model>
         <xf:instance id="cta-meta-internal">
@@ -67,22 +71,22 @@
         <xf:bind id="properties-bind" ref="xf:instance('cta-meta-internal')/properties/ctao:property">
           <xf:bind id="for-bind" ref="@for" xxf:default="xf:instance('cta-meta-internal')/meta/for"/>
           <xf:bind id="key-bind" ref="@key"/>
-          <xf:bind id="value-bind" ref="."/>          
+          <xf:bind id="value-bind" ref="."/>
         </xf:bind>
       </xf:model>
     </xbl:implementation>
-    
+
     <xbl:template>
       <xh:div>
         <xh:p>
-          These key/value pairs are specific to the selected control/form. They are stored in the form definition's 
+          These key/value pairs are specific to the selected control/form. They are stored in the form definition's
           meta-data so they are available to external processes which read the form. They are versioned along with the
           form definition itself, and are not included in submitted instance data.
         </xh:p>
         <!--
-          Grid configuration: 
+          Grid configuration:
           - repeat="true" (vs. "content") uses the legacy repeat behaviour without an iteration container element.
-          - apply-defaults is required for xxf:default on bindings to be evaluated (this is done when the new row is 
+          - apply-defaults is required for xxf:default on bindings to be evaluated (this is done when the new row is
             added to the model, and when the apply handler does recalculate.
           - insert: always puts new elements at the end
           - freeze, min: Due to an apparent orbeon bug we cannot allow the list to become empty or it's not possible to
@@ -99,7 +103,7 @@
             <xf:input bind="value-bind">
               <xf:label>Value</xf:label>
             </xf:input>
-          </fr:c>          
+          </fr:c>
         </fr:grid>
         <xh:p style="font-size: smaller;">
           Rows with a blank key are removed from the metadata when the changes are applied. At least one row is always
