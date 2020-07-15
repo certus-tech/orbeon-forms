@@ -172,10 +172,10 @@
                                     <xf:label appearance="minimal" ref="$resources/components/parameters-editor/control/label"/>
                                     <xf:alert ref="$resources/components/parameters-editor/control/alert"/>
 
-                                    <!--  NOTE: If the form has lots of controls (say, > 1000), showing all controls in the itemset is
-                                          costly (say, takes > 10 seconds). We need something different in this case, like a search
-                                          control. -->
-                                    <xf:itemset ref="for $c in fbf:getAllControlsWithIds()[position() le 50] return frf:controlNameFromId($c/@id)">
+                                    <!--  NOTE: Upstream source says this is very slow (>10s) with many (>1000) controls.
+                                          Tested with >500 controls and it was not appreciably slower than with 50, so 
+                                          removed restriction. -->
+                                    <xf:itemset ref="for $c in fbf:getAllControlsWithIds() return frf:controlNameFromId($c/@id)">
                                         <!-- Try to build a reasonably user-friendly label -->
                                         <xf:label
                                             value="
