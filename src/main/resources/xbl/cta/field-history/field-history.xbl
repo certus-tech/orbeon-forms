@@ -24,6 +24,7 @@
          xmlns:ev="http://www.w3.org/2001/xml-events"
          xmlns:cta="http://www.certus-tech.com/xbl">
 
+  <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
   <xbl:binding id="cta-field-history" element="cta|field-history" xxbl:mode="custom-lhha binding">
     
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
@@ -32,6 +33,11 @@
         <small-icon>/apps/fr/style/images/silk/time.png</small-icon>
         <large-icon>/apps/fr/style/images/silk/time.png</large-icon>
       </icon>
+      <!-- 
+        @control is the ID of the control this history is for e.g. @control-1
+        @modelpath is the path within the xform model to (but not including) @control, e.g. section-1/section-2
+        @bind is populated automatically by orbeon when this control is created, see @xxbl:mode, above
+      -->
       <templates>
         <view>
           <cta:field-history control="" bind="" modelpath=""/>
@@ -77,6 +83,8 @@
                     <xf:trigger>
                       <xf:label>Re-apply</xf:label>
                       <xf:action event="DOMActivate">
+                        <!-- this @refs the binding on THIS control i.e. the history control 
+                        so should be set to whichever component we want to change the value of. -->
                         <xf:setvalue ref="xxf:binding('cta-field-history')">
                           <xsl:attribute name="value">
                             <xsl:text>xxf:context('cta-history-field-repeat')/</xsl:text>
@@ -89,6 +97,7 @@
                       <xh:span class="history-date">
                         <xf:output bind="cta-form-historymeta-date-bind"/>
                       </xh:span>
+                      <xh:span>&#160;-&#160;</xh:span>
                       <xh:span class="history-value">
                         <xf:output bind="cta-form-history-field-bind"/>
                       </xh:span>
