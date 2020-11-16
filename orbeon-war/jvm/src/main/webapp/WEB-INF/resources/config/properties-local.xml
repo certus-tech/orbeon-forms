@@ -37,4 +37,5 @@
   -->
   <!-- Add a custom mapping for the namespace used by custom components -->
   <property as="xs:string" name="oxf.xforms.xbl.mapping.cta">http://www.certus-tech.com/xbl</property>
+  <property as="xs:string" name="oxf.xforms.xbl.mapping.ctao">http://www.certus-tech.com/orbeon</property>
 </properties>
