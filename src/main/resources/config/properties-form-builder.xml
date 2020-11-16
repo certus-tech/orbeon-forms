@@ -44,6 +44,7 @@
         oxf:/forms/orbeon/builder/xbl/text-secret.xbl
         oxf:/xbl/orbeon/character-counter/character-counter.xbl
         oxf:/xbl/cta/field-history/field-history.xbl
+        oxf:/xbl/cta/field-mixin/field-mixin.xbl
     </property>
 
     <!-- Toolbox -->
