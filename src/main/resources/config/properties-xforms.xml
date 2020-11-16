@@ -19,7 +19,8 @@
             xmlns:exf="http://www.exforms.org/exf/1-0"
             xmlns:xbl="http://www.w3.org/ns/xbl"
             xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
-            xmlns:fr="http://orbeon.org/oxf/xml/form-runner">
+            xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+            xmlns:cta="http://www.certus-tech.com/xbl">
 
     <property as="xs:boolean" name="oxf.xforms.replication"                             value="false"/>
 
@@ -203,6 +204,7 @@
         fr:yesno-input
         fr:open-select1
         fr:tree-select1
+        cta:field-mixin
     </property>
 
     <!-- Automatically search for XBL components in fr:* namespace -->
