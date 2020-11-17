@@ -17,7 +17,14 @@
              xf|input[appearance ~= field-mixin],
              xf|textarea[appearance ~= field-mixin],
              fr|tinymce[appearance ~= field-mixin],
-             fr|number[appearance ~= field-mixin]"
+             fr|number[appearance ~= field-mixin],
+             fr|select[appearance ~= field-mixin],
+             fr|select1[appearance ~= field-mixin],
+             fr|dropdown-select1[appearance ~= field-mixin],
+             fr|open-select1[appearance ~= field-mixin],
+             fr|yesno-input[appearance ~= field-mixin],
+             fr|date[appearance ~= field-mixin],
+             fr|datetime[appearance ~= field-mixin]"
     xxbl:mode="binding lhha value"
     xxbl:label-for="field">
 
@@ -79,6 +86,10 @@
             </xf:model>
            
             <xh:div xsl:version="2.0" class="cta-mixin-wrapper">
+              <!--
+              transformed [local-name: <xsl:value-of select="local-name()"/>, @id <xsl:value-of select="@id"/>]
+              attrs [<xsl:for-each select="/*/@*"><xsl:value-of select="local-name()"/>=<xsl:value-of select="."/>, </xsl:for-each>]
+              -->
               <xf:var name="binding" value="xxf:binding('cta-field-mixin')"/>
 
               <xsl:element name="{name(/*)}">
@@ -86,7 +97,7 @@
                 <xsl:attribute name="ref"         select="'$binding'"/>
                 <xsl:attribute name="incremental" select="'true'"/>
                 <xsl:attribute name="appearance"  select="tokenize(/*/@appearance, '\s+')[. != 'field-mixin']"/>
-                <xsl:copy-of select="/*/@mediatype"/>
+                <xsl:copy-of select="/*/@*[not(local-name() = ('id', 'ref', 'incremental', 'bind', 'appearance'))]"/>
               </xsl:element>
               
               <xh:div class="cta-mixin-controls">
