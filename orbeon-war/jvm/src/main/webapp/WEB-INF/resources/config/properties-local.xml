@@ -1,11 +1,10 @@
 <properties xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:oxf="http://www.orbeon.com/oxf/processors" xmlns:xi="http://www.w3.org/2001/XInclude">
-  <xi:include href="oxf:/config/properties-local-extra.xml"/>
   <!-- The value here, prefixed with 'jdbc/', is what the JNDI datasource in META-INF/context.xml must be named. -->
   <property as="xs:string" name="oxf.fr.persistence.provider.*.*.*" value="postgresql"/> 
-  <property as="xs:string" name="oxf.fr.detail.button.pdf.visible.*.*" value="false"/>
-  <property as="xs:string" name="oxf.fr.detail.button.summary.visible.*.*" value="false"/>
-  <property as="xs:string" name="oxf.fr.detail.button.clear.visible.*.*" value="false"/>
-  <property as="xs:string" name="oxf.fr.detail.button.review.visible.*.*" value="false"/>
+  <property as="xs:string" name="oxf.fr.detail.button.pdf.visible.*.*" value="false()"/>
+  <property as="xs:string" name="oxf.fr.detail.button.summary.visible.*.*" value="false()"/>
+  <property as="xs:string" name="oxf.fr.detail.button.clear.visible.*.*" value="false()"/>
+  <property as="xs:string" name="oxf.fr.detail.button.review.visible.*.*" value="false()"/>
   <!-- This allows RESTful service calls to be made from anywhere. Note that, like the app itself, this has no auth. -->
   <property as="xs:string" processor-name="oxf:page-flow" name="service-public-methods" value="GET HEAD POST PUT DELETE"/>
   <!-- Set UK date format.
@@ -38,4 +37,5 @@
   <!-- Add a custom mapping for the namespace used by custom components -->
   <property as="xs:string" name="oxf.xforms.xbl.mapping.cta">http://www.certus-tech.com/xbl</property>
   <property as="xs:string" name="oxf.xforms.xbl.mapping.ctao">http://www.certus-tech.com/orbeon</property>
+  <xi:include href="oxf:/config/properties-local-extra.xml"/>
 </properties>
