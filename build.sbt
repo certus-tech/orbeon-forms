@@ -759,4 +759,3 @@ lazy val root = (project in file("."))
     publishArtifact                    := false
   )
 
-sound.play(compile in Compile, Sounds.Blow, Sounds.Basso)
