@@ -19,4 +19,5 @@ node_modules/
 tmp
 scratch.txt
 *~
-/nbproject/private/
+.netbeans.xml
+private
