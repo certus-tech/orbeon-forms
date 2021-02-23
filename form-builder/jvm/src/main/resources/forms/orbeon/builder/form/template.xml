@@ -52,6 +52,7 @@
             <!-- Metadata -->
             <xf:instance id="fr-form-metadata" xxf:readonly="true" xxf:exclude-result-prefixes="#all">
                 <metadata>
+                    <ctao:use-history>false</ctao:use-history>
                     <application-name/>
                     <form-name/>
                     <title xml:lang=""/>
@@ -80,17 +81,48 @@
                 </resources>
             </xf:instance>
             
-            <!-- History data -->
-            <!-- TODO: Can this be factored out of the main template.xml and inserted via some extension mechanism? -->
+            <!--
+              Load history data when form is loaded, if enabled in the metadata instance & not readonly or running
+              in the form designer. You must replace the PLACEHOLDER URL on the submission below before enabling history.
+            -->
+            <xf:action event="xforms-ready"
+                       if="(instance('fr-form-metadata')/ctao:use-history = true()) and not(fr:is-readonly-mode()) 
+                       and not(fr:is-design-time())">
+              <xf:setvalue ref="instance('cta-form-history-parameters')/app" 
+                           value="fr:app-name()"/> 
+              <xf:setvalue ref="instance('cta-form-history-parameters')/form" 
+                           value="fr:form-name()"/> 
+              <xf:setvalue ref="instance('cta-form-history-parameters')/documentid"
+                           value="fr:document-id()"/> 
+              <xf:send submission="cta-form-history-submission"/>
+            </xf:action>
+
+            <!-- Contains side-loaded history. -->
             <xf:instance id="cta-form-history-instance" xxf:readonly="true" xxf:exclude-result-prefixes="#all">
-                <history>
-                    <form date="2010-01-01">
-                        <section-1>
-                            <control-1/>
-                        </section-1>
-                    </form>
-                </history>
+                <history/>
             </xf:instance>
+            
+            <!-- Populated with details of the form and submitted in order to side-load the history instance. -->
+            <xf:instance xxf:readonly="false" id="cta-form-history-parameters" xxf:exclude-result-prefixes="#all">
+              <history-parameters>
+                <app/>
+                <form/>
+                <documentid/>
+              </history-parameters>
+            </xf:instance>
+            
+            <!-- 
+              Side-loads the history instance. You must replace the PLACEHOLDER URL below before enabling history.
+            -->
+            <xf:submission id="cta-form-history-submission" method="get"
+                           action="PLACEHOLDER/b/WSFormHistory.do"
+                           ref="instance('cta-form-history-parameters')"
+                           replace="instance"
+                           instance="cta-form-history-instance">
+                <xf:action event="xforms-submit-error">
+                    <xf:message>History load failed</xf:message>
+                </xf:action>
+            </xf:submission>
 
         </xf:model>
     </xh:head>
