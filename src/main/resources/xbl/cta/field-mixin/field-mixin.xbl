@@ -16,6 +16,8 @@
     element="cta|field-mixin,
              xf|input[appearance ~= field-mixin],
              xf|textarea[appearance ~= field-mixin],
+             xf|select[appearance ~= field-mixin],
+             xf|select1[appearance ~= field-mixin],
              fr|tinymce[appearance ~= field-mixin],
              fr|number[appearance ~= field-mixin],
              fr|select[appearance ~= field-mixin],
