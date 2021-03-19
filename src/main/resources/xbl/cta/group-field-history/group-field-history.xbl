@@ -44,6 +44,56 @@
           <cta:group-field-history section=""/>
         </view>
       </templates>
+      <control-details>
+        <xf:model xmlns="" id="fb-editor-group-field-history-model">
+          <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
+            <xf:var name="c" value="."/>
+            <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
+          </xf:action>
+
+          <xf:instance id="local" xxf:exclude-result-prefixes="#all">
+            <local>
+              <section/>
+            </local>
+          </xf:instance>
+
+          <xf:bind ref="instance('local')">
+            <xf:bind ref="section" xxf:whitespace="trim"/>
+          </xf:bind>
+
+          <xf:instance id="fr-form-resources" xxf:readonly="true">
+            <resources>
+              <resource xml:lang="en">
+                <section>Section</section>
+              </resource>
+            </resources>
+          </xf:instance>
+        </xf:model>
+        <fr:grid xmlns="" id="fb-editor-group-field-history-grid">
+          <xh:tr>
+            <xh:td colspan="2">
+              <xf:input ref="instance('local')/section" id="section-control">
+                <xf:label ref="xxf:r('section')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+          </xh:tr>
+        </fr:grid>
+        <xf:action
+          id="fb-editor-group-field-history-action"
+          event="xforms-value-changed"
+          observer="section-control">
+          <xf:var name="name"      value="name(event('xxf:binding'))"/>
+          <xf:var name="new-value" value="string(event('xxf:binding'))"/>
+          <xf:insert
+            context="instance()"
+            if="xxf:non-blank($new-value)"
+            origin="xf:attribute($name, $new-value)"/>
+          <xf:delete
+            if="xxf:is-blank($new-value)"
+            ref="instance()/@*[name() = $name]"/>
+        </xf:action>
+      </control-details>
     </metadata>
     
     <xbl:resources>
@@ -81,28 +131,7 @@
                     <xf:setvalue ref="choose($history_enabled eq 'true',xxf:instance('fr-form-instance')//*[name()=$name],())"  value="xxf:instance('cta-form-history-instance')/xxf:evaluate($history_path)"/>
                   </xf:action>
                 </xf:action>
-
               </xf:trigger>
-              <xh:table>
-                <xf:repeat>
-                  <xsl:attribute name="ref">
-                    <xsl:text>xxf:instance('fr-form-instance')/*[name()='</xsl:text>
-                    <xsl:value-of select="@section"/>
-                    <xsl:text>']/*</xsl:text>
-                  </xsl:attribute>
-                  <xf:var name="name" value="name()"/>
-                  <xf:var name="history_enabled" value="xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history']"/>
-                  <xf:var name="history_value" value="string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(xf:instance)]/local-name(), '/')"/>
-                  <xh:tr>
-                    <xh:td>
-                      Control: <xf:output ref="$name"/>
-                    </xh:td>
-                    <xh:td>
-                      History <xf:output ref="xxf:instance('cta-form-history-instance')/xxf:evaluate($history_value)"/>
-                    </xh:td>
-                  </xh:tr>
-                </xf:repeat>
-              </xh:table>
             </xh:div>
           </xf:group>
         </xsl:template>
