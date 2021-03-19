@@ -1,0 +1,112 @@
+<!--
+  This software is provided by the copyright holders "as is"
+  and any express or implied warranties, including, but not limited to, the
+  implied warranties of merchantability and fitness for a particular purpose
+  are disclaimed. in no event shall the regents be liable for any
+  direct, indirect, incidental, special, exemplary, or consequential damages
+  (including, but not limited to, procurement of substitute goods or services;
+  loss of use, data, or profits; or business interruption) however caused and
+  on any theory of liability, whether in contract, strict liability, or tort
+  (including negligence or otherwise) arising in any way out of the use of this
+  software, even if advised of the possibility of such damage.
+ 
+  Copyright (c) 2000-2018 Certus Technology Associates Limited. All Rights Reserved.
+-->
+<xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+         xmlns:oxf="http://www.orbeon.com/oxf/processors"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:ctao="http://www.certus-tech.com/orbeon"
+         xmlns:cta="http://www.certus-tech.com/xbl">
+
+  <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
+  <xbl:binding id="cta-group-field-history" element="cta|group-field-history" xxbl:mode="custom-lhha">
+    
+    <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+      <display-name lang="en">Group field history</display-name>
+      <icon lang="en">
+        <small-icon>/apps/fr/style/images/silk/time.png</small-icon>
+        <large-icon>/apps/fr/style/images/silk/time.png</large-icon>
+      </icon>
+      <!-- 
+        @control is the ID of the control this history is for e.g. @control-1
+        @modelpath is the path within the xform model to (but not including) @control, e.g. section-1/section-2
+        @bind is populated automatically by orbeon when this control is created, see @xxbl:mode, above
+      -->
+      <templates>
+        <view>
+          <cta:group-field-history section=""/>
+        </view>
+      </templates>
+    </metadata>
+    
+    <xbl:resources>
+      <!--<xbl:style src="/xbl/cta/field-history/field-history.css"/>-->
+    </xbl:resources>
+    
+    <xbl:template xxbl:transform="oxf:xslt">
+      <xsl:transform version="2.0">
+        <xsl:template match="/*">
+          <xf:group id="cta-history-group" class="cta-history-transform-container">
+            
+            <!-- This model is in the template and not in the xbl:implementation (omitted), following the example of
+            autocomplete.xbl -->
+            <xf:model id="cta-history-internal">
+              <!-- This instance must exist else xxf:instance appears to fail to find the (external) history. -->
+              <xf:instance id="notused">
+                <data/>
+              </xf:instance>
+              <!-- Binds may appear here up to 2 levels deep. -->
+            </xf:model>
+            
+            <xh:div class="cta-history-transform-container">
+              <xf:trigger>
+                <xf:label>Re-apply</xf:label>
+                <xf:action ev:event="DOMActivate">
+                  <xf:action>
+                    <xsl:attribute name="iterate">
+                      <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
+                      <xsl:value-of select="@section"/>
+                      <xsl:text>/*</xsl:text>
+                    </xsl:attribute>
+                    <xf:var name="name" value="name()"/>
+                    <xf:var name="history_enabled" value="xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history']"/>
+                    <xf:var name="history_path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(xf:instance)]/local-name(), '/')"/>
+                    <xf:setvalue ref="choose($history_enabled eq 'true',xxf:instance('fr-form-instance')//*[name()=$name],())"  value="xxf:instance('cta-form-history-instance')/xxf:evaluate($history_path)"/>
+                  </xf:action>
+                </xf:action>
+
+              </xf:trigger>
+              <xh:table>
+                <xf:repeat>
+                  <xsl:attribute name="ref">
+                    <xsl:text>xxf:instance('fr-form-instance')/*[name()='</xsl:text>
+                    <xsl:value-of select="@section"/>
+                    <xsl:text>']/*</xsl:text>
+                  </xsl:attribute>
+                  <xf:var name="name" value="name()"/>
+                  <xf:var name="history_enabled" value="xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history']"/>
+                  <xf:var name="history_value" value="string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(xf:instance)]/local-name(), '/')"/>
+                  <xh:tr>
+                    <xh:td>
+                      Control: <xf:output ref="$name"/>
+                    </xh:td>
+                    <xh:td>
+                      History <xf:output ref="xxf:instance('cta-form-history-instance')/xxf:evaluate($history_value)"/>
+                    </xh:td>
+                  </xh:tr>
+                </xf:repeat>
+              </xh:table>
+            </xh:div>
+          </xf:group>
+        </xsl:template>
+      </xsl:transform>
+    </xbl:template>
+  </xbl:binding>
+</xbl:xbl>

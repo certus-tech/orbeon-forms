@@ -43,10 +43,14 @@
         oxf:/xbl/orbeon/tinymce/tinymce.xbl
         oxf:/forms/orbeon/builder/xbl/text-secret.xbl
         oxf:/xbl/orbeon/character-counter/character-counter.xbl
-        oxf:/xbl/cta/field-history/field-history.xbl
         oxf:/xbl/cta/field-mixin/field-mixin.xbl
     </property>
-
+    
+     <property as="xs:string"  name="oxf.fb.toolbox.group.text.uri.*.*">
+        oxf:/xbl/cta/field-history/field-history.xbl
+        oxf:/xbl/cta/group-field-history/group-field-history.xbl
+    </property>
+    
     <!-- Toolbox -->
     <property as="xs:string"  name="oxf.fb.toolbox.group.special.uri.*.*">
         oxf:/forms/orbeon/builder/xbl/utility-controls.xbl
