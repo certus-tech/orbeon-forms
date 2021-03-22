@@ -1,0 +1,40 @@
+<!DOCTYPE xbl [ <!ENTITY self "cta-history-field" > ]>
+<!-- 
+  This file is really freeform XML containing fragments for XBL bindings to XInclude, however it follows the structure
+  of an XBL binding to make it clearer what fragment is designed to be used where.
+-->
+<xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+         xmlns:oxf="http://www.orbeon.com/oxf/processors"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:cta="http://www.certus-tech.com/xbl"
+         xmlns:ctao="http://www.certus-tech.com/orbeon">
+
+  <xbl:binding>
+    <fb:metadata>
+      
+    </fb:metadata>
+    
+    <xbl:resources/>
+    <xbl:handlers/>
+
+    <xbl:template>
+      <xf:model id="&self;-internal">
+        <xf:var name="control-name" value="fr:component-param-value('control-name')"/>
+        <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
+        <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$control-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
+        <xf:var name="really-full-model-path" value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/', 'form[', $history-entry, ']/', $model-path)"/>
+        <!-- Binds onto cta-form-history-instance are not used: These become stale, and only expose the data in the placeholder instance. -->
+      </xf:model>  
+    </xbl:template>
+    
+  </xbl:binding>
+</xbl:xbl>

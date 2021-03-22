@@ -1,4 +1,7 @@
-<!DOCTYPE xbl [ <!ENTITY self "cta-history-text" > ]>
+<!DOCTYPE xbl [ 
+<!ENTITY self "cta-history-text" > 
+<!ENTITY history-common "/xbl/cta/history-field-common/history-field-common.xml" > 
+]>
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -6,9 +9,11 @@
          xmlns:xbl="http://www.w3.org/ns/xbl"
          xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
          xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
          xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
          xmlns:oxf="http://www.orbeon.com/oxf/processors"
          xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
          xmlns:cta="http://www.certus-tech.com/xbl"
          xmlns:ctao="http://www.certus-tech.com/orbeon">
 
@@ -25,9 +30,8 @@
         <icon-class>fa fa-fw fa-history</icon-class>
       </icon>
       <templates>
-        <!--<bind type="xf:decimal"/>-->
         <view>
-          <cta:history-text xmlns:xf="http://www.w3.org/2002/xforms" control-name="control-2" history-entry="last()">
+          <cta:history-text xmlns:xf="http://www.w3.org/2002/xforms" control-name="" history-entry="last()">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
@@ -35,9 +39,14 @@
           </cta:history-text>
         </view>
       </templates>
+      <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
+           See comment in this location on currency.xbl for detail.
+            <xi:include
+              xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+              href="/xbl/orbeon/number/number.xbl"
+              xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
       <control-details>
         <xf:model xmlns="" id="fb-&self;-model">
-
           <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
             <xf:var name="c" value="."/>
             <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
@@ -61,13 +70,14 @@
                 <control-name>Control Name</control-name>
                 <control-name-hint>Name of the control for which to display a historic value</control-name-hint>
                 <history-entry>History entry</history-entry>
-                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one &lt;form&gt; from the history.</history-entry-hint>
+                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
                 <history-entry-first>First</history-entry-first>
                 <history-entry-last>Last</history-entry-last>
               </resource>
             </resources>
           </xf:instance>
         </xf:model>
+    
         <fr:grid xmlns="" id="fb-editor-&self;-grid">
           <xh:tr>
             <xh:td>
@@ -94,8 +104,8 @@
             </xh:td>
           </xh:tr>
         </fr:grid>
-        <!-- Update the control attribute corresponding to the observed fields below, on change.
-        @observer can be space-separated. -->
+    
+        <!-- Update the control attribute corresponding to the observed fields below, on change. -->
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
@@ -106,10 +116,10 @@
           <xf:delete if="xxf:is-blank($new-value)" ref="instance()/@*[name() = $name]"/>
         </xf:action>
       </control-details>
+      <!-- END of content duped across all history view components -->
     </metadata>
 
-    <!--<xbl:resources/>-->
-    <!--<xbl:handlers/>-->
+    <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:resources, /xbl:xbl/xbl:binding/xbl:handlers)"/>
 
     <xbl:template xxbl:transform="oxf:xslt">
       <xsl:transform version="2.0">
@@ -123,17 +133,11 @@
               <!-- Binds onto cta-form-history-instance are not used: These become stale, and only expose the data in the placeholder instance. -->
             </xf:model>
             <xh:div class="&self;-wrapper">
-              <xh:div style="border: 1px solid red">
-                <xh:span>Eval: <xf:output value="xxf:evaluate($really-full-model-path)"/></xh:span>
-                <xh:br/>
-              </xh:div>
               <xh:span class="input &self;-input-wrap">
-                <!--<xf:input id="html-input" bind="&self;-history-field-bind"/>-->
-                <xf:input id="html-input2" ref="xxf:evaluate($really-full-model-path)"/>
+                <xf:input id="html-input" ref="xxf:evaluate($really-full-model-path)"/>
               </xh:span>
             </xh:div>
           </xf:group>
-          <!--</xf:group>-->
         </xsl:template>
       </xsl:transform>
     </xbl:template>
