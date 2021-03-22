@@ -117,7 +117,7 @@
                     <xsl:attribute name="iterate">
                       <!-- If the section defined is empty then it will use its parent node as the section -->
                       <xsl:choose>
-                        <xsl:when test="not(@section)">
+                        <xsl:when test="(not(@section) or @section='')">
                           <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('cta-group-field-history')/../name())/* </xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
