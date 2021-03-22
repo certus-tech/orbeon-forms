@@ -10,7 +10,7 @@
   (including negligence or otherwise) arising in any way out of the use of this
   software, even if advised of the possibility of such damage.
  
-  Copyright (c) 2000-2018 Certus Technology Associates Limited. All Rights Reserved.
+  Copyright (c) 2000-2021 Certus Technology Associates Limited. All Rights Reserved.
 -->
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
@@ -26,19 +26,14 @@
          xmlns:cta="http://www.certus-tech.com/xbl">
 
   <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
-  <xbl:binding id="cta-group-field-history" element="cta|group-field-history" xxbl:mode="custom-lhha">
-    
+  <xbl:binding id="cta-group-field-history" element="cta|group-field-history" xxbl:mode="binding custom-lhha">
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
       <display-name lang="en">Group field history</display-name>
       <icon lang="en">
         <small-icon>/apps/fr/style/images/silk/time.png</small-icon>
         <large-icon>/apps/fr/style/images/silk/time.png</large-icon>
       </icon>
-      <!-- 
-        @control is the ID of the control this history is for e.g. @control-1
-        @modelpath is the path within the xform model to (but not including) @control, e.g. section-1/section-2
-        @bind is populated automatically by orbeon when this control is created, see @xxbl:mode, above
-      -->
+
       <templates>
         <view>
           <cta:group-field-history section=""/>
@@ -112,7 +107,6 @@
               <xf:instance id="notused">
                 <data/>
               </xf:instance>
-              <!-- Binds may appear here up to 2 levels deep. -->
             </xf:model>
             
             <xh:div class="cta-history-transform-container">
@@ -121,14 +115,25 @@
                 <xf:action ev:event="DOMActivate">
                   <xf:action>
                     <xsl:attribute name="iterate">
-                      <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
-                      <xsl:value-of select="@section"/>
-                      <xsl:text>/*</xsl:text>
+                      <!-- If the section defined is empty then it will use its parent node as the section -->
+                      <xsl:choose>
+                        <xsl:when test="not(@section)">
+                          <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('cta-group-field-history')/../name())/* </xsl:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                          <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
+                          <xsl:value-of select="@section"/>
+                          <xsl:text>/*</xsl:text>
+                        </xsl:otherwise>
+                      </xsl:choose>
                     </xsl:attribute>
+                    
                     <xf:var name="name" value="name()"/>
-                    <xf:var name="history_enabled" value="xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history']"/>
-                    <xf:var name="history_path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(xf:instance)]/local-name(), '/')"/>
-                    <xf:setvalue ref="choose($history_enabled eq 'true',xxf:instance('fr-form-instance')//*[name()=$name],())"  value="xxf:instance('cta-form-history-instance')/xxf:evaluate($history_path)"/>
+                    <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history'],'false')[1]"/>
+                    <xf:var name="history_path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
+
+                    <!-- Set the value of the field if it has history metadata set to true -->
+                    <xf:setvalue ref="choose($history_enabled eq 'true',xxf:instance('fr-form-instance')//*[name()=$name],())"  value="choose($history_enabled eq 'true',xxf:instance('cta-form-history-instance')/form[last()]/xxf:evaluate($history_path),())"/>
                   </xf:action>
                 </xf:action>
               </xf:trigger>

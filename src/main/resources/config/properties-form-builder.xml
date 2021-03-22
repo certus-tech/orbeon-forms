@@ -46,7 +46,7 @@
         oxf:/xbl/cta/field-mixin/field-mixin.xbl
     </property>
     
-     <property as="xs:string"  name="oxf.fb.toolbox.group.text.uri.*.*">
+     <property as="xs:string"  name="oxf.fb.toolbox.group.history.uri.*.*">
         oxf:/xbl/cta/field-history/field-history.xbl
         oxf:/xbl/cta/group-field-history/group-field-history.xbl
     </property>
