@@ -14,6 +14,7 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
 <properties xmlns:xs="http://www.w3.org/2001/XMLSchema"
             xmlns:oxf="http://www.orbeon.com/oxf/processors">
 
+<<<<<<< HEAD
   <property as="xs:string"  name="oxf.fr.detail.css.uri.orbeon.builder">
     /apps/fr/style/form-runner-common.css
     /apps/fr/style/form-runner-base.css
@@ -119,7 +120,10 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
     
   <property as="xs:string"  name="oxf.fb.toolbox.group.history.uri.*.*">
     oxf:/forms/orbeon/builder/xbl/history-controls.xbl
-    oxf:/xbl/cta/field-history/field-history.xbl
+    oxf:/xbl/cta/history-text/history-text.xbl
+    oxf:/xbl/cta/history-select/history-select.xbl
+    oxf:/xbl/cta/history-select1/history-select1.xbl
+    oxf:/xbl/cta/history-yesno/history-yesno.xbl
     oxf:/xbl/cta/group-field-history/group-field-history.xbl
   </property>
 
