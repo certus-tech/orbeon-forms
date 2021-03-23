@@ -174,5 +174,5 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
 
   <property as="xs:string"  name="oxf.xforms.xbl.fr.grid.appearance.orbeon.builder"           value=""/>
   <property as="xs:string"  name="oxf.xforms.xbl.fr.section.appearance.orbeon.builder"        value=""/>
-
+    
 </properties>
