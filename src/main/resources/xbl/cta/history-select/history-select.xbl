@@ -31,7 +31,7 @@
       </icon>
       <templates>
         <view>
-          <cta:history-select xmlns:xf="http://www.w3.org/2002/xforms" control-name="" history-entry="last()">
+          <cta:history-select xmlns:xf="http://www.w3.org/2002/xforms" control-name="" history-entry="last()" appearance="full">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
@@ -127,15 +127,16 @@
           <xf:group id="&self;-group">
             <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:template/xf:model)"/>
             <xh:style fr:keep-if-design-time="true">
-              .&self;-input-wrap.placeholder {
-              background: repeating-linear-gradient(45deg, #eee, #eee 12px, #ccc 12px, #ccc 20px) !important;
+              .&self;-input-wrap.placeholder .xforms-items {
+                background: repeating-linear-gradient(45deg, #eee, #eee 12px, #ccc 12px, #ccc 20px) !important;
               }
             </xh:style>
             <xh:div class="&self;-wrapper">
             
               <xf:group fr:keep-if-design-time="true">
                 <xh:span class="input &self;-input-wrap placeholder">
-                  <xf:select appearance="full" id="html-input-placeholder" ref="''">
+                  <xf:select id="html-input-placeholder" ref="''">
+                    <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
                     <xf:itemset ref="$items">
                       <xf:label ref="label"/>
                       <xf:value ref="value"/>
@@ -147,7 +148,8 @@
               
               <xf:group fr:keep-if-design-time="false">
                 <xh:span class="input &self;-input-wrap">
-                  <xf:select id="html-input" appearance="full" ref="xxf:evaluate($history-value-path)">
+                  <xf:select id="html-input" ref="xxf:evaluate($history-value-path)">
+                    <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
                     <xf:itemset ref="$items">
                       <xf:label ref="label"/>
                       <xf:value ref="value"/>
