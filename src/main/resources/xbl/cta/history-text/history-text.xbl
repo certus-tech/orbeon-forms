@@ -19,7 +19,7 @@
 
   <xbl:binding
     id="&self;"
-    element="cta|history-text, xf|input[appearance ~= &self;]"
+    element="cta|history-text"
     xxbl:mode="lhha binding value"
     xxf:external-events="fr-set-client-value"
     xxbl:label-for="html-input">
@@ -40,11 +40,11 @@
         </view>
       </templates>
       <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
-           See comment in this location on currency.xbl for detail.
-            <xi:include
-              xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
-              href="/xbl/orbeon/number/number.xbl"
-              xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
+   See comment in this location on currency.xbl for detail.
+    <xi:include
+      xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+      href="/xbl/orbeon/number/number.xbl"
+      xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
       <control-details>
         <xf:model xmlns="" id="fb-&self;-model">
           <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
@@ -125,17 +125,26 @@
       <xsl:transform version="2.0">
         <xsl:template match="/*">
           <xf:group id="&self;-group">
-            <xf:model id="&self;-internal">
-              <xf:var name="control-name" value="fr:component-param-value('control-name')"/>
-              <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
-              <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$control-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-              <xf:var name="really-full-model-path" value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/', 'form[', $history-entry, ']/', $model-path)"/>
-              <!-- Binds onto cta-form-history-instance are not used: These become stale, and only expose the data in the placeholder instance. -->
-            </xf:model>
+            <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:template/xf:model)"/>
+            <xh:style fr:keep-if-design-time="true">
+              .&self;-input-wrap input {
+                background: repeating-linear-gradient(45deg, #eee, #eee 12px, #ccc 12px, #ccc 20px) !important;
+              }
+            </xh:style>
             <xh:div class="&self;-wrapper">
-              <xh:span class="input &self;-input-wrap">
-                <xf:input id="html-input" ref="xxf:evaluate($really-full-model-path)"/>
-              </xh:span>
+            
+              <xf:group fr:keep-if-design-time="true">
+                <xh:span class="input &self;-input-wrap">
+                  <xf:input id="html-input-placeholder" ref="concat('historic value from ', $control-name)"/>
+                </xh:span>
+              </xf:group>
+              
+              <xf:group fr:keep-if-design-time="false">
+                <xh:span class="input &self;-input-wrap">
+                  <xf:input id="html-input" ref="xxf:evaluate($history-value-path)"/>
+                </xh:span>
+              </xf:group>
+              
             </xh:div>
           </xf:group>
         </xsl:template>
