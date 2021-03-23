@@ -20,7 +20,12 @@
 
   <xbl:binding>
     <fb:metadata>
-      
+      <fb:control-details>
+        <!--
+        TODO it would be nice to put the common control details (control-name, history-entry & settings form) here,
+        but XInclude is not supported for this. See currency.xbl and history-text.xbl comments on the matter.
+        -->
+      </fb:control-details>
     </fb:metadata>
     
     <xbl:resources/>
@@ -31,7 +36,7 @@
         <xf:var name="control-name" value="fr:component-param-value('control-name')"/>
         <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
         <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$control-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-        <xf:var name="really-full-model-path" value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/', 'form[', $history-entry, ']/', $model-path)"/>
+        <xf:var name="history-value-path" value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/', 'form[', $history-entry, ']/', $model-path)"/>
         <!-- Binds onto cta-form-history-instance are not used: These become stale, and only expose the data in the placeholder instance. -->
       </xf:model>  
     </xbl:template>
