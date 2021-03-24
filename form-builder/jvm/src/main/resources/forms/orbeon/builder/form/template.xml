@@ -123,6 +123,11 @@
                     <xf:message>History load failed</xf:message>
                 </xf:action>
             </xf:submission>
+            
+            <!-- Set the entire form history instance to read-only. -->
+            <xf:bind id="cta-form-history-binds"
+                     ref="instance('cta-form-history-instance')"
+                     readonly="true()"/>
 
         </xf:model>
     </xh:head>
