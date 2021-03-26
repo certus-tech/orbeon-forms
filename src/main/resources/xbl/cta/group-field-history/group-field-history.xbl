@@ -46,6 +46,7 @@
             <resources>
               <resource xml:lang="en">
                 <section>Section</section>
+                <section-hint>Optional. Overrides the section name that this control will affect.</section-hint>
               </resource>
             </resources>
           </xf:instance>
@@ -55,6 +56,7 @@
             <xh:td colspan="2">
               <xf:input ref="instance('local')/section" id="section-control">
                 <xf:label ref="xxf:r('section')"/>
+                <xf:hint ref="xxf:r('section-hint')"/>
                 <xf:alert/>
               </xf:input>
             </xh:td>
