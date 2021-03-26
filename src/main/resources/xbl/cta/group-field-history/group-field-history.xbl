@@ -1,3 +1,7 @@
+<!DOCTYPE xbl [ 
+<!ENTITY self "cta-group-field-history" > 
+<!ENTITY history-common "/xbl/cta/history-field-common/history-field-common.xml" > 
+]>
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -8,11 +12,12 @@
          xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
          xmlns:oxf="http://www.orbeon.com/oxf/processors"
          xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
          xmlns:ctao="http://www.certus-tech.com/orbeon"
          xmlns:cta="http://www.certus-tech.com/xbl">
 
   <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
-  <xbl:binding id="cta-group-field-history" element="cta|group-field-history" xxbl:mode="binding custom-lhha">
+  <xbl:binding id="&self;" element="cta|group-field-history" xxbl:mode="binding custom-lhha">
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
       <display-name lang="en">Group field history</display-name>
       <icon lang="en">
@@ -22,11 +27,11 @@
 
       <templates>
         <view>
-          <cta:group-field-history section=""/>
+          <cta:group-field-history section="" history-entry="last()"/>
         </view>
       </templates>
       <control-details>
-        <xf:model xmlns="" id="fb-editor-group-field-history-model">
+        <xf:model xmlns="" id="fb-&self;-model">
           <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
             <xf:var name="c" value="."/>
             <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
@@ -35,11 +40,13 @@
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
               <section/>
+              <history-entry/>
             </local>
           </xf:instance>
 
           <xf:bind ref="instance('local')">
             <xf:bind ref="section" xxf:whitespace="trim"/>
+            <xf:bind ref="history-entry" xxf:whitespace="trim"/>
           </xf:bind>
 
           <xf:instance id="fr-form-resources" xxf:readonly="true">
@@ -47,13 +54,17 @@
               <resource xml:lang="en">
                 <section>Section</section>
                 <section-hint>Optional. Overrides the section name that this control will affect.</section-hint>
+                <history-entry>History entry</history-entry>
+                <history-entry-hint>Which values from the history to use, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
+                <history-entry-first>First</history-entry-first>
+                <history-entry-last>Last</history-entry-last>
               </resource>
             </resources>
           </xf:instance>
         </xf:model>
-        <fr:grid xmlns="" id="fb-editor-group-field-history-grid">
+        <fr:grid id="fb-editor-&self;-grid">
           <xh:tr>
-            <xh:td colspan="2">
+            <xh:td>
               <xf:input ref="instance('local')/section" id="section-control">
                 <xf:label ref="xxf:r('section')"/>
                 <xf:hint ref="xxf:r('section-hint')"/>
@@ -61,11 +72,27 @@
               </xf:input>
             </xh:td>
           </xh:tr>
+          <xh:tr>
+            <xh:td>
+              <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
+                <xf:label ref="xxf:r('history-entry')"/>
+                <xf:hint ref="xxf:r('history-entry-hint')"/>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-entry-first')"/>
+                  <xf:value>1</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-entry-last')"/>
+                  <xf:value>last()</xf:value>
+                </xf:item>
+              </fr:open-select1>
+            </xh:td>
+          </xh:tr>
         </fr:grid>
         <xf:action
-          id="fb-editor-group-field-history-action"
+          id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="section-control">
+          observer="section-control history-entry-control">
           <xf:var name="name"      value="name(event('xxf:binding'))"/>
           <xf:var name="new-value" value="string(event('xxf:binding'))"/>
           <xf:insert
@@ -79,14 +106,12 @@
       </control-details>
     </metadata>
     
-    <xbl:resources>
-      <!--<xbl:style src="/xbl/cta/field-history/field-history.css"/>-->
-    </xbl:resources>
+    <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:resources, /xbl:xbl/xbl:binding/xbl:handlers)"/>
     
     <xbl:template xxbl:transform="oxf:xslt">
       <xsl:transform version="2.0">
         <xsl:template match="/*">
-          <xf:group id="cta-history-group" class="cta-history-transform-container">
+          <xf:group id="&self;-group">
             
             <!-- This model is in the template and not in the xbl:implementation (omitted), following the example of
             autocomplete.xbl -->
@@ -97,16 +122,16 @@
               </xf:instance>
             </xf:model>
             
-            <xh:div class="cta-history-transform-container">
+            <xh:div>
               <xf:trigger>
                 <xf:label>Re-apply</xf:label>
                 <xf:action ev:event="DOMActivate">
                   <xf:action>
                     <xsl:attribute name="iterate">
-                      <!-- If the section defined is empty then it will use its parent node as the section -->
+                      <!-- If the section defined is empty then it will use this control's parent node as the section -->
                       <xsl:choose>
                         <xsl:when test="(not(@section) or @section='')">
-                          <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('cta-group-field-history')/../name())/* </xsl:text>
+                          <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('&self;')/../name())/* </xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
                           <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
