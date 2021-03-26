@@ -143,10 +143,13 @@
                     
                     <xf:var name="name" value="name()"/>
                     <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history'],'false')[1]"/>
-                    <xf:var name="history_path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-
+                    <xf:var name="history_path" 
+                            value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/form[', fr:component-param-value('history-entry'), ']/', string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/'))"/>
+                    
                     <!-- Set the value of the field if it has history metadata set to true -->
-                    <xf:setvalue ref="choose($history_enabled eq 'true',xxf:instance('fr-form-instance')//*[name()=$name],())"  value="choose($history_enabled eq 'true',xxf:instance('cta-form-history-instance')/form[last()]/xxf:evaluate($history_path),())"/>
+                    <xf:setvalue if="$history_enabled eq 'true'"
+                                 ref="xxf:instance('fr-form-instance')//*[name()=$name]"  
+                                 value="xxf:evaluate($history_path)"/>
                   </xf:action>
                 </xf:action>
               </xf:trigger>
