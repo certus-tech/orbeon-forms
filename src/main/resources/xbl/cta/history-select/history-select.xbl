@@ -56,12 +56,14 @@
             <local>
               <control-name/>
               <history-entry/>
+              <appearance/>
             </local>
           </xf:instance>
 
           <xf:bind ref="instance('local')">
             <xf:bind ref="control-name" name="control-name" xxf:whitespace="trim"/>
             <xf:bind ref="history-entry" name="history-entry" xxf:whitespace="trim"/>
+            <xf:bind ref="appearance" name="appearance" xxf:whitespace="trim"/>
           </xf:bind>
                     
           <xf:instance id="fr-form-resources" xxf:readonly="true">
@@ -89,6 +91,33 @@
           </xh:tr>
           <xh:tr>
             <xh:td>
+              <!--
+                TODO this may be reinventing the wheel; see history-select1.
+              -->
+              <fr:open-select1 xxf-type="xs:string" ref="instance('local')/appearance" appearance="minimal" id="appearance-control">
+                <xf:label>Appearance</xf:label>
+                <xf:hint>Inner control appearance. N.b. not all values may be valid for all types of control.</xf:hint>
+                <xf:item>
+                  <xf:label>Full</xf:label>
+                  <xf:value>full</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label>Compact</xf:label>
+                  <xf:value>compact</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label>Minimal</xf:label>
+                  <xf:value>minimal</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label>Horizontal</xf:label>
+                  <xf:value>horizontal</xf:value>
+                </xf:item>
+              </fr:open-select1>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td>
               <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
                 <xf:label ref="xxf:r('history-entry')"/>
                 <xf:hint ref="xxf:r('history-entry-hint')"/>
@@ -109,7 +138,7 @@
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="control-name-control history-entry-control">
+          observer="control-name-control history-entry-control appearance-control">
           <xf:var name="name" value="name(event('xxf:binding'))"/>
           <xf:var name="new-value" value="string(event('xxf:binding'))"/>
           <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
@@ -128,7 +157,7 @@
             <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:template/xf:model)"/>
             <xh:style fr:keep-if-design-time="true">
               .&self;-input-wrap.placeholder .xforms-items {
-                background: repeating-linear-gradient(45deg, #eee, #eee 12px, #ccc 12px, #ccc 20px) !important;
+              background: repeating-linear-gradient(45deg, #eee, #eee 12px, #ccc 12px, #ccc 20px) !important;
               }
             </xh:style>
             <xh:div class="&self;-wrapper">
