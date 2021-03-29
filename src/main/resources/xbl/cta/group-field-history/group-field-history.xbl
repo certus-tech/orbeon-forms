@@ -124,7 +124,7 @@
             
             <xh:div>
               <xf:trigger>
-                <xf:label>Re-apply</xf:label>
+                <xf:label>No changes</xf:label>
                 <xf:action ev:event="DOMActivate">
                   <xf:action>
                     <xsl:attribute name="iterate">
