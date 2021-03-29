@@ -19,7 +19,7 @@
   <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
   <xbl:binding id="&self;" element="cta|group-field-history" xxbl:mode="binding custom-lhha">
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
-      <display-name lang="en">Group field history</display-name>
+      <display-name lang="en">'No changes' action</display-name>
       <icon lang="en">
         <small-icon>/apps/fr/style/images/silk/time.png</small-icon>
         <large-icon>/apps/fr/style/images/silk/time.png</large-icon>
