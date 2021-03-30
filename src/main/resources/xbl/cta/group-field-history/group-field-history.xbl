@@ -126,7 +126,7 @@
               <xf:trigger>
                 <xf:label>No changes</xf:label>
                 <xf:action ev:event="DOMActivate">
-                  <xf:action>
+                  <xf:action fr:keep-if-design-time="false">
                     <xsl:attribute name="iterate">
                       <!-- If the section defined is empty then it will use this control's parent node as the section -->
                       <xsl:choose>
