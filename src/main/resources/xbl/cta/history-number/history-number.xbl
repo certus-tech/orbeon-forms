@@ -1,0 +1,228 @@
+<!DOCTYPE xbl [ 
+<!ENTITY self "cta-history-number" > 
+<!ENTITY history-common "/xbl/cta/history-field-common/history-field-common.xml" > 
+]>
+<xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+         xmlns:oxf="http://www.orbeon.com/oxf/processors"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:cta="http://www.certus-tech.com/xbl"
+         xmlns:ctao="http://www.certus-tech.com/orbeon">
+
+  <xbl:binding
+    id="&self;"
+    element="cta|history-number"
+    xxbl:mode="lhha binding value"
+    xxf:external-events="fr-set-client-value"
+    xxbl:label-for="html-input">
+
+    <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+      <display-name lang="en">History number</display-name>
+      <icon>
+        <icon-class>fa fa-fw fa-history</icon-class>
+      </icon>
+      <templates>
+        <view>
+          <cta:history-number xmlns:xf="http://www.w3.org/2002/xforms" control-name="" history-entry="last()"
+                              prefix="" suffix="" digits-after-decimal="" decimal-separator="" grouping-separator="">
+            <xf:label ref=""/>
+            <xf:hint ref=""/>
+            <xf:help ref=""/>
+            <xf:alert ref=""/>
+          </cta:history-number>
+        </view>
+      </templates>
+      <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
+   See comment in this location on currency.xbl for detail.
+    <xi:include
+      xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+      href="/xbl/orbeon/number/number.xbl"
+      xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
+      <control-details>
+        <xf:model xmlns="" id="fb-&self;-model">
+          <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
+            <xf:var name="c" value="."/>
+            <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
+          </xf:action>
+
+          <xf:instance id="local" xxf:exclude-result-prefixes="#all">
+            <local>
+              <control-name/>
+              <history-entry/>
+              <prefix/>
+              <suffix/>
+              <decimal-separator/>
+              <grouping-separator/>
+              <digits-after-decimal/>
+            </local>
+          </xf:instance>
+
+          <xf:bind ref="instance('local')">
+            <xf:bind ref="control-name" name="control-name" xxf:whitespace="trim"/>
+            <xf:bind ref="history-entry" name="history-entry" xxf:whitespace="trim"/>
+          </xf:bind>
+                    
+          <xf:instance id="fr-form-resources" xxf:readonly="true">
+            <resources>
+              <resource xml:lang="en">
+                <control-name>Control Name</control-name>
+                <control-name-hint>Name of the control for which to display a historic value</control-name-hint>
+                <history-entry>History entry</history-entry>
+                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
+                <history-entry-first>First</history-entry-first>
+                <history-entry-last>Last</history-entry-last>
+                <!-- Copied from fr:number. -->
+                <prefix>Prefix</prefix>
+                <suffix>Suffix</suffix>
+                <decimal-separator>Decimal Separator</decimal-separator>
+                <grouping-separator>Grouping Separator</grouping-separator>
+                <digits-after-decimal>Digits after decimal</digits-after-decimal>
+              </resource>
+            </resources>
+          </xf:instance>
+        </xf:model>
+    
+        <fr:grid xmlns="" id="fb-editor-&self;-grid">
+          <xh:tr>
+            <xh:td colspan="6">
+              <xf:input ref="instance('local')/control-name" id="control-name-control">
+                <xf:label ref="xxf:r('control-name')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
+              <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
+                <xf:label ref="xxf:r('history-entry')"/>
+                <xf:hint ref="xxf:r('history-entry-hint')"/>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-entry-first')"/>
+                  <xf:value>1</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-entry-last')"/>
+                  <xf:value>last()</xf:value>
+                </xf:item>
+              </fr:open-select1>
+            </xh:td>
+          </xh:tr>
+          <!-- Fields below here copied from fr:number with colspans adjusted. -->
+          <xh:tr>
+            <xh:td colspan="3">
+              <xf:input ref="instance('local')/prefix" id="prefix-control">
+                <xf:label ref="xxf:r('prefix')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+            <xh:td colspan="3">
+              <xf:input ref="instance('local')/suffix" id="suffix-control">
+                <xf:label ref="xxf:r('suffix')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="2">
+              <fr:number ref="instance('local')/digits-after-decimal" id="digits-after-decimal-control">
+                <xf:label ref="xxf:r('digits-after-decimal')"/>
+                <xf:alert/>
+              </fr:number>
+            </xh:td>
+            <xh:td colspan="2">
+              <xf:input ref="instance('local')/decimal-separator" id="decimal-separator-control">
+                <xf:label ref="xxf:r('decimal-separator')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+            <xh:td colspan="2">
+              <xf:input ref="instance('local')/grouping-separator" id="grouping-separator-control">
+                <xf:label ref="xxf:r('grouping-separator')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+          </xh:tr>
+        </fr:grid>
+    
+        <!-- Update the control attribute corresponding to the observed fields below, on change. -->
+        <xf:action
+          id="fb-editor-&self;-action"
+          event="xforms-value-changed"
+          observer="control-name-control 
+            history-entry-control
+            prefix-control
+            suffix-control
+            digits-after-decimal-control
+            decimal-separator-control
+            grouping-separator-control">
+          <xf:var name="name" value="name(event('xxf:binding'))"/>
+          <xf:var name="new-value" value="string(event('xxf:binding'))"/>
+          <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
+          <xf:delete if="xxf:is-blank($new-value)" ref="instance()/@*[name() = $name]"/>
+        </xf:action>
+      </control-details>
+      <!-- END of content duped across all history view components -->
+    </metadata>
+
+    <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:resources, /xbl:xbl/xbl:binding/xbl:handlers)"/>
+
+    <xbl:template xxbl:transform="oxf:xslt">
+      <xsl:transform version="2.0">
+        <xsl:template match="/*">
+          <xf:group id="&self;-group">
+            <xi:include href="&history-common;" xpointer="xpath(/xbl:xbl/xbl:binding/xbl:template/xf:model)"/>
+            <xh:style fr:keep-if-design-time="true">
+              .&self;-input-wrap input {
+              background: repeating-linear-gradient(45deg, #eee, #eee 12px, #ccc 12px, #ccc 20px) !important;
+              }
+            </xh:style>
+            <xh:div class="&self;-wrapper">
+            
+              <xf:group fr:keep-if-design-time="true">
+                <!-- XF vars are used by the addons below; XSL can't see them nor fr:component-param-value so uses @ -->
+                <xf:variable name="prefix" value="fr:component-param-value('prefix')"/>
+                <xf:variable name="suffix" value="fr:component-param-value('suffix')"/>
+                <xh:span>
+                  <xsl:attribute name="class">
+                    <xsl:text>input &self;-input-wrap fr-field-width-natural</xsl:text>
+                    <xsl:if test="@prefix"> input-prepend</xsl:if>
+                    <xsl:if test="@suffix"> input-append</xsl:if>
+                  </xsl:attribute>
+                  <xf:group fr:keep-if-param-non-blank="prefix" class="add-on" ref=".[xxf:non-blank($prefix)]">
+                    <xf:output value="$prefix"/>
+                  </xf:group>
+                  <xf:input id="html-input-placeholder" ref="concat('historic value from ', $control-name)"/>
+                  <xf:group fr:keep-if-param-non-blank="suffix" class="add-on" ref=".[xxf:non-blank($suffix)]">
+                    <xf:output value="$suffix"/>
+                  </xf:group>
+                </xh:span>
+              </xf:group>
+              
+              <xf:group fr:keep-if-design-time="false">
+                <xh:span class="input &self;-input-wrap">
+                  <fr:number id="html-input" ref="xxf:evaluate($history-value-path)">
+                    <xsl:attribute name="prefix" select="@prefix"/>
+                    <xsl:attribute name="suffix" select="@suffix"/>
+                    <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
+                    <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
+                    <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
+                  </fr:number>
+                </xh:span>
+              </xf:group>
+              
+            </xh:div>
+          </xf:group>
+        </xsl:template>
+      </xsl:transform>
+    </xbl:template>
+    
+  </xbl:binding>
+</xbl:xbl>
