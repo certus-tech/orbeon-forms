@@ -142,7 +142,7 @@
                     </xsl:attribute>
                     
                     <xf:var name="name" value="name()"/>
-                    <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='history'],'false')[1]"/>
+                    <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='hist:enabled'],'false')[1]"/>
                     <xf:var name="history_path" 
                             value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/form[', fr:component-param-value('history-entry'), ']/', string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/'))"/>
                     
