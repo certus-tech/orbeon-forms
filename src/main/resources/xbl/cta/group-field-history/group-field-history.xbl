@@ -125,32 +125,30 @@
             <xh:div>
               <xf:trigger>
                 <xf:label>No changes</xf:label>
-                <xf:action ev:event="DOMActivate">
-                  <xf:action fr:keep-if-design-time="false">
-                    <xsl:attribute name="iterate">
-                      <!-- If the section defined is empty then it will use this control's parent node as the section -->
-                      <xsl:choose>
-                        <xsl:when test="(not(@section) or @section='')">
-                          <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('&self;')/../name())/* </xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                          <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
-                          <xsl:value-of select="@section"/>
-                          <xsl:text>/*</xsl:text>
-                        </xsl:otherwise>
-                      </xsl:choose>
-                    </xsl:attribute>
+                <xf:action ev:event="DOMActivate" fr:keep-if-design-time="false">                  
+                  <xsl:attribute name="iterate">
+                    <!-- If the section defined is empty then it will use this control's parent node as the section -->
+                    <xsl:choose>
+                      <xsl:when test="(not(@section) or @section='')">
+                        <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('&self;')/../name())/* </xsl:text>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
+                        <xsl:value-of select="@section"/>
+                        <xsl:text>/*</xsl:text>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </xsl:attribute>
                     
-                    <xf:var name="name" value="name()"/>
-                    <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='hist:enabled'],'false')[1]"/>
-                    <xf:var name="history_path" 
+                  <xf:var name="name" value="name()"/>
+                  <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='hist:enabled'],'false')[1]"/>
+                  <xf:var name="history_path" 
                             value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/form[', fr:component-param-value('history-entry'), ']/', string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/'))"/>
                     
-                    <!-- Set the value of the field if it has history metadata set to true -->
-                    <xf:setvalue if="$history_enabled eq 'true'"
+                  <!-- Set the value of the field if it has history metadata set to true -->
+                  <xf:setvalue if="$history_enabled eq 'true'"
                                  ref="xxf:instance('fr-form-instance')//*[name()=$name]"  
                                  value="xxf:evaluate($history_path)"/>
-                  </xf:action>
                 </xf:action>
               </xf:trigger>
             </xh:div>
