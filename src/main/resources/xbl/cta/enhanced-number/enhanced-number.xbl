@@ -1,0 +1,348 @@
+<!DOCTYPE xbl [ 
+<!ENTITY self "cta-enhanced-number">
+<!-- names for the internal field states/modes -->
+<!ENTITY not-collected "1">
+<!ENTITY unchanged "2">
+<!ENTITY changed "3">
+<!-- value to set when an annotation on the instance data is 'on' -->
+<!ENTITY set "1">
+]>
+<xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
+         xmlns:xf="http://www.w3.org/2002/xforms"
+         xmlns:xs="http://www.w3.org/2001/XMLSchema"
+         xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+         xmlns:xbl="http://www.w3.org/ns/xbl"
+         xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
+         xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+         xmlns:oxf="http://www.orbeon.com/oxf/processors"
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:xi="http://www.w3.org/2001/XInclude"
+         xmlns:cta="http://www.certus-tech.com/xbl">
+  <xbl:binding
+    id="&self;"
+    element="cta|enhanced-number"
+    xxbl:mode="lhha binding value"
+    xxf:external-events="fr-set-client-value"
+    xxbl:label-for="html-input">
+
+    <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+      <display-name lang="en">Enhanced number</display-name>
+      <icon>
+        <icon-class>fa fa-fw fa-history</icon-class>
+      </icon>
+      <templates>
+        <view>
+          <cta:enhanced-number history-entry="last()"
+                               prefix="" suffix="" digits-after-decimal="" decimal-separator="" grouping-separator="">
+            <xf:label ref=""/>
+            <xf:hint ref=""/>
+            <xf:help ref=""/>
+            <xf:alert ref=""/>
+          </cta:enhanced-number>
+        </view>
+      </templates>
+      <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
+           See comment in this location on currency.xbl for detail.
+    <xi:include
+      xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+      href="/xbl/orbeon/number/number.xbl"
+      xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
+      <control-details>
+        <xf:model xmlns="" id="fb-&self;-model">
+          <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
+            <xf:var name="c" value="."/>
+            <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
+          </xf:action>
+
+          <xf:instance id="local" xxf:exclude-result-prefixes="#all">
+            <local>
+              <history-entry>last()</history-entry>
+              <prefix/>
+              <suffix/>
+              <decimal-separator/>
+              <grouping-separator/>
+              <digits-after-decimal/>
+              <round-when-formatting/>
+              <round-when-storing/>
+              <field-width/>
+            </local>
+          </xf:instance>
+
+          <xf:instance id="fr-form-resources" xxf:readonly="true">
+            <resources>
+              <resource xml:lang="en">
+                <history-entry>History entry</history-entry>
+                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
+                <history-entry-first>First</history-entry-first>
+                <history-entry-last>Last</history-entry-last>
+                <!-- Copied from fr:number. -->
+                <prefix>Prefix</prefix>
+                <suffix>Suffix</suffix>
+                <decimal-separator>Decimal Separator</decimal-separator>
+                <grouping-separator>Grouping Separator</grouping-separator>
+                <digits-after-decimal>Digits after decimal</digits-after-decimal>
+                <round-when-formatting>Round when formatting</round-when-formatting>
+                <round-when-storing>Round when storing</round-when-storing>
+                <default-always-never>
+                  <item id="0">Use default</item>
+                  <item id="1">Always</item>
+                  <item id="2">Never</item>
+                </default-always-never>
+              </resource>
+            </resources>
+          </xf:instance>
+        </xf:model>
+    
+        <fr:grid xmlns="" id="fb-editor-&self;-grid">
+          <xh:tr>
+            <xh:td colspan="6">
+              <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
+                <xf:label ref="xxf:r('history-entry')"/>
+                <xf:hint ref="xxf:r('history-entry-hint')"/>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-entry-first')"/>
+                  <xf:value>1</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-entry-last')"/>
+                  <xf:value>last()</xf:value>
+                </xf:item>
+              </fr:open-select1>
+            </xh:td>
+          </xh:tr>
+          <!-- Fields below here copied from fr:number with colspans adjusted. -->
+          <xh:tr>
+            <xh:td colspan="3">
+              <xf:input ref="instance('local')/prefix" id="prefix-control">
+                <xf:label ref="xxf:r('prefix')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+            <xh:td colspan="3">
+              <xf:input ref="instance('local')/suffix" id="suffix-control">
+                <xf:label ref="xxf:r('suffix')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="2">
+              <fr:number ref="instance('local')/digits-after-decimal" id="digits-after-decimal-control">
+                <xf:label ref="xxf:r('digits-after-decimal')"/>
+                <xf:alert/>
+              </fr:number>
+            </xh:td>
+            <xh:td colspan="2">
+              <xf:input ref="instance('local')/decimal-separator" id="decimal-separator-control">
+                <xf:label ref="xxf:r('decimal-separator')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+            <xh:td colspan="2">
+              <xf:input ref="instance('local')/grouping-separator" id="grouping-separator-control">
+                <xf:label ref="xxf:r('grouping-separator')"/>
+                <xf:alert/>
+              </xf:input>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
+              <xf:select1 ref="instance('local')/round-when-formatting" appearance="full xxf:horizontal" id="round-when-formatting-control">
+                <xf:label ref="xxf:r('round-when-formatting')"/>
+                <xf:alert/>
+                <xf:itemset ref="xxf:resource-elements('default-always-never.item')">
+                  <xf:label ref="."/>
+                  <xf:value ref="if (@id = 0) then '' else if (@id = 1) then 'true' else 'false'"/>
+                </xf:itemset>
+              </xf:select1>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
+              <xf:select1 ref="instance('local')/round-when-storing" appearance="full xxf:horizontal" id="round-when-storing-control">
+                <xf:label ref="xxf:r('round-when-storing')"/>
+                <xf:alert/>
+                <xf:itemset ref="xxf:resource-elements('default-always-never.item')">
+                  <xf:label ref="."/>
+                  <xf:value ref="if (@id = 0) then '' else if (@id = 1) then 'true' else 'false'"/>
+                </xf:itemset>
+              </xf:select1>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
+              <xf:select1 ref="instance('local')/field-width" appearance="full xxf:horizontal" id="field-width-control">
+                <xf:label ref="xxf:r('xbl-control-settings.field-width', '|fr-form-resources|')"/>
+                <xf:item>
+                  <xf:label ref="xxf:r('xbl-control-settings.default', '|fr-form-resources|')"/>
+                  <xf:value/>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('xbl-control-settings.full', '|fr-form-resources|')"/>
+                  <xf:value>full</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('xbl-control-settings.natural', '|fr-form-resources|')"/>
+                  <xf:value>natural</xf:value>
+                </xf:item>
+              </xf:select1>
+            </xh:td>
+          </xh:tr>
+        </fr:grid>
+        <!-- Update the control attribute corresponding to the observed fields below, on change. -->
+        <xf:action
+          id="fb-editor-&self;-action"
+          event="xforms-value-changed"
+          observer="history-entry-control
+                    prefix-control
+                    suffix-control
+                    digits-after-decimal-control
+                    decimal-separator-control
+                    grouping-separator-control
+                    round-when-formatting-control
+                    round-when-storing-control
+                    field-width-control">
+          <xf:var name="name" value="name(event('xxf:binding'))"/>
+          <xf:var name="new-value" value="string(event('xxf:binding'))"/>
+          <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
+          <xf:delete if="xxf:is-blank($new-value)" ref="instance()/@*[name() = $name]"/>
+        </xf:action>
+      </control-details>
+      <!-- END of content duped across all history view components -->
+    </metadata>
+
+    <xbl:resources/>
+    
+    <xbl:handlers/>
+
+    <xbl:template xxbl:transform="oxf:xslt">
+      <xsl:transform version="2.0">
+        <xsl:template match="/*">
+          <xf:group id="&self;-group">
+            <xf:model id="&self;-model">
+              <!-- TODO Potentially common model -->              
+              <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
+              <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
+              <xf:var name="model-path"
+                      value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
+              <xf:var name="history-value-path"
+                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path)"/>
+              <xf:var name="history-date-path"
+                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/@date')"/>
+              <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
+              <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
+              <xf:var name="items"
+                      value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
+              
+              <xf:instance id="cta-enhanced-control-mode">
+                <control>
+                  <current-mode>&not-collected;</current-mode>
+                  <current-value/>
+                  <!-- TODO use  etc. -->
+                  <available-modes>
+                    <mode>
+                      <label>Not collected</label>
+                      <value>&not-collected;</value>
+                    </mode>
+                    <mode>
+                      <label>Unchanged</label>
+                      <value>&unchanged;</value>
+                    </mode>
+                    <mode>
+                      <label>Changed</label>
+                      <value>&changed;</value>
+                    </mode>
+                  </available-modes>
+                </control>
+              </xf:instance>
+
+              <!-- Binds cannot ref cta-form-history-instance: These only seem to bind to the default data. -->
+              <xf:bind id="&self;-control-mode-bind" name="&self;-current-mode"
+                       ref="instance('cta-enhanced-control-mode')/current-mode"/>
+              
+              <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
+              
+              <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
+              <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
+                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
+              </xf:action>
+              
+              <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
+                         fr:keep-if-design-time="false">
+                <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
+                <!-- Clear the field value. -->
+                <xf:setvalue ref="xxf:binding('&self;')" value="()"/>
+                <!-- Remove existing annotations. -->
+                <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
+                <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
+                <!-- Add annotations for notcollected/unchanged if appropriate. -->
+                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
+                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
+                <!-- Copy the history value into the field if approrpriate. -->
+                <xf:setvalue ref="xxf:binding('&self;')" value="xxf:evaluate($history-value-path)" if="$mode = (&unchanged;, &changed;)"/>
+                <!-- Toggle the UI case RO/RW. -->
+                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
+                <xf:toggle case="writable"  if="$mode = &changed;" />
+              </xf:action>
+
+              <!-- TODO: Initialise to 'not collected' if the field does not have value. -->
+              <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
+                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-mode" value="&not-collected;"/>
+                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
+                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)"/>
+              </xf:action>
+            </xf:model>
+            
+            <xh:div class="&self;__wrapper">
+              <xh:span class="&self;__mode-wrapper">
+                <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
+                  <xf:itemset ref="instance('cta-enhanced-control-mode')/available-modes/mode">
+                    <xf:label ref="label"/>
+                    <xf:value ref="value"/>
+                  </xf:itemset>
+                </xf:select1>
+              </xh:span>
+              
+              <xh:span class="input &self;__input-wraper">
+                <xf:switch id="&self;-view-switch">
+                  <xf:case id="read-only">
+                    <fr:number id="ro-input" bind="ro-binding">
+                      <xsl:attribute name="prefix" select="@prefix"/>
+                      <xsl:attribute name="suffix" select="@suffix"/>
+                      <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
+                      <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
+                      <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
+                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
+                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
+                    </fr:number>
+                  </xf:case>
+                  <xf:case id="writable">
+                    <fr:number id="html-input" ref="xxf:binding('&self;')">
+                      <xsl:attribute name="prefix" select="@prefix"/>
+                      <xsl:attribute name="suffix" select="@suffix"/>
+                      <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
+                      <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
+                      <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
+                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
+                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
+                    </fr:number>
+                  </xf:case>
+                </xf:switch>
+              </xh:span>
+              
+              <xh:span class="&self;__history-wrapper">
+                <xh:span class="&self;__history-label">Last:&#160;</xh:span>
+                <xf:output ref="xxf:evaluate($history-value-path)"/>
+                <xh:span class="&self;__history-label">, collected on:&#160;</xh:span>
+                <xf:output ref="xxf:evaluate($history-date-path)"/>
+              </xh:span>
+            </xh:div>
+          </xf:group>
+        </xsl:template>
+      </xsl:transform>
+    </xbl:template>
+    
+  </xbl:binding>
+</xbl:xbl>
