@@ -118,6 +118,7 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
   <property as="xs:string"  name="oxf.fb.publish.buttons"                                     value=""/>
     
   <property as="xs:string"  name="oxf.fb.toolbox.group.history.uri.*.*">
+    oxf:/forms/orbeon/builder/xbl/history-controls.xbl
     oxf:/xbl/cta/history-text/history-text.xbl
     oxf:/xbl/cta/history-select/history-select.xbl
     oxf:/xbl/cta/history-select1/history-select1.xbl
