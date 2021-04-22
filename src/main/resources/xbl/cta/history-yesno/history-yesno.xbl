@@ -2,6 +2,11 @@
 <!ENTITY self "cta-history-yesno" > 
 <!ENTITY history-common "/xbl/cta/history-field-common/history-field-common.xml" > 
 ]>
+<!-- 
+########################################################
+            DEPRECATED HISTORY CONTROL
+########################################################
+-->
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
