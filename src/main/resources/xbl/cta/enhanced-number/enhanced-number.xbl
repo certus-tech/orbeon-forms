@@ -307,8 +307,8 @@
               </xf:action>
             </xf:model>
             
-            <xh:div class="&self;__wrapper">
-              <xh:span class="&self;__mode-wrapper">
+            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
+              <xh:span class="cta-enhanced-control__mode-wrapper">
                 <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
                   <xf:itemset ref="instance('cta-enhanced-control-mode')/available-modes/mode">
                     <xf:label ref="label"/>
@@ -317,7 +317,7 @@
                 </xf:select1>
               </xh:span>
               
-              <xh:span class="input &self;__input-wraper">
+              <xh:span class="input cta-enhanced-control__input-wraper">
                 <xf:switch id="&self;-view-switch">
                   <xf:case id="read-only">
                     <fr:number id="ro-input" bind="ro-binding">
@@ -344,8 +344,8 @@
                 </xf:switch>
               </xh:span>
               
-              <xh:span class="&self;__history-wrapper">
-                <xh:span class="&self;__history-label">Last:&#160;</xh:span>
+              <xh:span class="cta-enhanced-control__history-wrapper">
+                <xh:span class="cta-enhanced-control__history-label">Last:&#160;</xh:span>
                 <xf:output value="NumberSupport:getDisplayAndEditValueJava(
                             xxf:evaluate($history-value-path),
                             fr:component-param-value('decimal-separator'),
@@ -355,7 +355,7 @@
                             string(fr:component-param-value('round-when-formatting')) = 'true',
                             string(fr:component-param-value('round-when-storing'))    = 'true'
                         )"/>
-                <xh:span class="&self;__history-label">, collected on:&#160;</xh:span>
+                <xh:span class="cta-enhanced-control__history-label">, collected on:&#160;</xh:span>
                 <xf:output ref="xxf:evaluate($history-date-path)"/>
               </xh:span>
             </xh:div>

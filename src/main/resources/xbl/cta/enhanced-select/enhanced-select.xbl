@@ -1,5 +1,5 @@
 <!DOCTYPE xbl [ 
-<!ENTITY self "cta-enhanced-text">
+<!ENTITY self "cta-enhanced-select">
 <!-- names for the internal field states/modes -->
 <!ENTITY not-collected "1">
 <!ENTITY unchanged "2">
@@ -22,24 +22,29 @@
          xmlns:cta="http://www.certus-tech.com/xbl">
   <xbl:binding
     id="&self;"
-    element="cta|enhanced-text"
+    element="cta|enhanced-select"
     xxbl:mode="lhha binding value"
     xxf:external-events="fr-set-client-value"
     xxbl:label-for="html-input">
 
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
-      <display-name lang="en">Enhanced text</display-name>
+      <display-name lang="en">Enhanced checkboxes</display-name>
       <icon>
-        <icon-class>fa fa-fw fa-i-cursor</icon-class>
+        <icon-class>fa fa-fw fa-check-square</icon-class>
       </icon>
+      <editors static-itemset="true"/>
       <templates>
         <view>
-          <cta:enhanced-text history-entry="last()">
+          <cta:enhanced-select history-entry="last()">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
             <xf:alert ref=""/>
-          </cta:enhanced-text>
+            <xf:itemset ref="">
+              <xf:label ref="label"/>
+              <xf:value ref="value"/>
+            </xf:itemset>
+          </cta:enhanced-select>
         </view>
       </templates>
       <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
@@ -104,7 +109,9 @@
       </control-details>
     </metadata>
 
-    <xbl:resources/>
+    <xbl:resources>
+      <xbl:style src="/xbl/cta/enhanced-fields/enhanced-fields.css"/>
+    </xbl:resources>
     
     <xbl:handlers/>
 
@@ -197,32 +204,60 @@
               </xf:action>
             </xf:model>
             
-            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
-              <xh:span class="cta-enhanced-control__mode-wrapper">
-                <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
-                  <xf:itemset ref="instance('cta-enhanced-control-mode')/available-modes/mode">
-                    <xf:label ref="label"/>
-                    <xf:value ref="value"/>
-                  </xf:itemset>
-                </xf:select1>
-              </xh:span>
-              
-              <xh:span class="input cta-enhanced-control__input-wraper">
-                <xf:switch id="&self;-view-switch">
-                  <xf:case id="read-only">
-                    <xf:input id="ro-input" bind="ro-binding"/>
-                  </xf:case>
-                  <xf:case id="writable">
-                    <xf:input id="html-input" ref="xxf:binding('&self;')"/>
-                  </xf:case>
-                </xf:switch>
-              </xh:span>
-              
-              <xh:span class="cta-enhanced-control__history-wrapper">
-                <xh:span class="cta-enhanced-control__history-label">Last:&#160;</xh:span>
-                <xf:output ref="xxf:evaluate($history-value-path)"/>
-                <xh:span class="cta-enhanced-control__history-label">, collected on:&#160;</xh:span>
-                <xf:output ref="xxf:evaluate($history-date-path)"/>
+            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--grid">
+              <xh:span class="input cta-enhanced-control__input-wrapper">
+                <xh:div class="cta-enhanced-select-layout__grid">
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <xh:span class="cta-enhanced-control__history-wrapper">
+                      <xh:span class="cta-enhanced-control__history-label">Last collected on:&#160;</xh:span>
+                      <xf:output ref="xxf:evaluate($history-date-path)"/>
+                    </xh:span>
+                    <xf:select id="history-input" ref="xxf:evaluate($history-value-path)">
+                      <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
+                      <xf:itemset ref="$items">
+                        <xf:label/><!-- omit setting the labels -->
+                        <xf:value ref="value"/>
+                        <xf:hint ref="hint"/>
+                      </xf:itemset>
+                    </xf:select>
+                  </xh:div>
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <xh:span class="cta-enhanced-control__cap">Now</xh:span>
+                    <xf:switch id="&self;-view-switch">
+                      <xf:case id="read-only">
+                        <xf:select id="ro-input" bind="ro-binding">
+                          <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
+                          <xf:itemset ref="$items">
+                            <xf:label ref="label"/>
+                            <xf:value ref="value"/>
+                            <xf:hint ref="hint"/>
+                          </xf:itemset>
+                        </xf:select>
+                      </xf:case>
+                      <xf:case id="writable">
+                        <xf:select id="html-input" ref="xxf:binding('&self;')">
+                          <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
+                          <xf:itemset ref="$items">
+                            <xf:label ref="label"/>
+                            <xf:value ref="value"/>
+                            <xf:hint ref="hint"/>
+                          </xf:itemset>
+                        </xf:select>
+                      </xf:case>
+                    </xf:switch>
+                  </xh:div>
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <xh:span class="cta-enhanced-control__cap">&#xA0;</xh:span>
+                    <xh:span class="cta-enhanced-control__mode-wrapper">
+                      <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind" appearance="full">
+                        <xf:itemset ref="instance('cta-enhanced-control-mode')/available-modes/mode">
+                          <xf:label ref="label"/>
+                          <xf:value ref="value"/>
+                        </xf:itemset>
+                      </xf:select1>
+                    </xh:span>
+                  </xh:div>
+                </xh:div>
               </xh:span>
             </xh:div>
           </xf:group>

@@ -1,0 +1,52 @@
+// History wrapper contains the history date and possibly previous value, or a placeholder.
+.cta-enhanced-control__wrapper {
+  .cta-enhanced-control__history-wrapper {
+    font-size: .8em;
+    font-style: italic;
+    color: #666;
+  }
+
+  // Inline controls use flexbox for layout of the modeswitch, field and history details.
+  &.cta-enhanced-control__wrapper--inline {
+    display: flex;
+    flex-wrap: wrap;
+
+    .cta-enhanced-control__mode-wrapper {
+      flex-grow: 0;
+    }
+    .cta-enhanced-control__input-wraper {
+      flex-grow: 1; // allow the control to expand to its normal size, e.g. "natural" width numeric fields.
+    }
+    .cta-enhanced-control__history-wrapper {
+      flex-basis: 100%; // Take enough space that a wrap is forced.
+      flex-grow: 1;
+      flex-wrap: wrap;
+    }
+  }
+
+  &.cta-enhanced-control__wrapper--grid {
+    .cta-enhanced-select-layout__grid {
+      display: flex;
+      .cta-enhanced-select-layout__cell {
+        &:first-child {
+          .xforms-items {
+            float: right;
+          }
+        }
+        &:not(:last-child) {
+          margin-right: 1em;
+        }
+      }
+    }
+
+    .cta-enhanced-control__history-wrapper {
+      float: left;
+    }
+  }
+
+  // The caption displayed above the 'current selections' column on a select control.
+  .cta-enhanced-control__cap {
+    float: left;
+  }
+
+}
