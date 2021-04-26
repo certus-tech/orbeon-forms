@@ -44,7 +44,7 @@
         </view>
       </templates>
       <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
-           See comment in this location on currency.xbl for detail.
+     See comment in this location on currency.xbl for detail.
     <xi:include
       xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
       href="/xbl/orbeon/number/number.xbl"
@@ -238,9 +238,8 @@
               
               <xf:instance id="cta-enhanced-control-mode">
                 <control>
-                  <current-mode>&not-collected;</current-mode>
+                  <current-mode/>
                   <current-value/>
-                  <!-- TODO use  etc. -->
                   <available-modes>
                     <mode>
                       <label>Not collected</label>
@@ -287,11 +286,23 @@
                 <xf:toggle case="writable"  if="$mode = &changed;" />
               </xf:action>
 
-              <!-- TODO: Initialise to 'not collected' if the field does not have value. -->
+              <!-- Initialise the internal model and bootstrap the form model if needed. -->
               <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-mode" value="&not-collected;"/>
+                <!-- Set the internal mode to match the state of the data. -->
+                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-mode" 
+                             value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
+                                    else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
+                                    else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
+                                    else &changed;"/>
+                                    
+                <!-- Copy in the current value. -->     
                 <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)"/>
+                
+                <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
+                <xf:insert context="xxf:binding('&self;')" 
+                           origin="xxf:attribute('notcollected', &set;)"
+                           if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged)) 
+                               and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
               </xf:action>
             </xf:model>
             
