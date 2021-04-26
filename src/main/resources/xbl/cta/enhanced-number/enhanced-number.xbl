@@ -19,7 +19,8 @@
          xmlns:oxf="http://www.orbeon.com/oxf/processors"
          xmlns:ev="http://www.w3.org/2001/xml-events"
          xmlns:xi="http://www.w3.org/2001/XInclude"
-         xmlns:cta="http://www.certus-tech.com/xbl">
+         xmlns:cta="http://www.certus-tech.com/xbl"
+         xmlns:NumberSupport="java:org.orbeon.xbl.NumberSupportJava">
   <xbl:binding
     id="&self;"
     element="cta|enhanced-number"
@@ -345,7 +346,15 @@
               
               <xh:span class="&self;__history-wrapper">
                 <xh:span class="&self;__history-label">Last:&#160;</xh:span>
-                <xf:output ref="xxf:evaluate($history-value-path)"/>
+                <xf:output value="NumberSupport:getDisplayAndEditValueJava(
+                            xxf:evaluate($history-value-path),
+                            fr:component-param-value('decimal-separator'),
+                            fr:component-param-value('grouping-separator'),
+                            fr:component-param-value('prefix'),
+                            fr:component-param-value('digits-after-decimal'),
+                            string(fr:component-param-value('round-when-formatting')) = 'true',
+                            string(fr:component-param-value('round-when-storing'))    = 'true'
+                        )"/>
                 <xh:span class="&self;__history-label">, collected on:&#160;</xh:span>
                 <xf:output ref="xxf:evaluate($history-date-path)"/>
               </xh:span>
