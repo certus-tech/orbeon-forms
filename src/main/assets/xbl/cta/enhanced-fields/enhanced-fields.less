@@ -49,4 +49,11 @@
     float: left;
   }
 
+  // Disabled fields don't respond to onclick so disable pointer events on these. The element behind them receives the
+  // event instead (the containing div or span), allowing intercepting the event for click-to-edit.
+  .cta-enhanced-control__ro-input input {
+    outline: 1px solid cyan;
+    pointer-events: none;
+  }
 }
+
