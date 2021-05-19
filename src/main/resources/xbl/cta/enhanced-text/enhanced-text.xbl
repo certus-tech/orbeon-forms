@@ -204,8 +204,7 @@
                                and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
               </xf:action>
               
-              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the 
-              container for the read-only field. This fires an event back to the component side. -->
+              <!-- Fire a custom event from the clientside when the RO field is clicked. -->
               <xf:action type="javascript" ev:event="xforms-model-construct-done">
                 <xf:param name="clientId" value="xxf:client-id('&self;')"/>
                 <xf:param name="compsep" value="'&compsep;'"/>
@@ -217,8 +216,7 @@
               </xf:action>
               
               <!--
-              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because 
-              setting the mode control does not in turn fire the 
+              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO.
               -->
               <xf:action ev:event="xforms-ready">
                 <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
