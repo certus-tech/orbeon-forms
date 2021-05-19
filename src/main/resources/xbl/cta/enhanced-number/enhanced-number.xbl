@@ -6,6 +6,8 @@
 <!ENTITY changed "3">
 <!-- value to set when an annotation on the instance data is 'on' -->
 <!ENTITY set "1">
+<!-- Orbeon uses this to separate components in IDs. \u2261 IDENTICAL TO. -->
+<!ENTITY compsep "&#8801;">
 ]>
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
@@ -24,8 +26,8 @@
   <xbl:binding
     id="&self;"
     element="cta|enhanced-number"
-    xxbl:mode="lhha binding value"
-    xxf:external-events="fr-set-client-value"
+    xxbl:mode="lhha binding value focus"
+    xxf:external-events="fr-set-client-value cta-click-to-edit"
     xxbl:label-for="html-input">
 
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
@@ -216,7 +218,13 @@
 
     <xbl:resources/>
     
-    <xbl:handlers/>
+    <xbl:handlers>
+      <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
+      <xbl:handler event="cta-click-to-edit" phase="target">
+        <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"/>
+        <xf:setfocus event="DOMActivate" control="html-input"/>
+      </xbl:handler>
+    </xbl:handlers>
 
     <xbl:template xxbl:transform="oxf:xslt">
       <xsl:transform version="2.0">
@@ -289,21 +297,43 @@
 
               <!-- Initialise the internal model and bootstrap the form model if needed. -->
               <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
+                <!-- Copy in the current value, if any. -->     
+                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
+                
                 <!-- Set the internal mode to match the state of the data. -->
-                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-mode" 
+                <xf:setvalue bind="&self;-control-mode-bind"
                              value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
                                     else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
                                     else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
                                     else &changed;"/>
-                                    
-                <!-- Copy in the current value. -->     
-                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
                 
                 <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
                 <xf:insert context="xxf:binding('&self;')" 
                            origin="xxf:attribute('notcollected', &set;)"
                            if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged)) 
                                and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
+              </xf:action>
+              
+              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the 
+              container for the read-only field. This fires an event back to the component side. -->
+              <xf:action type="javascript" ev:event="xforms-model-construct-done">
+                <xf:param name="clientId" value="xxf:client-id('&self;')"/>
+                <xf:param name="compsep" value="'&compsep;'"/>
+                <xf:body>
+                  ORBEON.jQuery(`#${clientId}${compsep}ro-input`).on('click', function() {
+                  ORBEON.xforms.Document.dispatchEvent(clientId, "cta-click-to-edit");
+                  });
+                </xf:body>
+              </xf:action>
+              
+              <!--
+              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because 
+              setting the mode control does not in turn fire the 
+              -->
+              <xf:action ev:event="xforms-ready">
+                <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
+                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
+                <xf:toggle case="writable"  if="$mode = &changed;" />
               </xf:action>
             </xf:model>
             
@@ -320,7 +350,7 @@
               <xh:span class="input cta-enhanced-control__input-wraper">
                 <xf:switch id="&self;-view-switch">
                   <xf:case id="read-only">
-                    <fr:number id="ro-input" bind="ro-binding">
+                    <fr:number id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
                       <xsl:attribute name="prefix" select="@prefix"/>
                       <xsl:attribute name="suffix" select="@suffix"/>
                       <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
