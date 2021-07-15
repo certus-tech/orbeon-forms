@@ -386,7 +386,7 @@
                             string(fr:component-param-value('round-when-storing'))    = 'true'
                         )"/>
                 <xh:span class="cta-enhanced-control__history-label">, collected on:&#160;</xh:span>
-                <xf:output ref="xxf:evaluate($history-date-path)"/>
+                <xf:output ref="format-date(xs:date(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
               </xh:span>
             </xh:div>
           </xf:group>

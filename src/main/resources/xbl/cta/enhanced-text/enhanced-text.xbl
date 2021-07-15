@@ -121,7 +121,7 @@
         <xsl:template match="/*">
           <xf:group id="&self;-group">
             <xf:model id="&self;-model">
-              <!-- TODO Potentially common model -->              
+              <!-- TODO Potentially common model -->
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
               <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
               <xf:var name="model-path"
@@ -250,7 +250,7 @@
                 <xh:span class="cta-enhanced-control__history-label">Last:&#160;</xh:span>
                 <xf:output ref="xxf:evaluate($history-value-path)"/>
                 <xh:span class="cta-enhanced-control__history-label">, collected on:&#160;</xh:span>
-                <xf:output ref="xxf:evaluate($history-date-path)"/>
+                <xf:output ref="format-date(xs:date(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
               </xh:span>
             </xh:div>
           </xf:group>
