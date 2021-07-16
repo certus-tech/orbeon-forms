@@ -37,7 +37,7 @@
       <editors static-itemset="true"/>
       <templates>
         <view>
-          <cta:enhanced-select history-entry="last()">
+          <cta:enhanced-select history-entry="last()" appearance="full">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
@@ -46,6 +46,7 @@
               <xf:label ref="label"/>
               <xf:value ref="value"/>
             </xf:itemset>
+            
           </cta:enhanced-select>
         </view>
       </templates>
@@ -65,6 +66,7 @@
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
               <history-entry>last()</history-entry>
+              <appearance>full</appearance>
             </local>
           </xf:instance>
 
@@ -75,6 +77,7 @@
                 <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
                 <history-entry-first>First</history-entry-first>
                 <history-entry-last>Last</history-entry-last>
+                <!--DEV This itemset should store the reference to appearance modes in orbeon (currently some copypasted garbage) -->
               </resource>
             </resources>
           </xf:instance>
@@ -97,12 +100,29 @@
               </fr:open-select1>
             </xh:td>
           </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
+              <xf:select1 ref="instance('local')/appearance" appearance="full" id="field-appearance-control">
+                <xf:item>
+                  <xf:label>Dropdown Menu</xf:label>
+                  <xf:value>dropdown</xf:value>
+                  <xf:hint/>
+                </xf:item>
+                <xf:item>
+                  <xf:label>Checkboxes</xf:label>
+                  <xf:value>full</xf:value>
+                  <xf:hint/>
+                </xf:item>
+              </xf:select1>
+              
+            </xh:td>
+          </xh:tr>
         </fr:grid>
         <!-- Update the control attribute corresponding to the observed fields below, on change. -->
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="history-entry-control">
+          observer="history-entry-control field-appearance-control">
           <xf:var name="name" value="name(event('xxf:binding'))"/>
           <xf:var name="new-value" value="string(event('xxf:binding'))"/>
           <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
