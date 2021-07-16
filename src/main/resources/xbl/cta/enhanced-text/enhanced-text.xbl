@@ -21,7 +21,8 @@
          xmlns:oxf="http://www.orbeon.com/oxf/processors"
          xmlns:ev="http://www.w3.org/2001/xml-events"
          xmlns:xi="http://www.w3.org/2001/XInclude"
-         xmlns:cta="http://www.certus-tech.com/xbl">
+         xmlns:cta="http://www.certus-tech.com/xbl"
+         xmlns:exsl="http://exslt.org/common">
   <xbl:binding
     id="&self;"
     element="cta|enhanced-text"
@@ -124,6 +125,21 @@
               <!-- TODO Potentially common model -->
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
               <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
+              <!--
+               TODO: This is partially working support for single level repeats. It has various issues.
+               - Adding new repeats will put the history subscript e.g. [4] off the end of the available history.
+               - This (I think) leads to weird effects where changing status of one control influences a sibling. 
+               - It allows controls to be in unusual states e.g. add a new repeat then set to 'unchanged'.
+               - It is unclear whether *-iteration elements need to be ignored in the history path (always? only 
+                 in sections? only in grids?).
+               - Does not cater to customised iteration names at all.
+              -->
+              <!--<xf:var name="repeat-position-raw" value="xxf:repeat-position()"/>-->
+              <!--<xf:var name="repeat-position" value="if (string(exsl:object-type($repeat-position-raw)) = 'number') then $repeat-position-raw else 1"/>-->
+              <!--Any matching elem can be used to build a path for all N repeats (if any), hence [1] subscript below.--> 
+              <!--<xf:var name="model-elem" value="(xxf:instance('fr-form-instance')//*[name()=$element-name])[1]"/>-->
+              <!--<xf:var name="model-path-parts" value="$model-elem/ancestor::*[not(local-name() = 'form')][not(contains(local-name(), '-iteration'))]"/>-->
+              <!--<xf:var name="model-path" value="concat(string-join($model-path-parts/local-name(), '/'), '[', $repeat-position, ']/', $element-name)"/>-->
               <xf:var name="model-path"
                       value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
               <xf:var name="history-value-path"
