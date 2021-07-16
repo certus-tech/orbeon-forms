@@ -32,12 +32,12 @@
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
       <display-name lang="en">Enhanced single select</display-name>
       <icon>
-        <small-icon>/forms/orbeon/builder/images/radio.png</small-icon>
+        <small-icon>/forms/orbeon/builder/images/dropdown.png</small-icon>
       </icon>
       <editors static-itemset="true"/>
       <templates>
         <view>
-          <cta:enhanced-select1 history-entry="last()">
+          <cta:enhanced-select1 history-entry="last()" appearance="dropdown">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
@@ -65,6 +65,7 @@
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
               <history-entry>last()</history-entry>
+              <appearance>dropdown</appearance>
             </local>
           </xf:instance>
 
@@ -75,6 +76,8 @@
                 <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
                 <history-entry-first>First</history-entry-first>
                 <history-entry-last>Last</history-entry-last>
+                <appearance-full>Radio buttons</appearance-full>
+                <appearance-dropdown>Dropdown</appearance-dropdown>
               </resource>
             </resources>
           </xf:instance>
@@ -97,12 +100,28 @@
               </fr:open-select1>
             </xh:td>
           </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
+              <xf:select1 ref="instance('local')/appearance" appearance="full" id="field-appearance-control">
+                <xf:item>
+                  <xf:label ref="xxf:r('appearance-dropdown')"/>
+                  <xf:value>dropdown</xf:value>
+                  <xf:hint/>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('appearance-full')"/>
+                  <xf:value>full</xf:value>
+                  <xf:hint/>
+                </xf:item>
+              </xf:select1>
+            </xh:td>
+          </xh:tr>
         </fr:grid>
         <!-- Update the control attribute corresponding to the observed fields below, on change. -->
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="history-entry-control">
+          observer="history-entry-control field-appearance-control">
           <xf:var name="name" value="name(event('xxf:binding'))"/>
           <xf:var name="new-value" value="string(event('xxf:binding'))"/>
           <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
@@ -128,7 +147,7 @@
         <xsl:template match="/*">
           <xf:group id="&self;-group">
             <xf:model id="&self;-model">
-              <!-- TODO Potentially common model -->              
+              <!-- TODO Potentially common model -->
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
               <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
               <xf:var name="model-path"
@@ -245,7 +264,12 @@
                     <xf:select1 id="history-input" ref="xxf:evaluate($history-value-path)">
                       <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
                       <xf:itemset ref="$items">
-                        <xf:label/><!-- omit setting the labels -->
+                        <!-- omit setting the labels unless in dropdown mode. -->
+                        <xf:label>
+                          <xsl:if test="@appearance = 'dropdown'">
+                            <xsl:attribute name="ref">label</xsl:attribute>
+                          </xsl:if>
+                        </xf:label>
                         <xf:value ref="value"/>
                         <xf:hint ref="hint"/>
                       </xf:itemset>
@@ -256,7 +280,7 @@
                     <xf:switch id="&self;-view-switch">
                       <xf:case id="read-only">
                         <xf:select1 id="ro-input" bind="ro-binding"  class="cta-enhanced-control__ro-input">
-                          <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
+                          <xsl:attribute name="appearance" select="(@appearance, 'dropdown')[1]"/>
                           <xf:itemset ref="$items">
                             <xf:label ref="label"/>
                             <xf:value ref="value"/>
@@ -266,7 +290,7 @@
                       </xf:case>
                       <xf:case id="writable">
                         <xf:select1 id="html-input" ref="xxf:binding('&self;')">
-                          <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
+                          <xsl:attribute name="appearance" select="(@appearance, 'dropdown')[1]"/>
                           <xf:itemset ref="$items">
                             <xf:label ref="label"/>
                             <xf:value ref="value"/>

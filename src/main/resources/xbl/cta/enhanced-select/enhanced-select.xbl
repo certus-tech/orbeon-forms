@@ -30,7 +30,7 @@
     xxbl:label-for="html-input">
 
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
-      <display-name lang="en">Enhanced checkboxes</display-name>
+      <display-name lang="en">Enhanced select</display-name>
       <icon>
         <icon-class>fa fa-fw fa-check-square</icon-class>
       </icon>
@@ -77,7 +77,8 @@
                 <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
                 <history-entry-first>First</history-entry-first>
                 <history-entry-last>Last</history-entry-last>
-                <!--DEV This itemset should store the reference to appearance modes in orbeon (currently some copypasted garbage) -->
+                <appearance-full>Checkboxes</appearance-full>
+                <appearance-dropdown>Dropdown</appearance-dropdown>
               </resource>
             </resources>
           </xf:instance>
@@ -104,17 +105,16 @@
             <xh:td colspan="6">
               <xf:select1 ref="instance('local')/appearance" appearance="full" id="field-appearance-control">
                 <xf:item>
-                  <xf:label>Dropdown Menu</xf:label>
+                  <xf:label ref="xxf:r('appearance-dropdown')"/>
                   <xf:value>dropdown</xf:value>
                   <xf:hint/>
                 </xf:item>
                 <xf:item>
-                  <xf:label>Checkboxes</xf:label>
+                  <xf:label ref="xxf:r('appearance-full')"/>
                   <xf:value>full</xf:value>
                   <xf:hint/>
                 </xf:item>
               </xf:select1>
-              
             </xh:td>
           </xh:tr>
         </fr:grid>
@@ -265,7 +265,12 @@
                     <xf:select id="history-input" ref="xxf:evaluate($history-value-path)">
                       <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
                       <xf:itemset ref="$items">
-                        <xf:label/><!-- omit setting the labels -->
+                        <!-- omit setting the labels unless in dropdown mode. -->
+                        <xf:label>
+                          <xsl:if test="@appearance = 'dropdown'">
+                            <xsl:attribute name="ref">label</xsl:attribute>
+                          </xsl:if>
+                        </xf:label>
                         <xf:value ref="value"/>
                         <xf:hint ref="hint"/>
                       </xf:itemset>
