@@ -1,5 +1,10 @@
 <!DOCTYPE xbl [ 
 <!ENTITY self "cta-group-field-history" > 
+<!-- names for the internal field states/modes -->
+<!ENTITY not-collected "1">
+<!ENTITY unchanged "2">
+<!-- value to set when an annotation on the instance data is 'on' -->
+<!ENTITY set "1">
 <!ENTITY history-common "/xbl/cta/history-field-common/history-field-common.xml" > 
 ]>
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
@@ -19,7 +24,7 @@
   <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
   <xbl:binding id="&self;" element="cta|group-field-history" xxbl:mode="binding custom-lhha">
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
-      <display-name lang="en">'No changes' action</display-name>
+      <display-name lang="en">'No changes' toggle</display-name>
       <icon lang="en">
         <small-icon>/apps/fr/style/images/silk/time.png</small-icon>
         <large-icon>/apps/fr/style/images/silk/time.png</large-icon>
@@ -27,7 +32,7 @@
 
       <templates>
         <view>
-          <cta:group-field-history section="" history-entry="last()"/>
+          <cta:group-field-history history-entry="last()"/>
         </view>
       </templates>
       <control-details>
@@ -39,21 +44,17 @@
 
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
-              <section/>
               <history-entry/>
             </local>
           </xf:instance>
 
           <xf:bind ref="instance('local')">
-            <xf:bind ref="section" xxf:whitespace="trim"/>
             <xf:bind ref="history-entry" xxf:whitespace="trim"/>
           </xf:bind>
 
           <xf:instance id="fr-form-resources" xxf:readonly="true">
             <resources>
               <resource xml:lang="en">
-                <section>Section</section>
-                <section-hint>Optional. Overrides the section name that this control will affect.</section-hint>
                 <history-entry>History entry</history-entry>
                 <history-entry-hint>Which values from the history to use, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
                 <history-entry-first>First</history-entry-first>
@@ -63,15 +64,6 @@
           </xf:instance>
         </xf:model>
         <fr:grid id="fb-editor-&self;-grid">
-          <xh:tr>
-            <xh:td>
-              <xf:input ref="instance('local')/section" id="section-control">
-                <xf:label ref="xxf:r('section')"/>
-                <xf:hint ref="xxf:r('section-hint')"/>
-                <xf:alert/>
-              </xf:input>
-            </xh:td>
-          </xh:tr>
           <xh:tr>
             <xh:td>
               <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
@@ -92,7 +84,7 @@
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="section-control history-entry-control">
+          observer="history-entry-control">
           <xf:var name="name"      value="name(event('xxf:binding'))"/>
           <xf:var name="new-value" value="string(event('xxf:binding'))"/>
           <xf:insert
@@ -113,44 +105,52 @@
         <xsl:template match="/*">
           <xf:group id="&self;-group">
             
-            <!-- This model is in the template and not in the xbl:implementation (omitted), following the example of
-            autocomplete.xbl -->
             <xf:model id="cta-history-internal">
               <!-- This instance must exist else xxf:instance appears to fail to find the (external) history. -->
-              <xf:instance id="notused">
-                <data/>
+              <xf:instance id="internal">
+                <data>
+                  <toggle>false</toggle>
+                </data>
               </xf:instance>
+              
+              <xf:bind id="&self;-toggle-bind" ref="xxf:instance('internal')/toggle" type="xf:boolean"/>
+              
+              <xf:action event="xforms-value-changed" 
+                         observer="&self;-toggle" 
+                         fr:keep-if-design-time="false"
+                         iterate="xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('&self;')/../name())/*">
+                <xf:var name="name" value="name()"/>
+                <xf:var name="mode" value="if (string(event('xxf:binding')) = 'true') then &unchanged; else &not-collected;"/>
+                <xf:var name="entry" value="fr:component-param-value('history-entry')"/>
+                <xf:var name="ancestors" value="xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]"/>
+                <xf:var name="history_path" value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/form[', $entry, ']/', string-join( $ancestors/local-name(), '/'))"/>                
+                <xf:var name="binding_node" value="xxf:instance('fr-form-instance')//*[name()=$name]"/>                
+                <xf:var name="act" value="$history_path and $binding_node"/>                
+                <!-- NOTE 2021-07-19: 
+                This could togglee between unchanged/not-collected but then it is impossible to remove the attrs if they
+                are applied to non-history-aware fields, which they probably are; they probably then end up out of sync
+                and hence wrong. Instead only @notchanged is managed. Values are cleared when unchecking but @notcollected
+                is not applied.
+                -->
+                <!-- Delete any meta attrs. -->
+                <xf:delete ref="$binding_node/@notcollected"/>
+                <xf:delete ref="$binding_node/@notchanged"/>
+                <!-- If this field is ticked (entering unchanged mode), copy the value and set unchanged. -->
+                <xf:setvalue if="$act and ($mode = &unchanged;)" ref="$binding_node" value="xxf:evaluate($history_path)"/>
+                <xf:insert   if="$act and ($mode = &unchanged;)" context="$binding_node" origin="xxf:attribute('notchanged', &set;)"/>
+                <!-- If this field is unticked (entering not collected mode), clear the value and set not collected. -->
+                <xf:setvalue if="$act and ($mode = &not-collected;)" ref="$binding_node" value="()"/>
+                <!-- Do not put @notcollected on as it's impossible to remove it from non-history-aware fields. -->
+                <!--<xf:insert   if="$act and ($mode = &not-collected;)" context="$binding_node" origin="xxf:attribute('notchanged', &set;)"/>-->
+              </xf:action>
+              
             </xf:model>
             
             <xh:div>
-              <xf:trigger>
-                <xf:label>No changes</xf:label>
-                <xf:action ev:event="DOMActivate" fr:keep-if-design-time="false">                  
-                  <xsl:attribute name="iterate">
-                    <!-- If the section defined is empty then it will use this control's parent node as the section -->
-                    <xsl:choose>
-                      <xsl:when test="(not(@section) or @section='')">
-                        <xsl:text>xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('&self;')/../name())/* </xsl:text>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <xsl:text>xxf:instance('fr-form-instance')/</xsl:text>
-                        <xsl:value-of select="@section"/>
-                        <xsl:text>/*</xsl:text>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                  </xsl:attribute>
-                    
-                  <xf:var name="name" value="name()"/>
-                  <xf:var name="history_enabled" value="(xxf:instance('fr-form-metadata')//ctao:property[@for=$name and @key='hist:enabled'],'false')[1]"/>
-                  <xf:var name="history_path" 
-                            value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/form[', fr:component-param-value('history-entry'), ']/', string-join(xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/'))"/>
-                    
-                  <!-- Set the value of the field if it has history metadata set to true -->
-                  <xf:setvalue if="$history_enabled eq 'true'"
-                                 ref="xxf:instance('fr-form-instance')//*[name()=$name]"  
-                                 value="xxf:evaluate($history_path)"/>
-                </xf:action>
-              </xf:trigger>
+              <fr:checkbox-input id="&self;-toggle" bind="&self;-toggle-bind">
+                <xf:label>No changes (previous values stand)</xf:label>
+                <xf:hint/>
+              </fr:checkbox-input>
             </xh:div>
           </xf:group>
         </xsl:template>
