@@ -24,7 +24,7 @@
          xmlns:cta="http://www.certus-tech.com/xbl">
   <xbl:binding
     id="&self;"
-    element="cta|enhanced-select1"
+    element="cta|enhanced-yesno"
     xxbl:mode="lhha binding value focus"
     xxf:external-events="fr-set-client-value cta-click-to-edit"
     xxbl:label-for="html-input">
