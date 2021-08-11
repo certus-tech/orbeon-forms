@@ -259,7 +259,7 @@
                   <xh:div class="cta-enhanced-select-layout__cell">
                     <xh:span class="cta-enhanced-control__history-wrapper">
                       <xh:span class="cta-enhanced-control__history-label">Last collected on:&#160;</xh:span>
-                      <xf:output ref="format-date(xs:date(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
+                      <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
                     </xh:span>
                     <xf:select1 id="history-input" ref="xxf:evaluate($history-value-path)">
                       <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
