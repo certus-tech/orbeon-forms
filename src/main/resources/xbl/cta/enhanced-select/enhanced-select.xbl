@@ -37,7 +37,7 @@
       <editors static-itemset="true"/>
       <templates>
         <view>
-          <cta:enhanced-select history-entry="last()" appearance="full">
+          <cta:enhanced-select history-entry="last()" history-mode="available-modes-all" appearance="full">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
@@ -66,6 +66,7 @@
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
               <history-entry>last()</history-entry>
+              <history-mode>available-modes-all</history-mode>
               <appearance>full</appearance>
             </local>
           </xf:instance>
@@ -77,6 +78,10 @@
                 <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
                 <history-entry-first>First</history-entry-first>
                 <history-entry-last>Last</history-entry-last>
+                <history-mode>History mode</history-mode>
+                <history-mode-hint>Which history controls to be available</history-mode-hint>
+                <history-mode-all>All</history-mode-all>
+                <history-mode-not-unchanged>Not unchanged</history-mode-not-unchanged>
                 <appearance-full>Checkboxes</appearance-full>
                 <appearance-dropdown>Dropdown</appearance-dropdown>
               </resource>
@@ -103,6 +108,22 @@
           </xh:tr>
           <xh:tr>
             <xh:td colspan="6">
+              <xf:select1 xxf-type="xs:string" ref="instance('local')/history-mode" appearance="minimal" id="history-mode-control">
+                <xf:label ref="xxf:r('history-mode')"/>
+                <xf:hint ref="xxf:r('history-mode-hint')"/>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-mode-all')"/>
+                  <xf:value>available-modes-all</xf:value>
+                </xf:item>
+                <xf:item>
+                  <xf:label ref="xxf:r('history-mode-not-unchanged')"/>
+                  <xf:value>available-modes-not-unchanged</xf:value>
+                </xf:item>
+              </xf:select1>
+            </xh:td>
+          </xh:tr>
+          <xh:tr>
+            <xh:td colspan="6">
               <xf:select1 ref="instance('local')/appearance" appearance="full" id="field-appearance-control">
                 <xf:item>
                   <xf:label ref="xxf:r('appearance-dropdown')"/>
@@ -122,7 +143,7 @@
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="history-entry-control field-appearance-control">
+          observer="history-entry-control history-mode-control field-appearance-control">
           <xf:var name="name" value="name(event('xxf:binding'))"/>
           <xf:var name="new-value" value="string(event('xxf:binding'))"/>
           <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
@@ -151,6 +172,7 @@
               <!-- TODO Potentially common model -->              
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
               <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
+              <xf:var name="history-mode" value="fr:component-param-value('history-mode')"/>
               <xf:var name="model-path"
                       value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
               <xf:var name="history-value-path"
@@ -166,7 +188,7 @@
                 <control>
                   <current-mode/>
                   <current-value/>
-                  <available-modes>
+                  <available-modes-all>
                     <mode>
                       <label>Not collected</label>
                       <value>&not-collected;</value>
@@ -179,7 +201,17 @@
                       <label>Changed</label>
                       <value>&changed;</value>
                     </mode>
-                  </available-modes>
+                  </available-modes-all>
+                  <available-modes-not-unchanged>
+                    <mode>
+                      <label>Not collected</label>
+                      <value>&not-collected;</value>
+                    </mode>
+                    <mode>
+                      <label>Changed</label>
+                      <value>&changed;</value>
+                    </mode>
+                  </available-modes-not-unchanged>
                 </control>
               </xf:instance>
 
@@ -205,8 +237,6 @@
                 <!-- Add annotations for notcollected/unchanged if appropriate. -->
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
-                <!-- Copy the history value into the field if approrpriate. -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="xxf:evaluate($history-value-path)" if="$mode = (&unchanged;, &changed;)"/>
                 <!-- Toggle the UI case RO/RW. -->
                 <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
                 <xf:toggle case="writable"  if="$mode = &changed;" />
@@ -305,7 +335,7 @@
                     <xh:span class="cta-enhanced-control__cap">&#xA0;</xh:span>
                     <xh:span class="cta-enhanced-control__mode-wrapper">
                       <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind" appearance="full">
-                        <xf:itemset ref="instance('cta-enhanced-control-mode')/available-modes/mode">
+                        <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
                           <xf:label ref="label"/>
                           <xf:value ref="value"/>
                         </xf:itemset>
