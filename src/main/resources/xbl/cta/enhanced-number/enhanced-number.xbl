@@ -130,10 +130,6 @@
                   <xf:value>available-modes-all</xf:value>
                 </xf:item>
                 <xf:item>
-                  <xf:label ref="xxf:r('history-mode-none')"/>
-                  <xf:value>available-modes-none</xf:value>
-                </xf:item>
-                <xf:item>
                   <xf:label ref="xxf:r('history-mode-not-unchanged')"/>
                   <xf:value>available-modes-not-unchanged</xf:value>
                 </xf:item>
@@ -290,8 +286,6 @@
                       <value>&changed;</value>
                     </mode>
                   </available-modes-all>
-                  <available-modes-none>
-                  </available-modes-none>
                   <available-modes-not-unchanged>
                     <mode>
                       <label>Not collected</label>
