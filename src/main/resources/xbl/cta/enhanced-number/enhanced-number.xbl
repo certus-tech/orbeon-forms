@@ -1,14 +1,16 @@
-<!DOCTYPE xbl [ 
-<!ENTITY self "cta-enhanced-number">
-<!-- names for the internal field states/modes -->
-<!ENTITY not-collected "1">
-<!ENTITY unchanged "2">
-<!ENTITY changed "3">
-<!-- value to set when an annotation on the instance data is 'on' -->
-<!ENTITY set "1">
-<!-- Orbeon uses this to separate components in IDs. \u2261 IDENTICAL TO. -->
-<!ENTITY compsep "&#8801;">
-]>
+<!--
+  Copyright (C) 2010 Orbeon, Inc.
+
+  This program is free software; you can redistribute it and/or modify it under the terms of the
+  GNU Lesser General Public License as published by the Free Software Foundation; either version
+  2.1 of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  See the GNU Lesser General Public License for more details.
+
+  The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
+  -->
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -16,399 +18,224 @@
          xmlns:xbl="http://www.w3.org/ns/xbl"
          xmlns:xxbl="http://orbeon.org/oxf/xml/xbl"
          xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
-         xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
-         xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-         xmlns:oxf="http://www.orbeon.com/oxf/processors"
-         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:NumberSupport="java:org.orbeon.xbl.NumberSupportJava"
          xmlns:xi="http://www.w3.org/2001/XInclude"
-         xmlns:cta="http://www.certus-tech.com/xbl"
-         xmlns:NumberSupport="java:org.orbeon.xbl.NumberSupportJava">
-  <xbl:binding
-    id="&self;"
-    element="cta|enhanced-number"
-    xxbl:mode="lhha binding value focus"
-    xxf:external-events="fr-set-client-value cta-click-to-edit"
-    xxbl:label-for="html-input">
+         xmlns:ev="http://www.w3.org/2001/xml-events"
+         xmlns:cta="http://www.certus-tech.com/xbl">
 
-    <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
-      <display-name lang="en">Enhanced number</display-name>
-      <icon>
-        <icon-class>fa fa-fw fa-history</icon-class>
-      </icon>
-      <templates>
-        <view>
-          <cta:enhanced-number history-entry="last()" history-mode="available-modes-all"
-                               prefix="" suffix="" digits-after-decimal="" decimal-separator="" grouping-separator="">
-            <xf:label ref=""/>
-            <xf:hint ref=""/>
-            <xf:help ref=""/>
-            <xf:alert ref=""/>
-          </cta:enhanced-number>
-        </view>
-      </templates>
-      <!-- As of 2018-12-03 the upstream source does not allow XInclude here so this is all duped.
-     See comment in this location on currency.xbl for detail.
-    <xi:include
-      xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
-      href="/xbl/orbeon/number/number.xbl"
-      xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
-      <control-details>
-        <xf:model xmlns="" id="fb-&self;-model">
-          <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
-            <xf:var name="c" value="."/>
-            <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
-          </xf:action>
+    <xbl:binding
+            id="cta-enhanced-number"
+            element="cta|enhanced-number"
+            xxbl:mode="lhha binding value focus javascript-lifecycle"
+            xxf:external-events="fr-set-client-value"
+            xxbl:label-for="html-input">
 
-          <xf:instance id="local" xxf:exclude-result-prefixes="#all">
-            <local>
-              <history-entry>last()</history-entry>
-              <history-mode>available-modes-all</history-mode>
-              <prefix/>
-              <suffix/>
-              <decimal-separator/>
-              <grouping-separator/>
-              <digits-after-decimal/>
-              <round-when-formatting/>
-              <round-when-storing/>
-              <field-width/>
-            </local>
-          </xf:instance>
 
-          <xf:instance id="fr-form-resources" xxf:readonly="true">
-            <resources>
-              <resource xml:lang="en">
-                <history-entry>History entry</history-entry>
-                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
-                <history-entry-first>First</history-entry-first>
-                <history-entry-last>Last</history-entry-last>
-                <history-mode>History mode</history-mode>
-                <history-mode-hint>Which history controls to be available</history-mode-hint>
-                <history-mode-all>All</history-mode-all>
-                <history-mode-not-unchanged>Not unchanged</history-mode-not-unchanged>
-                <!-- Copied from fr:number. -->
-                <prefix>Prefix</prefix>
-                <suffix>Suffix</suffix>
-                <decimal-separator>Decimal Separator</decimal-separator>
-                <grouping-separator>Grouping Separator</grouping-separator>
-                <digits-after-decimal>Digits after decimal</digits-after-decimal>
-                <round-when-formatting>Round when formatting</round-when-formatting>
-                <round-when-storing>Round when storing</round-when-storing>
-                <default-always-never>
-                  <item id="0">Use default</item>
-                  <item id="1">Always</item>
-                  <item id="2">Never</item>
-                </default-always-never>
-              </resource>
-            </resources>
-          </xf:instance>
-        </xf:model>
-    
-        <fr:grid xmlns="" id="fb-editor-&self;-grid">
-          <xh:tr>
-            <xh:td colspan="6">
-              <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
-                <xf:label ref="xxf:r('history-entry')"/>
-                <xf:hint ref="xxf:r('history-entry-hint')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-entry-first')"/>
-                  <xf:value>1</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-entry-last')"/>
-                  <xf:value>last()</xf:value>
-                </xf:item>
-              </fr:open-select1>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="6">
-              <xf:select1 xxf-type="xs:string" ref="instance('local')/history-mode" appearance="minimal" id="history-mode-control">
-                <xf:label ref="xxf:r('history-mode')"/>
-                <xf:hint ref="xxf:r('history-mode-hint')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-mode-all')"/>
-                  <xf:value>available-modes-all</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-mode-not-unchanged')"/>
-                  <xf:value>available-modes-not-unchanged</xf:value>
-                </xf:item>
-              </xf:select1>
-            </xh:td>
-          </xh:tr>
-          <!-- Fields below here copied from fr:number with colspans adjusted. -->
-          <xh:tr>
-            <xh:td colspan="3">
-              <xf:input ref="instance('local')/prefix" id="prefix-control">
-                <xf:label ref="xxf:r('prefix')"/>
-                <xf:alert/>
-              </xf:input>
-            </xh:td>
-            <xh:td colspan="3">
-              <xf:input ref="instance('local')/suffix" id="suffix-control">
-                <xf:label ref="xxf:r('suffix')"/>
-                <xf:alert/>
-              </xf:input>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="2">
-              <fr:number ref="instance('local')/digits-after-decimal" id="digits-after-decimal-control">
-                <xf:label ref="xxf:r('digits-after-decimal')"/>
-                <xf:alert/>
-              </fr:number>
-            </xh:td>
-            <xh:td colspan="2">
-              <xf:input ref="instance('local')/decimal-separator" id="decimal-separator-control">
-                <xf:label ref="xxf:r('decimal-separator')"/>
-                <xf:alert/>
-              </xf:input>
-            </xh:td>
-            <xh:td colspan="2">
-              <xf:input ref="instance('local')/grouping-separator" id="grouping-separator-control">
-                <xf:label ref="xxf:r('grouping-separator')"/>
-                <xf:alert/>
-              </xf:input>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="6">
-              <xf:select1 ref="instance('local')/round-when-formatting" appearance="full xxf:horizontal" id="round-when-formatting-control">
-                <xf:label ref="xxf:r('round-when-formatting')"/>
-                <xf:alert/>
-                <xf:itemset ref="xxf:resource-elements('default-always-never.item')">
-                  <xf:label ref="."/>
-                  <xf:value ref="if (@id = 0) then '' else if (@id = 1) then 'true' else 'false'"/>
-                </xf:itemset>
-              </xf:select1>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="6">
-              <xf:select1 ref="instance('local')/round-when-storing" appearance="full xxf:horizontal" id="round-when-storing-control">
-                <xf:label ref="xxf:r('round-when-storing')"/>
-                <xf:alert/>
-                <xf:itemset ref="xxf:resource-elements('default-always-never.item')">
-                  <xf:label ref="."/>
-                  <xf:value ref="if (@id = 0) then '' else if (@id = 1) then 'true' else 'false'"/>
-                </xf:itemset>
-              </xf:select1>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="6">
-              <xf:select1 ref="instance('local')/field-width" appearance="full xxf:horizontal" id="field-width-control">
-                <xf:label ref="xxf:r('xbl-control-settings.field-width', '|fr-form-resources|')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('xbl-control-settings.default', '|fr-form-resources|')"/>
-                  <xf:value/>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('xbl-control-settings.full', '|fr-form-resources|')"/>
-                  <xf:value>full</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('xbl-control-settings.natural', '|fr-form-resources|')"/>
-                  <xf:value>natural</xf:value>
-                </xf:item>
-              </xf:select1>
-            </xh:td>
-          </xh:tr>
-        </fr:grid>
-        <!-- Update the control attribute corresponding to the observed fields below, on change. -->
-        <xf:action
-          id="fb-editor-&self;-action"
-          event="xforms-value-changed"
-          observer="history-entry-control
-                    history-mode-control
-                    prefix-control
-                    suffix-control
-                    digits-after-decimal-control
-                    decimal-separator-control
-                    grouping-separator-control
-                    round-when-formatting-control
-                    round-when-storing-control
-                    field-width-control">
-          <xf:var name="name" value="name(event('xxf:binding'))"/>
-          <xf:var name="new-value" value="string(event('xxf:binding'))"/>
-          <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
-          <xf:delete if="xxf:is-blank($new-value)" ref="instance()/@*[name() = $name]"/>
-        </xf:action>
-      </control-details>
-      <!-- END of content duped across all history view components -->
-    </metadata>
+         <xf:message event="xforms-ready">
+                            root!
+                          </xf:message>
+        <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
+            <display-name lang="en">Number</display-name>
+            <display-name lang="es">Número</display-name>
+            <display-name lang="fi">Numero</display-name>
+            <display-name lang="fr">Nombre</display-name>
+            <display-name lang="ru" todo="true">[Number]</display-name>
+            <display-name lang="de">Zahlenwert</display-name>
+            <display-name lang="it">Valore numerico</display-name>
+            <display-name lang="sv">Numeriskt värde</display-name>
+            <display-name lang="nl">Getal</display-name>
+            <display-name lang="pt">Número</display-name>
+            <icon>
+                <icon-class>fa fa-fw fa-superscript</icon-class>
+            </icon>
+            <templates>
+                <bind type="xf:decimal"/>
+                <view>
+                    <cta:enhanced-number xmlns:xf="http://www.w3.org/2002/xforms">
+                        <xf:label ref=""/>
+                        <xf:hint ref=""/>
+                        <xf:help ref=""/>
+                        <xf:alert ref=""/>
+                    </cta:enhanced-number>
+                </view>
+            </templates>
+            <control-details>
+                <xf:model xmlns="" id="fb-editor-number-model">
 
-    <xbl:resources/>
-    
-    <xbl:handlers>
-      <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
-      <xbl:handler event="cta-click-to-edit" phase="target">
-        <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"/>
-        <xf:setfocus event="DOMActivate" control="html-input"/>
-      </xbl:handler>
-    </xbl:handlers>
+                    <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
+                        <xf:var name="c" value="."/>
+                        <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
+                    </xf:action>
 
-    <xbl:template xxbl:transform="oxf:xslt">
-      <xsl:transform version="2.0">
-        <xsl:template match="/*">
-          <xf:group id="&self;-group">
-            <xf:model id="&self;-model">
-              <!-- TODO Potentially common model -->              
-              <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
-              <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
-              <xf:var name="history-mode" value="fr:component-param-value('history-mode')"/>
-              <xf:var name="model-path"
-                      value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-              <xf:var name="history-value-path"
-                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path)"/>
-              <xf:var name="history-date-path"
-                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/@date')"/>
-              <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
-              <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
-              <xf:var name="items"
-                      value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
-              
-              <xf:instance id="cta-enhanced-control-mode">
-                <control>
-                  <current-mode/>
-                  <current-value/>
-                  <available-modes-all>
-                    <mode>
-                      <label>Not collected</label>
-                      <value>&not-collected;</value>
-                    </mode>
-                    <mode>
-                      <label>Unchanged</label>
-                      <value>&unchanged;</value>
-                    </mode>
-                    <mode>
-                      <label>Changed</label>
-                      <value>&changed;</value>
-                    </mode>
-                  </available-modes-all>
-                  <available-modes-not-unchanged>
-                    <mode>
-                      <label>Not collected</label>
-                      <value>&not-collected;</value>
-                    </mode>
-                    <mode>
-                      <label>Changed</label>
-                      <value>&changed;</value>
-                    </mode>
-                  </available-modes-not-unchanged>
-                </control>
-              </xf:instance>
+                    <xf:instance id="local" xxf:exclude-result-prefixes="#all">
+                        <local>
+                            <prefix/>
+                            <suffix/>
+                            <decimal-separator/>
+                            <grouping-separator/>
+                            <digits-after-decimal/>
+                            <round-when-formatting/>
+                            <round-when-storing/>
+                            <field-width/>
+                        </local>
+                    </xf:instance>
 
-              <!-- Binds cannot ref cta-form-history-instance: These only seem to bind to the default data. -->
-              <xf:bind id="&self;-control-mode-bind" name="&self;-current-mode"
-                       ref="instance('cta-enhanced-control-mode')/current-mode"/>
-              
-              <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
-              
-              <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
-              <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
-                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
-              </xf:action>
-              
-              <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
-                         fr:keep-if-design-time="false">
-                <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
-                <!-- Clear the field value. -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="()"/>
-                <!-- Remove existing annotations. -->
-                <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
-                <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
-                <!-- Add annotations for notcollected/unchanged if appropriate. -->
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
-                <!-- Toggle the UI case RO/RW. -->
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-                <xf:toggle case="writable"  if="$mode = &changed;" />
-              </xf:action>
+                    <xf:bind ref="instance('local')">
+                        <xf:bind ref="prefix | suffix | digits-after-decimal" xxf:whitespace="trim"/>
+                        <xf:bind ref="digits-after-decimal" type="xf:integer" constraint="xxf:is-blank() or xxf:non-negative()"/>
+                        <xf:bind ref="decimal-separator | grouping-separator" constraint="xxf:max-length(1)"/>
+                    </xf:bind>
 
-              <!-- Initialise the internal model and bootstrap the form model if needed. -->
-              <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-                <!-- Copy in the current value, if any. -->     
-                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
-                
-                <!-- Set the internal mode to match the state of the data. -->
-                <xf:setvalue bind="&self;-control-mode-bind"
-                             value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
-                                    else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
-                                    else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
-                                    else &changed;"/>
-                
-                <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
-                <xf:insert context="xxf:binding('&self;')" 
-                           origin="xxf:attribute('notcollected', &set;)"
-                           if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged)) 
-                               and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
-              </xf:action>
-              
-              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the 
-              container for the read-only field. This fires an event back to the component side. -->
-              <xf:action type="javascript" ev:event="xforms-model-construct-done">
-                <xf:param name="clientId" value="xxf:client-id('&self;')"/>
-                <xf:param name="compsep" value="'&compsep;'"/>
-                <xf:body>
-                  ORBEON.jQuery(`#${clientId}${compsep}ro-input`).on('click', function() {
-                  ORBEON.xforms.Document.dispatchEvent(clientId, "cta-click-to-edit");
-                  });
-                </xf:body>
-              </xf:action>
-              
-              <!--
-              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because 
-              setting the mode control does not in turn fire the 
-              -->
-              <xf:action ev:event="xforms-ready">
-                <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-                <xf:toggle case="writable"  if="$mode = &changed;" />
-              </xf:action>
-            </xf:model>
-            
-            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
-              <xh:span class="cta-enhanced-control__mode-wrapper">
-                <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
-                  <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
-                    <xf:label ref="label"/>
-                    <xf:value ref="value"/>
-                  </xf:itemset>
-                </xf:select1>
-              </xh:span>
-              
-              <xh:span class="input cta-enhanced-control__input-wraper">
-                <xf:switch id="&self;-view-switch">
-                  <xf:case id="read-only">
-                    <fr:number id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
-                      <xsl:attribute name="prefix" select="@prefix"/>
-                      <xsl:attribute name="suffix" select="@suffix"/>
-                      <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
-                      <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
-                      <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
-                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
-                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                    </fr:number>
-                  </xf:case>
-                  <xf:case id="writable">
-                    <fr:number id="html-input" ref="xxf:binding('&self;')">
-                      <xsl:attribute name="prefix" select="@prefix"/>
-                      <xsl:attribute name="suffix" select="@suffix"/>
-                      <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
-                      <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
-                      <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
-                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
-                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                    </fr:number>
-                  </xf:case>
-                </xf:switch>
-              </xh:span>
-              
-              <xh:span class="cta-enhanced-control__history-wrapper">
-                <xh:span class="cta-enhanced-control__history-label">Last:&#160;</xh:span>
-                <xf:output value="NumberSupport:getDisplayAndEditValueJava(
-                            xxf:evaluate($history-value-path),
+                    <xf:instance id="fr-form-resources" xxf:readonly="true">
+                        <resources>
+                            <resource xml:lang="en">
+                                <prefix>Prefix</prefix>
+                                <suffix>Suffix</suffix>
+                                <decimal-separator>Decimal Separator</decimal-separator>
+                                <grouping-separator>Grouping Separator</grouping-separator>
+                                <digits-after-decimal>Digits after decimal</digits-after-decimal>
+                                <round-when-formatting>Round when formatting</round-when-formatting>
+                                <round-when-storing>Round when storing</round-when-storing>
+                                <default-always-never>
+                                    <item id="0">Use default</item>
+                                    <item id="1">Always</item>
+                                    <item id="2">Never</item>
+                                </default-always-never>
+                            </resource>
+                            <resource xml:lang="fr">
+                                <prefix>Préfixe</prefix>
+                                <suffix>Suffixe</suffix>
+                                <decimal-separator>Séparateur décimal</decimal-separator>
+                                <grouping-separator>Séparateur de groupe</grouping-separator>
+                                <digits-after-decimal>Chiffres après la virgule</digits-after-decimal>
+                                <round-when-formatting>Arrondir au formattage</round-when-formatting>
+                                <round-when-storing>Arrondir au stockage</round-when-storing>
+                                <default-always-never>
+                                    <item id="0">Utiliser la défaut</item>
+                                    <item id="1">Toujours</item>
+                                    <item id="2">Jamais</item>
+                                </default-always-never>
+                            </resource>
+                        </resources>
+                    </xf:instance>
+                </xf:model>
+                <fr:grid xmlns="" id="fb-editor-number-grid">
+                    <xh:tr>
+                        <xh:td colspan="2">
+                            <xf:input ref="instance('local')/prefix" id="prefix-control">
+                                <xf:label ref="xxf:r('prefix')"/>
+                                <xf:alert/>
+                            </xf:input>
+                        </xh:td>
+                        <xh:td colspan="2">
+                            <xf:input ref="instance('local')/suffix" id="suffix-control">
+                                <xf:label ref="xxf:r('suffix')"/>
+                                <xf:alert/>
+                            </xf:input>
+                        </xh:td>
+                    </xh:tr>
+                    <xh:tr>
+                        <xh:td colspan="2">
+                            <fr:number ref="instance('local')/digits-after-decimal"  id="digits-after-decimal-control">
+                                <xf:label ref="xxf:r('digits-after-decimal')"/>
+                                <xf:alert/>
+                            </fr:number>
+                        </xh:td>
+                        <xh:td colspan="2">
+                            <xf:input ref="instance('local')/decimal-separator"  id="decimal-separator-control">
+                                <xf:label ref="xxf:r('decimal-separator')"/>
+                                <xf:alert/>
+                            </xf:input>
+                        </xh:td>
+                        <xh:td colspan="2">
+                            <xf:input ref="instance('local')/grouping-separator"  id="grouping-separator-control">
+                                <xf:label ref="xxf:r('grouping-separator')"/>
+                                <xf:alert/>
+                            </xf:input>
+                        </xh:td>
+                    </xh:tr>
+                    <xh:tr>
+                        <xh:td colspan="6">
+                            <xf:select1 ref="instance('local')/round-when-formatting" appearance="full xxf:horizontal" id="round-when-formatting-control">
+                                <xf:label ref="xxf:r('round-when-formatting')"/>
+                                <xf:alert/>
+                                <xf:itemset ref="xxf:resource-elements('default-always-never.item')">
+                                    <xf:label ref="."/>
+                                    <xf:value ref="if (@id = 0) then '' else if (@id = 1) then 'true' else 'false'"/>
+                                </xf:itemset>
+                            </xf:select1>
+                        </xh:td>
+                    </xh:tr>
+                    <xh:tr>
+                        <xh:td colspan="6">
+                            <xf:select1 ref="instance('local')/round-when-storing" appearance="full xxf:horizontal" id="round-when-storing-control">
+                                <xf:label ref="xxf:r('round-when-storing')"/>
+                                <xf:alert/>
+                                <xf:itemset ref="xxf:resource-elements('default-always-never.item')">
+                                    <xf:label ref="."/>
+                                    <xf:value ref="if (@id = 0) then '' else if (@id = 1) then 'true' else 'false'"/>
+                                </xf:itemset>
+                            </xf:select1>
+                        </xh:td>
+                    </xh:tr>
+                    <xh:tr>
+                        <xh:td colspan="6">
+                            <xf:select1 ref="instance('local')/field-width" appearance="full xxf:horizontal" id="field-width-control">
+                                <xf:label ref="xxf:r('xbl-control-settings.field-width', '|fr-form-resources|')"/>
+                                <xf:item>
+                                    <xf:label ref="xxf:r('xbl-control-settings.default', '|fr-form-resources|')"/>
+                                    <xf:value/>
+                                </xf:item>
+                                <xf:item>
+                                    <xf:label ref="xxf:r('xbl-control-settings.full', '|fr-form-resources|')"/>
+                                    <xf:value>full</xf:value>
+                                </xf:item>
+                                <xf:item>
+                                    <xf:label ref="xxf:r('xbl-control-settings.natural', '|fr-form-resources|')"/>
+                                    <xf:value>natural</xf:value>
+                                </xf:item>
+                            </xf:select1>
+                        </xh:td>
+                    </xh:tr>
+                </fr:grid>
+                <xf:action
+                    id="fb-editor-number-action"
+                    event="xforms-value-changed"
+                    observer="
+                        prefix-control
+                        suffix-control
+                        decimal-separator-control
+                        grouping-separator-control
+                        digits-after-decimal-control
+                        round-when-formatting-control
+                        round-when-storing-control
+                        field-width-control">
+
+                    <xf:var name="name"      value="name(event('xxf:binding'))"/>
+                    <xf:var name="new-value" value="string(event('xxf:binding'))"/>
+                    <xf:insert
+                        context="instance()"
+                        if="xxf:non-blank($new-value)"
+                        origin="xf:attribute($name, $new-value)"/>
+                    <xf:delete
+                        if="xxf:is-blank($new-value)"
+                        ref="instance()/@*[name() = $name]"/>
+                </xf:action>
+            </control-details>
+        </metadata>
+
+        <xbl:resources>
+            <xbl:style src="/xbl/orbeon/number/number.css"/>
+        </xbl:resources>
+
+        <xbl:handlers>
+            <xbl:handler event="fr-set-client-value">
+                <xf:setvalue
+                    ref="xxf:binding('cta-enhanced-number')"
+                    value="
+                        NumberSupport:getStorageValueJava(
+                            event('value'),
+                            xxf:binding('cta-enhanced-number'),
                             fr:component-param-value('decimal-separator'),
                             fr:component-param-value('grouping-separator'),
                             fr:component-param-value('prefix'),
@@ -416,14 +243,144 @@
                             string(fr:component-param-value('round-when-formatting')) = 'true',
                             string(fr:component-param-value('round-when-storing'))    = 'true'
                         )"/>
-                <xh:span class="cta-enhanced-control__history-label">, collected on:&#160;</xh:span>
-                <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
-              </xh:span>
-            </xh:div>
-          </xf:group>
-        </xsl:template>
-      </xsl:transform>
-    </xbl:template>
-    
-  </xbl:binding>
+            </xbl:handler>
+
+            <!-- Update field when formatted value changes or iteration moves. Do this here so client has valid observer id. -->
+            <xbl:handler
+                phase="target"
+                event="xxforms-visible xforms-value-changed xxforms-iteration-moved DOMFocusOut">
+
+                <xf:var
+                    name="display-and-edit-values"
+                    value="
+                        NumberSupport:getDisplayAndEditValueJava(
+                            xxf:binding('cta-enhanced-number'),
+                            fr:component-param-value('decimal-separator'),
+                            fr:component-param-value('grouping-separator'),
+                            fr:component-param-value('prefix'),
+                            fr:component-param-value('digits-after-decimal'),
+                            string(fr:component-param-value('round-when-formatting')) = 'true',
+                            string(fr:component-param-value('round-when-storing'))    = 'true'
+                        )"/>
+
+                <xf:action type="javascript">
+                    <xf:param name="displayValue"     value="$display-and-edit-values[1]"/>
+                    <xf:param name="editValue"        value="$display-and-edit-values[2]"/>
+                    <xf:param name="decimalSeparator" value="fr:component-param-value('decimal-separator')"/>
+                    <xf:body>var i = ORBEON.xforms.XBL.instanceForControl(this); if (i) i.updateWithServerValues(displayValue, editValue, decimalSeparator);</xf:body>
+                </xf:action>
+
+            </xbl:handler>
+
+        </xbl:handlers>
+
+        <xbl:template>
+             <xf:setvalue event="xforms-ready" ref="xxf:binding('cta-enhanced-number')" value="TEST"/>
+            <xf:var
+                name="binding"
+                value="xxf:binding('cta-enhanced-number')"/>
+
+            <xf:var
+                name="view"
+                value="
+                    xxf:is-control-readonly('cta-enhanced-number') and (
+                        property('xxf:readonly-appearance') = 'static' or
+                        (: See https://github.com/orbeon/orbeon-forms/issues/3800 :)
+                        fr:mode() = 'pdf'
+                    )"/>
+
+
+            <!--<xf:dispatch event="xxforms-iteration-moved" name="fr-iteration-moved" targetid="formatted-value"/>-->
+
+            <!-- Readwrite mode -->
+            <xf:group ref="$binding[not($view)]">
+                  <xf:action ev:event="xforms-value-changed" ev:observer="cta-enhanced-state-selector-mode-control">
+                      <xf:setvalue ref="xxf:binding('cta-enhanced-number')" value="()"/>
+                  </xf:action>
+                  <xf:message event="xforms-ready">
+                    Hello!
+                  </xf:message>
+
+
+                <xf:var name="prefix"      value="fr:component-param-value('prefix')"/>
+                <xf:var name="suffix"      value="fr:component-param-value('suffix')"/>
+                <xf:var name="field-width" value="fr:component-param-value('field-width')"/>
+
+                <!-- See also https://github.com/orbeon/orbeon-forms/issues/2495 -->
+
+                <!--
+                    Visible HTML input
+
+                    - `.xforms-input-input`: so the border gets highlighted when the container gets `.xforms-invalid.xforms-visited`
+                    - `step="any"`: so that even for numbers with decimal digits, increments/decrements are by 1
+                    - `pattern`:
+                        - triggers the numeric keypad on iOS when needed
+                        - use `fraction-digits` common constraint instead of `$digits-after-decimal`, because what matters to select
+                          the keypad is that the *expected* format be a non-negative integer, while `$digits-after-decimal` is used
+                          for formatting only
+                        - also tests on the `integer` datatype, which is the same as `fraction-digits = 0`
+                    - `maxlength`:
+                        - not natively supported for `type="number"`, but when JavaScript support is enabled, the attribute can be read to enforce
+                          a maximum number of allowed characters to type (https://github.com/orbeon/orbeon-forms/issues/2486)
+                        - if a `maxlength` or `xxf:maxlength` is placed on the bound element, that takes precedence
+                    - `min`: makes control natively invalid as the user types, if the value cannot be negative
+                -->
+                <xh:span
+                    class="{
+                        (
+                            'input-prepend'[xxf:non-blank($prefix)],
+                            'input-append' [xxf:non-blank($suffix)],
+                            concat('fr-field-width-', $field-width)
+                        )
+                    }">
+                    <xf:group fr:keep-if-param-non-blank="prefix" class="add-on" ref=".[xxf:non-blank($prefix)]"><xf:output value="$prefix"/></xf:group>
+                    <xh:input
+                        id="html-input"
+                        class="xbl-fr-number-visible-input xbl-html-input xforms-input-input"
+                        type="text"
+                        step="any"
+                        pattern="{
+                            if (NumberSupport:isZeroValidationFractionDigitsJava($binding) and
+                                xxf:custom-mip($binding, 'non-negative') = 'true'
+                            ) then
+                                '[0-9]*'
+                            else
+                                '.*'
+                        }"
+                        min="{
+                            if (xxf:custom-mip($binding, 'non-negative') = 'true') then
+                                '0'
+                            else
+                                ''
+                        }"
+                        maxlength="{xs:integer(xxf:custom-mip($binding, 'max-length')[. castable as xs:integer])}"
+                        xbl:attr="tabindex tabindex=navindex maxlength=xxf:maxlength maxlength pattern=xxf:pattern"/>
+                    <xf:group fr:keep-if-param-non-blank="suffix" class="add-on" ref=".[xxf:non-blank($suffix)]"><xf:output value="$suffix"/></xf:group>
+                    <xi:include
+                        href="/xbl/cta/enhanced-state-selector/enhanced-state-selector.xbl"
+                        xpointer="xpath(/xbl:xbl/xbl:binding/xbl:template/*)"/>
+                </xh:span>
+            </xf:group>
+            <!-- Static readonly mode -->
+            <xf:input
+                ref="$binding[$view]"
+                xxf:format="
+                    string-join(
+                        (
+                            fr:component-param-value('prefix'),
+                            NumberSupport:getDisplayAndEditValueJava(
+                                xxf:binding('cta-enhanced-number'),
+                                fr:component-param-value('decimal-separator'),
+                                fr:component-param-value('grouping-separator'),
+                                fr:component-param-value('prefix'),
+                                fr:component-param-value('digits-after-decimal'),
+                                string(fr:component-param-value('round-when-formatting')) = 'true',
+                                string(fr:component-param-value('round-when-storing'))    = 'true'
+                            )[1],
+                            fr:component-param-value('suffix')
+                        ),
+                        ' '
+                    )"/>
+        </xbl:template>
+    </xbl:binding>
 </xbl:xbl>

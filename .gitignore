@@ -2,6 +2,7 @@ build/
 builder/target/
 tmp/
 target/
+.idea/
 build-local.properties
 .idea/shelf/
 .idea/modules/
