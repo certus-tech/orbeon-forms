@@ -53,6 +53,7 @@ private class DateCompanion extends XBLCompanion {
       options.showOnFocus      = false
       options.forceParse       = false
       options.language         = Page.getLang()
+      options.container        = ".orbeon"
       datePicker = inputEl.parent().datepicker(options)
       // Register listeners
       inputEl.on("blur", () ⇒ onBlur())
@@ -156,6 +157,7 @@ private object DatePickerFacade {
     var forceParse       : Boolean           = true
     var datesDisabled    : js.Array[js.Date] = null
     var language         : String            = "en"
+    var container        : String            = _
   }
 
   implicit class DatePickerOps(val datePicker: DatePicker) extends AnyVal {
