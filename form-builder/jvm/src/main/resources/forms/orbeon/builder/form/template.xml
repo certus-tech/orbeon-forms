@@ -107,6 +107,21 @@
         <xf:setvalue ref="instance('cta-form-context-parameters')/ct-service"
                      value="xxf:get-request-parameter('ct-service')"/>
 
+        <!-- 
+          Add as attributes to the form instance
+        -->
+        <xf:insert context="instance('fr-form-instance')"
+                   if="xxf:get-request-parameter('ct-principal')"
+                   origin="xxf:attribute('ct-principal', xxf:get-request-parameter('ct-principal'))"/>
+        <xf:insert context="instance('fr-form-instance')"
+                   if="xxf:get-request-parameter('ct-objectId')"
+                   origin="xxf:attribute('ct-objectId', xxf:get-request-parameter('ct-objectId'))"/>
+        <xf:insert context="instance('fr-form-instance')"
+                   if="xxf:get-request-parameter('ct-objectType')"
+                   origin="xxf:attribute('ct-objectType', xxf:get-request-parameter('ct-objectType'))"/>
+        <xf:insert context="instance('fr-form-instance')"
+                   if="xxf:get-request-parameter('ct-service')"
+                   origin="xxf:attribute('ct-service', xxf:get-request-parameter('ct-service'))"/>
 
         <!-- 
           Pre-populate the form
@@ -186,12 +201,6 @@
       <xf:bind id="cta-form-history-binds"
                ref="instance('cta-form-history-instance')"
                readonly="true()"/>
-
-      <!-- 
-        Set the entire form to readonly if query parameter 'readonly' is true  
-        Does not hide or disable the send button, currently expect the UI to handle this.
-      -->
-      <xf:bind ref="instance('fr-form-instance')" readonly="xxf:get-request-parameter('readonly')"/>
 
     </xf:model>
   </xh:head>
