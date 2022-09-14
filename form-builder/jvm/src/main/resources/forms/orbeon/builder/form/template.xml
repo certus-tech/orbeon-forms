@@ -98,13 +98,13 @@
         <!-- 
           Add context from query strings 
         -->
-        <xf:setvalue ref="xxf:instance('cta-form-context-parameters')/ct-principal"
+        <xf:setvalue ref="xxf:instance('cta-form-context-parameters')principal"
                      value="xxf:get-request-parameter('ct-principal')"/> 
-        <xf:setvalue ref="instance('cta-form-context-parameters')/ct-objectId"
+        <xf:setvalue ref="instance('cta-form-context-parameters')/objectId"
                      value="xxf:get-request-parameter('ct-objectId')"/> 
-        <xf:setvalue ref="instance('cta-form-context-parameters')/ct-objectType"
+        <xf:setvalue ref="instance('cta-form-context-parameters')/objectType"
                      value="xxf:get-request-parameter('ct-objectType')"/>
-        <xf:setvalue ref="instance('cta-form-context-parameters')/ct-service"
+        <xf:setvalue ref="instance('cta-form-context-parameters')/service"
                      value="xxf:get-request-parameter('ct-service')"/>
         
         <!-- 
@@ -164,10 +164,10 @@
           <app/>
           <form/>
           <documentid/>
-          <ct-principal/>
-          <ct-objectType/>
-          <ct-objectId/>
-          <ct-service/>
+          <principal/>
+          <objectType/>
+          <objectId/>
+          <service/>
         </history-parameters>
       </xf:instance>
 
