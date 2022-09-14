@@ -201,6 +201,12 @@
       <xf:bind id="cta-form-history-binds"
                ref="instance('cta-form-history-instance')"
                readonly="true()"/>
+      
+      <!--
+        Feature to set fields with ct-readonly attribute set to true to 
+      -->
+      <xf:bind ref="//*[@ct-readonly='true']" 
+               readonly="xxf:property('cta.readonly.attribute')"/> 
 
     </xf:model>
   </xh:head>
