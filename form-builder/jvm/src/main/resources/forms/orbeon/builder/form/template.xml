@@ -98,7 +98,7 @@
         <!-- 
           Add context from query strings 
         -->
-        <xf:setvalue ref="xxf:instance('cta-form-context-parameters')principal"
+        <xf:setvalue ref="xxf:instance('cta-form-context-parameters')/principal"
                      value="xxf:get-request-parameter('ct-principal')"/> 
         <xf:setvalue ref="instance('cta-form-context-parameters')/objectId"
                      value="xxf:get-request-parameter('ct-objectId')"/> 
