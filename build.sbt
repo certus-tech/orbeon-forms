@@ -672,6 +672,23 @@ lazy val core = (project in file("src"))
     libraryDependencies                ++= CoreLibraryDependencies
   )
 
+lazy val ctaExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-extensions"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "orbeon-cta-extensions"
+  )
+
+lazy val ctaExtensionJVM = ctaExtension.jvm
+  .enablePlugins(SbtCoffeeScript, SbtWeb)
+  .dependsOn(
+    commonJVM,
+    formRunnerJVM % "test->test;compile->compile",
+    core          % "test->test;compile->compile"
+  )
+  .settings(jUnitTestOptions: _*)
+  .settings(assetsSettings: _*)
+
+
 lazy val orbeonWar = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Dummy) in file("orbeon-war"))
   .settings(
     name := "orbeon-war",
@@ -684,6 +701,7 @@ lazy val orbeonWarJVM = orbeonWar.jvm
     dom,
     xupdate,
     core,
+    ctaExtensionJVM,
     xformsJVM,
     formRunnerJVM,
     formBuilderJVM,
@@ -740,6 +758,7 @@ lazy val root = (project in file("."))
     dom,
     xupdate,
     core,
+    ctaExtensionJVM,
     xformsJVM,
     xformsJS,
     formRunnerJVM,
