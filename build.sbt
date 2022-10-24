@@ -72,6 +72,7 @@ val CoreLibraryDependencies = Seq(
   (_.exclude("javax.servlet"  , "servlet-api"))         // because `jcifs` depends on this and we want it provided
 
 val ExplodedWarLibPath            = "build/orbeon-war/WEB-INF/lib"
+val OrbeonWarLibPath              = "orbeon-war/jvm/target/webapp/WEB-INF/lib"
 val LiferayWarLibPath             = "/Users/ebruchez/OF/liferay-portal-6.2-ce-ga6/tomcat-7.0.62/webapps/proxy-portlet/WEB-INF/lib"
 
 val LocalResourcesPath            = "resources-local"
@@ -81,6 +82,7 @@ val FormRunnerResourcesPathInWar  = "apps/fr/resources"
 val XFormsResourcesPathInWar      = "ops/javascript"
 
 val copyJarToExplodedWar           = taskKey[Option[File]]("Copy JAR file to local WEB-INF/lib for development.")
+val copyJarToOrbeonWar             = taskKey[Option[File]]("Copy JAR file to orbeon war WEB-INF/lib for development.")
 val copyDependenciesToExplodedWar  = taskKey[Unit]("Copy managed library JAR files to WEB-INF/lib.")
 val fastOptJSToLocalResources      = taskKey[Unit]("Copy fast-optimized JavaScript files to local resources.")
 val fullOptJSToLocalResources      = taskKey[Unit]("Copy full-optimized JavaScript files to local resources.")
@@ -297,6 +299,7 @@ lazy val commonSettings = Seq(
   exportJars := true,
 
   copyJarToExplodedWar := copyJarFile((packageBin in Compile).value, ExplodedWarLibPath, JarFilesToExcludeFromWar.contains, matchRawJarName = true),
+  copyJarToOrbeonWar := copyJarFile((packageBin in Compile).value, OrbeonWarLibPath, JarFilesToExcludeFromWar.contains, matchRawJarName = true),
   copyJarToLiferayWar  := copyJarFile((packageBin in Compile).value, LiferayWarLibPath,  JarFilesToExcludeFromLiferayWar.contains, matchRawJarName = true)
 ) ++ unmanagedJarsSettings
 
@@ -679,14 +682,9 @@ lazy val ctaExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossTy
   )
 
 lazy val ctaExtensionJVM = ctaExtension.jvm
-  .enablePlugins(SbtCoffeeScript, SbtWeb)
-  .dependsOn(
-    commonJVM,
-    formRunnerJVM % "test->test;compile->compile",
-    core          % "test->test;compile->compile"
-  )
-  .settings(jUnitTestOptions: _*)
+  .enablePlugins(SbtWeb)
   .settings(assetsSettings: _*)
+  .settings(commonSettings: _*)
 
 
 lazy val orbeonWar = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Dummy) in file("orbeon-war"))
