@@ -434,6 +434,29 @@ lazy val portletSupport = (project in file("portlet-support"))
     name := "orbeon-portlet-support"
   )
 
+lazy val ctaFormRunnerExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-form-runner-extensions"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "orbeon-cta-form-runner-extensions"
+  )
+
+lazy val ctaFormRunnerExtensionJVM = ctaFormRunnerExtension.jvm
+  .enablePlugins(SbtWeb)
+  .settings(assetsSettings: _*)
+  .settings(commonSettings: _*)
+
+
+lazy val ctaFormBuilderExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-form-builder-extensions"))
+  .settings(commonSettings: _*)
+  .settings(
+    name := "orbeon-cta-form-builder-extensions"
+  )
+
+lazy val ctaFormBuilderExtensionJVM = ctaFormBuilderExtension.jvm
+  .enablePlugins(SbtWeb)
+  .settings(assetsSettings: _*)
+  .settings(commonSettings: _*)
+
 lazy val formRunner = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("form-runner"))
   .settings(commonSettings: _*)
   .settings(
@@ -517,7 +540,8 @@ lazy val formBuilderJVM = formBuilder.jvm
   .dependsOn(
     commonJVM,
     formRunnerJVM % "test->test;compile->compile",
-    core          % "test->test;compile->compile"
+    core          % "test->test;compile->compile",
+    ctaFormBuilderExtensionJVM
   )
   .settings(jUnitTestOptions: _*)
   .settings(assetsSettings: _*)
@@ -675,18 +699,6 @@ lazy val core = (project in file("src"))
     libraryDependencies                ++= CoreLibraryDependencies
   )
 
-lazy val ctaExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-extensions"))
-  .settings(commonSettings: _*)
-  .settings(
-    name := "orbeon-cta-extensions"
-  )
-
-lazy val ctaExtensionJVM = ctaExtension.jvm
-  .enablePlugins(SbtWeb)
-  .settings(assetsSettings: _*)
-  .settings(commonSettings: _*)
-
-
 lazy val orbeonWar = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Dummy) in file("orbeon-war"))
   .settings(
     name := "orbeon-war",
@@ -699,7 +711,8 @@ lazy val orbeonWarJVM = orbeonWar.jvm
     dom,
     xupdate,
     core,
-    ctaExtensionJVM,
+    ctaFormRunnerExtensionJVM,
+    ctaFormBuilderExtensionJVM,
     xformsJVM,
     formRunnerJVM,
     formBuilderJVM,
@@ -756,7 +769,8 @@ lazy val root = (project in file("."))
     dom,
     xupdate,
     core,
-    ctaExtensionJVM,
+    ctaFormRunnerExtensionJVM,
+    ctaFormBuilderExtensionJVM,
     xformsJVM,
     xformsJS,
     formRunnerJVM,

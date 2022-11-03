@@ -67,6 +67,21 @@
         <xf:instance id="cta-property-iteration">
           <ctao:property for="" key=""/>
         </xf:instance>
+              <xf:instance id="fr-form-resources" xxf:readonly="true">
+                <resources>
+                  <resource xml:lang="en">
+                    <control-metadata-description>
+                    These key/value pairs are specific to the selected control/form. They are stored in the form definition's
+                    meta-data so they are available to external processes which read the form. They are versioned along with the
+                    form definition itself, and are not included in submitted instance data.
+                    </control-metadata-description>
+                    <control-metadata-footer>
+                    Rows with a blank key are removed from the metadata when the changes are applied.
+                    At least one row is always displayed in the grid; a solitary row cannot be removed except by setting its key to blank.
+                    </control-metadata-footer>
+                  </resource>
+                </resources>
+              </xf:instance>
 
         <xf:bind id="properties-bind" ref="xf:instance('cta-meta-internal')/properties/ctao:property">
           <xf:bind id="for-bind" ref="@for" xxf:default="xf:instance('cta-meta-internal')/meta/for"/>
@@ -78,11 +93,7 @@
 
     <xbl:template>
       <xh:div>
-        <xh:p>
-          These key/value pairs are specific to the selected control/form. They are stored in the form definition's
-          meta-data so they are available to external processes which read the form. They are versioned along with the
-          form definition itself, and are not included in submitted instance data.
-        </xh:p>
+        <xh:p><xf:output value="xxf:r('control-metadata-description')"/></xh:p>
         <!--
           Grid configuration:
           - repeat="true" (vs. "content") uses the legacy repeat behaviour without an iteration container element.
@@ -105,10 +116,7 @@
             </xf:input>
           </fr:c>
         </fr:grid>
-        <xh:p style="font-size: smaller;">
-          Rows with a blank key are removed from the metadata when the changes are applied. At least one row is always
-          displayed in the grid; a solitary row cannot be removed except by setting its key to blank.
-        </xh:p>
+        <xh:p style="font-size: smaller;"><xf:output value="xxf:r('control-metadata-footer')"/></xh:p>
       </xh:div>
     </xbl:template>
   </xbl:binding>
