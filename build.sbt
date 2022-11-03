@@ -434,7 +434,7 @@ lazy val portletSupport = (project in file("portlet-support"))
     name := "orbeon-portlet-support"
   )
 
-lazy val ctaFormRunnerExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-form-runner-extensions"))
+lazy val ctaFormRunnerExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-extensions/cta-form-runner-extensions"))
   .settings(commonSettings: _*)
   .settings(
     name := "orbeon-cta-form-runner-extensions"
@@ -446,7 +446,7 @@ lazy val ctaFormRunnerExtensionJVM = ctaFormRunnerExtension.jvm
   .settings(commonSettings: _*)
 
 
-lazy val ctaFormBuilderExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-form-builder-extensions"))
+lazy val ctaFormBuilderExtension = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("cta-extensions/cta-form-builder-extensions"))
   .settings(commonSettings: _*)
   .settings(
     name := "orbeon-cta-form-builder-extensions"
@@ -456,6 +456,12 @@ lazy val ctaFormBuilderExtensionJVM = ctaFormBuilderExtension.jvm
   .enablePlugins(SbtWeb)
   .settings(assetsSettings: _*)
   .settings(commonSettings: _*)
+
+lazy val ctaExtensions = (project in file("cta-extensions"))
+  .aggregate(
+    ctaFormRunnerExtensionJVM,
+    ctaFormBuilderExtensionJVM
+  )
 
 lazy val formRunner = (crossProject(JVMPlatform, JSPlatform).crossType(CrossType.Full) in file("form-runner"))
   .settings(commonSettings: _*)
