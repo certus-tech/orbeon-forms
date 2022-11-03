@@ -9,7 +9,7 @@
     <option name="deprecationWarnings" value="true" />
     <option name="uncheckedWarnings" value="true" />
     <option name="incrementalityType" value="SBT" />
-    <profile name="SBT 1" modules="root" />
+    <profile name="SBT 1" modules="orbeon-forms.root,root" />
     <profile name="SBT 2" modules="common,commonSharedJS">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
@@ -55,7 +55,7 @@
         <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.8/jars/scalajs-compiler_2.11.8-0.6.13.jar" />
       </plugins>
     </profile>
-    <profile name="SBT 5" modules="clientServerSharedJVM,commonSharedJVM,formBuilderSharedJVM,formBuilder,formBuilderSharedJVM,formRunner,orbeonWar,xupdate,fullPortlet,portletSupport,dom,fileScanExample,commonJVM,formBuilderJVM,xformsJVM,core,embedding,orbeonWarJVM,formRunnerProxyPortlet,jvm-orbeon-form-builder,jvm-orbeon-common,orbeon-core,orbeon-proxy-portlet,orbeon-dom,jvm-orbeon-xforms,orbeon-common,orbeon-full-portlet,orbeon-portlet-support,orbeon-embedding,file-scan-example,orbeon-xupdate,orbeon-form-builder,jvm-orbeon-war">
+    <profile name="SBT 5" modules="clientServerSharedJVM,commonJVM,commonSharedJVM,core,dom,embedding,file-scan-example,file-scan-example.fileScanExample,fileScanExample,formBuilder,formBuilderJVM,formBuilderSharedJVM,formBuilderSharedJVM,formRunner,formRunnerProxyPortlet,full-portlet.fullPortlet,fullPortlet,jvm-orbeon-common,jvm-orbeon-form-builder,jvm-orbeon-war,jvm-orbeon-xforms,jvm.commonJVM,jvm.formBuilderJVM,jvm.orbeonWarJVM,jvm.xformsJVM,orbeon-common,orbeon-core,orbeon-dom,orbeon-embedding,orbeon-form-builder,orbeon-forms.dom,orbeon-forms.embedding,orbeon-forms.xupdate,orbeon-full-portlet,orbeon-portlet-support,orbeon-proxy-portlet,orbeon-xupdate,orbeonWar,orbeonWarJVM,portlet-support.portletSupport,portletSupport,proxy-portlet.formRunnerProxyPortlet,src.core,xformsJVM,xupdate">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
@@ -67,7 +67,7 @@
         <parameter value="utf8" />
       </parameters>
     </profile>
-    <profile name="SBT 6" modules="formRunnerComponentsJVM,formRunnerJVM,jvm-orbeon-form-runner">
+    <profile name="SBT 6" modules="ctaExtensionJVM,formRunnerComponentsJVM,formRunnerJVM,jvm-orbeon-form-runner,jvm.formRunnerJVM">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
@@ -81,7 +81,7 @@
         <parameter value="utf8" />
       </parameters>
     </profile>
-    <profile name="SBT 8" modules="orbeonWarJS,commonJS,nodeFacades,js-orbeon-war">
+    <profile name="SBT 8" modules="commonJS,js-orbeon-war,nodeFacades,orbeonWarJS">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
@@ -96,7 +96,7 @@
         <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.11/jars/scalajs-compiler_2.11.11-0.6.21.jar" />
       </plugins>
     </profile>
-    <profile name="SBT 9" modules="formRunnerJS,xformsJS,formBuilderJS,js-orbeon-form-runner">
+    <profile name="SBT 9" modules="formBuilderJS,formRunnerJS,js-orbeon-form-runner,xformsJS">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
@@ -112,7 +112,7 @@
         <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.11/jars/scalajs-compiler_2.11.11-0.6.21.jar" />
       </plugins>
     </profile>
-    <profile name="sbt 1" modules="orbeon-form-runner,orbeon-xforms,js-orbeon-form-builder">
+    <profile name="sbt 1" modules="js-orbeon-form-builder,orbeon-form-runner,orbeon-xforms">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
@@ -128,7 +128,7 @@
         <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.11/jars/scalajs-compiler_2.11.11-0.6.25.jar" />
       </plugins>
     </profile>
-    <profile name="sbt 2" modules="orbeon-war,orbeon-node-facades,js-orbeon-common">
+    <profile name="sbt 2" modules="js-orbeon-common,orbeon-node-facades,orbeon-war">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
@@ -141,6 +141,38 @@
       </parameters>
       <plugins>
         <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.11/jars/scalajs-compiler_2.11.11-0.6.25.jar" />
+      </plugins>
+    </profile>
+    <profile name="sbt 3" modules="js.commonJS,js.orbeonWarJS,node-facades.nodeFacades">
+      <option name="postfixOps" value="true" />
+      <option name="reflectiveCalls" value="true" />
+      <option name="implicitConversions" value="true" />
+      <option name="higherKinds" value="true" />
+      <option name="existentials" value="true" />
+      <option name="featureWarnings" value="true" />
+      <parameters>
+        <parameter value="-encoding" />
+        <parameter value="utf8" />
+      </parameters>
+      <plugins>
+        <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.11/jars/scalajs-compiler_2.11.11-0.6.26.jar" />
+      </plugins>
+    </profile>
+    <profile name="sbt 4" modules="js.formBuilderJS,js.formRunnerJS,js.xformsJS">
+      <option name="postfixOps" value="true" />
+      <option name="reflectiveCalls" value="true" />
+      <option name="implicitConversions" value="true" />
+      <option name="higherKinds" value="true" />
+      <option name="existentials" value="true" />
+      <option name="featureWarnings" value="true" />
+      <parameters>
+        <parameter value="-encoding" />
+        <parameter value="utf8" />
+        <parameter value="-P:scalajs:sjsDefinedByDefault" />
+        <parameter value="-P:scalajs:suppressExportDeprecations" />
+      </parameters>
+      <plugins>
+        <plugin path="$USER_HOME$/.ivy2/cache/org.scala-js/scalajs-compiler_2.11.11/jars/scalajs-compiler_2.11.11-0.6.26.jar" />
       </plugins>
     </profile>
   </component>

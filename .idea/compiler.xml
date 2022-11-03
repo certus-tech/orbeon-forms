@@ -22,7 +22,7 @@
       <entry name="?*.dtd" />
       <entry name="?*.tld" />
     </wildcardResourcePatterns>
-    <bytecodeTargetLevel target="1.6">
+    <bytecodeTargetLevel>
       <module name="clientServerSharedJS" target="1.6" />
       <module name="clientServerSharedJVM" target="1.6" />
       <module name="common" target="1.6" />
@@ -31,8 +31,10 @@
       <module name="commonSharedJS" target="1.6" />
       <module name="commonSharedJVM" target="1.6" />
       <module name="core" target="1.6" />
+      <module name="ctaExtensionJVM" target="1.6" />
       <module name="dom" target="1.6" />
       <module name="embedding" target="1.6" />
+      <module name="file-scan-example.fileScanExample" target="1.6" />
       <module name="fileScanExample" target="1.6" />
       <module name="formBuilder" target="1.6" />
       <module name="formBuilderClient" target="1.6" />
@@ -46,22 +48,40 @@
       <module name="formRunnerJS" target="1.6" />
       <module name="formRunnerJVM" target="1.6" />
       <module name="formRunnerProxyPortlet" target="1.6" />
+      <module name="full-portlet.fullPortlet" target="1.6" />
       <module name="fullPortlet" target="1.6" />
       <module name="js-orbeon-common" target="1.6" />
       <module name="js-orbeon-form-builder" target="1.6" />
       <module name="js-orbeon-form-runner" target="1.6" />
       <module name="js-orbeon-war" target="1.6" />
+      <module name="js.commonJS" target="1.6" />
+      <module name="js.formBuilderJS" target="1.6" />
+      <module name="js.formRunnerJS" target="1.6" />
+      <module name="js.orbeonWarJS" target="1.6" />
+      <module name="js.xformsJS" target="1.6" />
       <module name="jvm-orbeon-common" target="1.6" />
       <module name="jvm-orbeon-form-builder" target="1.6" />
       <module name="jvm-orbeon-form-runner" target="1.6" />
       <module name="jvm-orbeon-war" target="1.6" />
       <module name="jvm-orbeon-xforms" target="1.6" />
+      <module name="jvm.commonJVM" target="1.6" />
+      <module name="jvm.formBuilderJVM" target="1.6" />
+      <module name="jvm.formRunnerJVM" target="1.6" />
+      <module name="jvm.orbeonWarJVM" target="1.6" />
+      <module name="jvm.xformsJVM" target="1.6" />
+      <module name="node-facades.nodeFacades" target="1.6" />
       <module name="nodeFacades" target="1.6" />
+      <module name="orbeon-forms.dom" target="1.6" />
+      <module name="orbeon-forms.embedding" target="1.6" />
+      <module name="orbeon-forms.xupdate" target="1.6" />
       <module name="orbeonWar" target="1.6" />
       <module name="orbeonWarJS" target="1.6" />
       <module name="orbeonWarJVM" target="1.6" />
+      <module name="portlet-support.portletSupport" target="1.6" />
       <module name="portletSupport" target="1.6" />
+      <module name="proxy-portlet.formRunnerProxyPortlet" target="1.6" />
       <module name="root" target="1.6" />
+      <module name="src.core" target="1.6" />
       <module name="xformsJS" target="1.6" />
       <module name="xformsJVM" target="1.6" />
       <module name="xupdate" target="1.6" />
@@ -70,5 +90,29 @@
   <component name="EclipseCompilerSettings">
     <option name="GENERATE_NO_WARNINGS" value="true" />
     <option name="DEPRECATION" value="false" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ctaExtensionJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
+      <module name="file-scan-example.fileScanExample" options="-encoding utf8" />
+      <module name="full-portlet.fullPortlet" options="-encoding utf8" />
+      <module name="js.commonJS" options="-encoding utf8" />
+      <module name="js.formBuilderJS" options="-encoding utf8" />
+      <module name="js.formRunnerJS" options="-encoding utf8" />
+      <module name="js.orbeonWarJS" options="-encoding utf8" />
+      <module name="js.xformsJS" options="-encoding utf8" />
+      <module name="jvm.commonJVM" options="-encoding utf8" />
+      <module name="jvm.formBuilderJVM" options="-encoding utf8" />
+      <module name="jvm.formRunnerJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
+      <module name="jvm.orbeonWarJVM" options="-encoding utf8" />
+      <module name="jvm.xformsJVM" options="-encoding utf8" />
+      <module name="node-facades.nodeFacades" options="-encoding utf8" />
+      <module name="orbeon-forms.dom" options="-encoding utf8" />
+      <module name="orbeon-forms.embedding" options="-encoding utf8" />
+      <module name="orbeon-forms.xupdate" options="-encoding utf8" />
+      <module name="portlet-support.portletSupport" options="-encoding utf8" />
+      <module name="proxy-portlet.formRunnerProxyPortlet" options="-encoding utf8" />
+      <module name="src.core" options="-encoding utf8" />
+    </option>
   </component>
 </project>
