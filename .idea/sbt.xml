@@ -12,8 +12,10 @@
             <option value="$PROJECT_DIR$/common/js" />
             <option value="$PROJECT_DIR$/common/jvm" />
             <option value="$PROJECT_DIR$/common/shared" />
-            <option value="$PROJECT_DIR$/cta-extensions/jvm" />
-            <option value="$PROJECT_DIR$/cta-extensions/shared" />
+            <option value="$PROJECT_DIR$/cta-form-builder-extensions/jvm" />
+            <option value="$PROJECT_DIR$/cta-form-builder-extensions/shared" />
+            <option value="$PROJECT_DIR$/cta-form-runner-extensions/jvm" />
+            <option value="$PROJECT_DIR$/cta-form-runner-extensions/shared" />
             <option value="$PROJECT_DIR$/dom" />
             <option value="$PROJECT_DIR$/embedding" />
             <option value="$PROJECT_DIR$/file-scan-example" />

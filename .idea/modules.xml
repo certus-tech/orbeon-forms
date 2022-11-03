@@ -9,8 +9,10 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/commonJVM-build.iml" filepath="$PROJECT_DIR$/.idea/modules/commonJVM-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.iml" filepath="$PROJECT_DIR$/.idea/modules/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core-build.iml" filepath="$PROJECT_DIR$/.idea/modules/core-build.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cta-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/cta-extensions-sources.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ctaExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/ctaExtensionJVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cta-form-builder-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/cta-form-builder-extensions-sources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cta-form-runner-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/cta-form-runner-extensions-sources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ctaFormBuilderExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/ctaFormBuilderExtensionJVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ctaFormRunnerExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/ctaFormRunnerExtensionJVM.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dom.iml" filepath="$PROJECT_DIR$/.idea/modules/dom.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dom-build.iml" filepath="$PROJECT_DIR$/.idea/modules/dom-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/embedding.iml" filepath="$PROJECT_DIR$/.idea/modules/embedding.iml" />

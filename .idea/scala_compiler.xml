@@ -67,7 +67,7 @@
         <parameter value="utf8" />
       </parameters>
     </profile>
-    <profile name="SBT 6" modules="ctaExtensionJVM,formRunnerComponentsJVM,formRunnerJVM,jvm-orbeon-form-runner,jvm.formRunnerJVM">
+    <profile name="SBT 6" modules="ctaExtensionJVM,ctaFormBuilderExtensionJVM,ctaFormRunnerExtensionJVM,formRunnerComponentsJVM,formRunnerJVM,jvm-orbeon-form-runner,jvm.formRunnerJVM">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />

@@ -32,6 +32,8 @@
       <module name="commonSharedJVM" target="1.6" />
       <module name="core" target="1.6" />
       <module name="ctaExtensionJVM" target="1.6" />
+      <module name="ctaFormBuilderExtensionJVM" target="1.6" />
+      <module name="ctaFormRunnerExtensionJVM" target="1.6" />
       <module name="dom" target="1.6" />
       <module name="embedding" target="1.6" />
       <module name="file-scan-example.fileScanExample" target="1.6" />
@@ -94,6 +96,8 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="ctaExtensionJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
+      <module name="ctaFormBuilderExtensionJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
+      <module name="ctaFormRunnerExtensionJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
       <module name="file-scan-example.fileScanExample" options="-encoding utf8" />
       <module name="full-portlet.fullPortlet" options="-encoding utf8" />
       <module name="js.commonJS" options="-encoding utf8" />
