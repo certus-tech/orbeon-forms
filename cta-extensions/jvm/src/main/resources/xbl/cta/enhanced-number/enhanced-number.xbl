@@ -85,6 +85,7 @@
                 <history-mode-hint>Which history controls to be available</history-mode-hint>
                 <history-mode-all>All</history-mode-all>
                 <history-mode-not-unchanged>Not unchanged</history-mode-not-unchanged>
+                <history-collected-on>, collected on:&#160;</history-collected-on>
                 <!-- Copied from fr:number. -->
                 <prefix>Prefix</prefix>
                 <suffix>Suffix</suffix>
@@ -269,6 +270,7 @@
                       value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
               
               <xf:instance id="cta-enhanced-control-mode">
+
                 <control>
                   <current-mode/>
                   <current-value/>
@@ -298,7 +300,14 @@
                   </available-modes-not-unchanged>
                 </control>
               </xf:instance>
-
+              <xf:instance id="fr-form-resources" xxf:readonly="true">
+                <resources>
+                  <resource xml:lang="en">
+                    <history-collected-on>, collected on:&#160;</history-collected-on>
+                    <history-last-collected>Last:&#160;</history-last-collected>
+                  </resource>
+                </resources>
+              </xf:instance>
               <!-- Binds cannot ref cta-form-history-instance: These only seem to bind to the default data. -->
               <xf:bind id="&self;-control-mode-bind" name="&self;-current-mode"
                        ref="instance('cta-enhanced-control-mode')/current-mode"/>
@@ -406,7 +415,9 @@
               </xh:span>
               
               <xh:span class="cta-enhanced-control__history-wrapper">
-                <xh:span class="cta-enhanced-control__history-label">Last:&#160;</xh:span>
+                <xh:span class="cta-enhanced-control__history-label">
+                  <xf:output value="xxf:r('history-last-collected')"/>
+                </xh:span>
                 <xf:output value="NumberSupport:getDisplayAndEditValueJava(
                             xxf:evaluate($history-value-path),
                             fr:component-param-value('decimal-separator'),
@@ -416,7 +427,9 @@
                             string(fr:component-param-value('round-when-formatting')) = 'true',
                             string(fr:component-param-value('round-when-storing'))    = 'true'
                         )"/>
-                <xh:span class="cta-enhanced-control__history-label">, collected on:&#160;</xh:span>
+                <xh:span label="wah" class="cta-enhanced-control__history-label">
+                  <xf:output value="xxf:r('history-collected-on')"/>
+                </xh:span>
                 <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
               </xh:span>
             </xh:div>
