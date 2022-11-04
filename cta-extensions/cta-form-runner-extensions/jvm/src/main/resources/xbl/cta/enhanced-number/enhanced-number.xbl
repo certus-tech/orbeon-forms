@@ -300,7 +300,7 @@
                   </available-modes-not-unchanged>
                 </control>
               </xf:instance>
-              <xf:instance id="fr-form-resources" xxf:readonly="true">
+              <xf:instance id="cta-form-resources" xxf:readonly="true">
                 <resources>
                   <resource xml:lang="en">
                     <history-collected-on>, collected on:&#160;</history-collected-on>
@@ -416,7 +416,7 @@
               
               <xh:span class="cta-enhanced-control__history-wrapper">
                 <xh:span class="cta-enhanced-control__history-label">
-                  <xf:output value="xxf:r('history-last-collected')"/>
+                  <xf:output value="xxf:r('history-last-collected', 'cta-form-resources')"/>
                 </xh:span>
                 <xf:output value="NumberSupport:getDisplayAndEditValueJava(
                             xxf:evaluate($history-value-path),
@@ -428,7 +428,7 @@
                             string(fr:component-param-value('round-when-storing'))    = 'true'
                         )"/>
                 <xh:span class="cta-enhanced-control__history-label">
-                  <xf:output value="xxf:r('history-collected-on')"/>
+                  <xf:output value="xxf:r('history-collected-on', 'cta-form-resources')"/>
                 </xh:span>
                 <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
               </xh:span>

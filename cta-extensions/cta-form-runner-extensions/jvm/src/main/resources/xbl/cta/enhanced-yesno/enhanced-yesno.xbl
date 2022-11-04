@@ -191,7 +191,7 @@
                   </available-modes-not-unchanged>
                 </control>
               </xf:instance>
-              <xf:instance id="fr-form-resources" xxf:readonly="true">
+              <xf:instance id="cta-form-resources" xxf:readonly="true">
                 <resources>
                   <resource xml:lang="en">
                     <history-collected-on>Last collected on:&#160;</history-collected-on>
@@ -274,7 +274,7 @@
                 <xh:div class="cta-enhanced-select-layout__grid">
                   <xh:div class="cta-enhanced-select-layout__cell">
                     <xh:span class="cta-enhanced-control__history-wrapper">
-                      <xh:span class="cta-enhanced-control__history-label"><xf:output value="xxf:r('history-collected-on')"/>&#160;</xh:span>
+                      <xh:span class="cta-enhanced-control__history-label"><xf:output value="xxf:r('history-collected-on', 'cta-form-resources')"/>&#160;</xh:span>
                       <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
                     </xh:span>
                     <xf:select1 id="history-input" ref="xxf:evaluate($history-value-path)">
@@ -290,7 +290,7 @@
                     </xf:select1>
                   </xh:div>
                   <xh:div class="cta-enhanced-select-layout__cell">
-                    <xh:span class="cta-enhanced-control__cap"><xf:output value="xxf:r('history-just-changed')"/></xh:span>
+                    <xh:span class="cta-enhanced-control__cap"><xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/></xh:span>
                     <xf:switch id="&self;-view-switch">
                       <xf:case id="read-only">
                         <xf:select1 id="ro-input" bind="ro-binding"  class="cta-enhanced-control__ro-input">
