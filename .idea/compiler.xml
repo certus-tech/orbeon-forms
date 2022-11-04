@@ -67,6 +67,8 @@
       <module name="jvm-orbeon-war" target="1.6" />
       <module name="jvm-orbeon-xforms" target="1.6" />
       <module name="jvm.commonJVM" target="1.6" />
+      <module name="jvm.ctaFormBuilderExtensionJVM" target="1.6" />
+      <module name="jvm.ctaFormRunnerExtensionJVM" target="1.6" />
       <module name="jvm.formBuilderJVM" target="1.6" />
       <module name="jvm.formRunnerJVM" target="1.6" />
       <module name="jvm.orbeonWarJVM" target="1.6" />
@@ -106,6 +108,8 @@
       <module name="js.orbeonWarJS" options="-encoding utf8" />
       <module name="js.xformsJS" options="-encoding utf8" />
       <module name="jvm.commonJVM" options="-encoding utf8" />
+      <module name="jvm.ctaFormBuilderExtensionJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
+      <module name="jvm.ctaFormRunnerExtensionJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
       <module name="jvm.formBuilderJVM" options="-encoding utf8" />
       <module name="jvm.formRunnerJVM" options="-encoding utf8 -encoding utf8 -source 1.6 -target 1.6" />
       <module name="jvm.orbeonWarJVM" options="-encoding utf8" />

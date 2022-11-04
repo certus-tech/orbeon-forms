@@ -9,10 +9,7 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/commonJVM-build.iml" filepath="$PROJECT_DIR$/.idea/modules/commonJVM-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.iml" filepath="$PROJECT_DIR$/.idea/modules/core.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core-build.iml" filepath="$PROJECT_DIR$/.idea/modules/core-build.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cta-form-builder-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/cta-form-builder-extensions-sources.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/cta-form-runner-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/cta-form-runner-extensions-sources.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ctaFormBuilderExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/ctaFormBuilderExtensionJVM.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ctaFormRunnerExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/ctaFormRunnerExtensionJVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ctaExtensions.iml" filepath="$PROJECT_DIR$/.idea/modules/ctaExtensions.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dom.iml" filepath="$PROJECT_DIR$/.idea/modules/dom.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/dom-build.iml" filepath="$PROJECT_DIR$/.idea/modules/dom-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/embedding.iml" filepath="$PROJECT_DIR$/.idea/modules/embedding.iml" />
@@ -48,6 +45,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm-orbeon-war.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm-orbeon-war.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm-orbeon-xforms.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm-orbeon-xforms.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm.commonJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm.commonJVM.iml" group="orbeon-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm.ctaFormBuilderExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm.ctaFormBuilderExtensionJVM.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm.ctaFormRunnerExtensionJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm.ctaFormRunnerExtensionJVM.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm.formBuilderJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm.formBuilderJVM.iml" group="orbeon-form-builder" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm.formRunnerJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm.formRunnerJVM.iml" group="orbeon-form-runner" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jvm.orbeonWarJVM.iml" filepath="$PROJECT_DIR$/.idea/modules/jvm.orbeonWarJVM.iml" group="orbeon-war" />
@@ -71,6 +70,8 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/root.iml" filepath="$PROJECT_DIR$/.idea/modules/root.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/root-build.iml" filepath="$PROJECT_DIR$/.idea/modules/root-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.common-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.common-sources.iml" group="orbeon-common" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.cta-form-builder-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.cta-form-builder-extensions-sources.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.cta-form-runner-extensions-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.cta-form-runner-extensions-sources.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.form-builder-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.form-builder-sources.iml" group="orbeon-form-builder" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.form-runner-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.form-runner-sources.iml" group="orbeon-form-runner" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/shared.xforms-sources.iml" filepath="$PROJECT_DIR$/.idea/modules/shared.xforms-sources.iml" group="orbeon-xforms" />

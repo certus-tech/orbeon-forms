@@ -9,7 +9,7 @@
     <option name="deprecationWarnings" value="true" />
     <option name="uncheckedWarnings" value="true" />
     <option name="incrementalityType" value="SBT" />
-    <profile name="SBT 1" modules="orbeon-forms.root,root" />
+    <profile name="SBT 1" modules="ctaExtensions,orbeon-forms.root,root" />
     <profile name="SBT 2" modules="common,commonSharedJS">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
@@ -67,7 +67,7 @@
         <parameter value="utf8" />
       </parameters>
     </profile>
-    <profile name="SBT 6" modules="ctaExtensionJVM,ctaFormBuilderExtensionJVM,ctaFormRunnerExtensionJVM,formRunnerComponentsJVM,formRunnerJVM,jvm-orbeon-form-runner,jvm.formRunnerJVM">
+    <profile name="SBT 6" modules="ctaExtensionJVM,ctaFormBuilderExtensionJVM,ctaFormRunnerExtensionJVM,formRunnerComponentsJVM,formRunnerJVM,jvm-orbeon-form-runner,jvm.ctaFormBuilderExtensionJVM,jvm.ctaFormRunnerExtensionJVM,jvm.formRunnerJVM">
       <option name="postfixOps" value="true" />
       <option name="reflectiveCalls" value="true" />
       <option name="implicitConversions" value="true" />
