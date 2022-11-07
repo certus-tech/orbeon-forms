@@ -207,8 +207,8 @@
               <xf:instance id="cta-form-resources" xxf:readonly="true">
                 <resources>
                   <resource xml:lang="en">
-                    <history-collected-on>, collected on:&#160;</history-collected-on>
-                    <history-last-collected>Last:&#160;</history-last-collected>
+                    <history-not-collected>Not previously collected</history-not-collected>
+                    <history-collected-on>As collected on </history-collected-on>
                   </resource>
                 </resources>
               </xf:instance>
@@ -300,12 +300,16 @@
                   </xf:case>
                 </xf:switch>
               </xh:span>
-              
+
               <xh:span class="cta-enhanced-control__history-wrapper">
-                <xh:span class="cta-enhanced-control__history-label"><xf:output value="xxf:r('history-last-collected', 'cta-form-resources')"/></xh:span>
-                <xf:output ref="xxf:evaluate($history-value-path)"/>
-                <xh:span class="cta-enhanced-control__history-label"><xf:output value="xxf:r('history-collected-on', 'cta-form-resources')"/></xh:span>
-                <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]')"/>
+                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
+                <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
+                <xf:var name="history-set" value="exists($history-date)"/>
+                <xh:span class="cta-enhanced-control__history-label">
+                  <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
+                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]: ')"/>
+                  <xf:output value="if ($history-set) then $history-value else ''"/>
+                 </xh:span>
               </xh:span>
             </xh:div>
           </xf:group>
