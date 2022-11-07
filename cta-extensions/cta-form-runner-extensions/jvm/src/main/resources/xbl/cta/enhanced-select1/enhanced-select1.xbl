@@ -228,6 +228,7 @@
                        ref="instance('cta-enhanced-control-mode')/current-mode"/>
               
               <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
+              <xf:bind id="history-ro-binding" ref="xxf:evaluate($history-value-path)" readonly="true()"/>
               
               <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
               <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
@@ -304,7 +305,7 @@
                       </xh:span>
                       <xf:output ref="format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]: ')"/>
                     </xh:span>
-                    <xf:select1 id="history-input" ref="xxf:evaluate($history-value-path)">
+                    <xf:select1 id="history-input"  bind="history-ro-binding">
                       <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
                       <xf:itemset ref="$items">
                         <!-- omit setting the labels unless in dropdown mode. -->
