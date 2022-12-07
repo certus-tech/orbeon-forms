@@ -59,10 +59,6 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
     oxf:/xbl/orbeon/number/number.xbl
     oxf:/xbl/orbeon/currency/currency.xbl
     oxf:/forms/orbeon/builder/xbl/typed-email.xbl
-    <!--
-     oxf:/xbl/orbeon/us-phone/us-phone.xbl
-     oxf:/xbl/orbeon/us-state/us-state.xbl
-    -->
   </property>
 
   <property as="xs:string"  name="oxf.fb.toolbox.group.dateTime.uri.*.*">
@@ -124,6 +120,7 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
     oxf:/xbl/cta/enhanced-select1/enhanced-select1.xbl
     oxf:/xbl/cta/enhanced-text/enhanced-text.xbl
     oxf:/xbl/cta/enhanced-yesno/enhanced-yesno.xbl
+    oxf:/xbl/cta/enhanced-date/enhanced-date.xbl
     oxf:/xbl/cta/group-field-history/group-field-history.xbl
   </property>
 
