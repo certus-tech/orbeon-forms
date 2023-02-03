@@ -207,8 +207,48 @@
         Feature to set fields with ct-readonly attribute set to true to 
       -->
       <xf:bind ref="//*[@ct-readonly='true']" 
-               readonly="xxf:property('cta.readonly.attribute')"/> 
+               readonly="xxf:property('cta.readonly.attribute')"/>
+      <!--
+        Load prepopulation data when form is loaded, if enabled in the metadata instance & not running
+        in the form designer. You must replace the PLACEHOLDER URL on the submission below before enabling
+        prepopulation.
+      -->
+      <xf:action event="xforms-ready"
+                 if="(instance('fr-form-metadata')/ctao:use-prepopulation = true()) and not(fr:is-readonly-mode())
+                       and not(fr:is-design-time())">
+        <xf:setvalue ref="instance('cta-form-prepopulation-parameters')/app"
+                     value="fr:app-name()"/>
+        <xf:setvalue ref="instance('cta-form-prepopulation-parameters')/form"
+                     value="fr:form-name()"/>
+        <xf:setvalue ref="instance('cta-form-prepopulation-parameters')/documentid"
+                     value="fr:document-id()"/>
+        <xf:send submission="cta-prepopulation-submission"/>
+      </xf:action>
+      <xf:instance id="cta-form-prepopulation-instance" xxf:readonly="true" xxf:exclude-result-prefixes="#all">
+        <prepopulation/>
+      </xf:instance>
 
+      <xf:instance xxf:readonly="false" id="cta-form-prepopulation-parameters" xxf:exclude-result-prefixes="#all">
+        <prepopulation-parameters>
+          <app/>
+          <form/>
+          <documentid/>
+        </prepopulation-parameters>
+      </xf:instance>
+      <xf:submission id="cta-prepopulation-submission" method="get"
+                     action="PLACEHOLDER/b/WSFormPrepopulation.do"
+                     ref="instance('cta-form-prepopulation-parameters')"
+                     replace="instance"
+                     instance="cta-form-prepopulation-instance">
+        <xf:action event="xforms-submit-error">
+          <xf:message>Prepopulation load failed</xf:message>
+        </xf:action>
+      </xf:submission>
+
+      <!-- Set the entire form prepopulation instance to read-only. -->
+      <xf:bind id="cta-form-prepopulation-binds"
+               ref="instance('cta-form-prepopulation-instance')"
+               readonly="true()"/>
     </xf:model>
   </xh:head>
   <xh:body>
