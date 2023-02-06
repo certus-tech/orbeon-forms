@@ -68,82 +68,18 @@
 
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
-              <history-entry>last()</history-entry>
-              <history-mode>available-modes-all</history-mode>
-              <field-width/>
             </local>
           </xf:instance>
           <xf:instance id="fr-form-resources" xxf:readonly="true">
             <resources>
               <resource xml:lang="en">
-                <history-entry>History entry</history-entry>
-                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
-                <history-entry-first>First</history-entry-first>
-                <history-entry-last>Last</history-entry-last>
               </resource>
             </resources>
           </xf:instance>
         </xf:model>
-        <!-- Grid used to display the control settings within the Form Settings.-->
-        <fr:grid xmlns="" id="fb-editor-&self;-grid">
-          <xh:tr>
-            <xh:td colspan="6">
-              <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
-                <xf:label ref="xxf:r('history-entry')"/>
-                <xf:hint ref="xxf:r('history-entry-hint')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-entry-first')"/>
-                  <xf:value>1</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-entry-last')"/>
-                  <xf:value>last()</xf:value>
-                </xf:item>
-              </fr:open-select1>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="6">
-              <xf:select1 ref="instance('local')/field-width" appearance="full xxf:horizontal" id="field-width-control">
-                <xf:label ref="xxf:r('xbl-control-settings.field-width', '|fr-form-resources|')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('xbl-control-settings.default', '|fr-form-resources|')"/>
-                  <xf:value/>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('xbl-control-settings.full', '|fr-form-resources|')"/>
-                  <xf:value>full</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('xbl-control-settings.natural', '|fr-form-resources|')"/>
-                  <xf:value>natural</xf:value>
-                </xf:item>
-              </xf:select1>
-            </xh:td>
-          </xh:tr>
-        </fr:grid>
-        <!-- Update the control attribute corresponding to the observed fields below, on change. -->
-        <xf:action id="fb-editor-&self;-action" event="xforms-value-changed"
-            observer="history-entry-control
-                      history-mode-control
-                      field-width-control">
 
-            <xf:var name="name"      value="name(event('xxf:binding'))"/>
-            <xf:var name="new-value" value="string(event('xxf:binding'))"/>
-            <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
-            <xf:delete if="xxf:is-blank($new-value)" ref="instance()/@*[name() = $name]"/>
-        </xf:action>
-        <!-- END of content duped across all history view components -->
       </control-details>
     </metadata>
-
-    <xbl:handlers>
-      <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
-      <xbl:handler event="cta-click-to-edit" phase="target">
-        <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"/>
-        <xf:setfocus event="DOMActivate" control="html-input"/>
-      </xbl:handler>
-    </xbl:handlers>
 
     <xbl:resources>
       <xbl:style src="/xbl/orbeon/date/date.css"/>
@@ -202,7 +138,7 @@
               <xf:bind id="&self;-control-mode-bind" name="&self;-current-mode"
                        ref="instance('cta-prepopulation-control-mode')/current-mode"/>
 
-              <xf:bind id="ro-binding" ref="instance('cta-prepopulation-control-mode')/current-value" readonly="true()"/>
+              <xf:bind id="ro-binding" ref="xxf:evaluate($history-value-path)" readonly="true()"/>
 
               <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
               <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
@@ -269,11 +205,20 @@
               <xh:span class="cta-prepopulation-control__history-wrapper">
                 <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
                 <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
-                <xf:var name="history-set" value="exists($history-date)"/>
+                <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
+                <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
+                 </fr:date>
+              </xh:span>
+            </xh:div>
+            <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
+              <!-- Read-only value. -->
+              <xh:span class="cta-prepopulation-control__history-wrapper">
+                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
+                <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
+                <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
                 <xh:span class="cta-prepopulation-control__history-label">
                   <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]: ')"/>
-                  <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]') else ''"/>
+                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y] ')"/>
                  </xh:span>
               </xh:span>
             </xh:div>
