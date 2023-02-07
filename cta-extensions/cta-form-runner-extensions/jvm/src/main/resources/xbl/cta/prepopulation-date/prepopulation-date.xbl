@@ -206,18 +206,9 @@
                 <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
                 <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
                 <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
-                <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
-                 </fr:date>
-              </xh:span>
-            </xh:div>
-            <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
-              <!-- Read-only value. -->
-              <xh:span class="cta-prepopulation-control__history-wrapper">
-                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
-                <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
-                <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
                 <xh:span class="cta-prepopulation-control__history-label">
                   <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
+                  <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]: ') else ''"/>
                   <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y] ')"/>
                  </xh:span>
               </xh:span>
