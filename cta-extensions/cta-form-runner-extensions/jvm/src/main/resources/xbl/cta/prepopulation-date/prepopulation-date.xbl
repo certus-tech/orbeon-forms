@@ -1,9 +1,5 @@
 <!DOCTYPE xbl [
 <!ENTITY self "cta-prepopulation-date">
-<!-- names for the internal field states/modes -->
-<!ENTITY not-collected "1">
-<!ENTITY unchanged "2">
-<!ENTITY changed "3">
 <!-- value to set when an annotation on the instance data is 'on' -->
 <!ENTITY set "1">
 <!-- Orbeon uses this to separate components in IDs. \u2261 IDENTICAL TO. -->
@@ -50,8 +46,7 @@
       </icon>
       <templates>
         <view>
-          <cta:prepopulation-date history-entry="last()" history-mode="available-modes-all"
-                             prefix="" suffix="" field-width="">
+          <cta:prepopulation-date prefix="" suffix="" field-width="">
             <xf:label  ref=""/>
             <xf:hint   ref=""/>
             <xf:help   ref=""/>
@@ -65,19 +60,7 @@
             <xf:var name="c" value="."/>
             <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
           </xf:action>
-
-          <xf:instance id="local" xxf:exclude-result-prefixes="#all">
-            <local>
-            </local>
-          </xf:instance>
-          <xf:instance id="fr-form-resources" xxf:readonly="true">
-            <resources>
-              <resource xml:lang="en">
-              </resource>
-            </resources>
-          </xf:instance>
         </xf:model>
-
       </control-details>
     </metadata>
 
@@ -86,21 +69,21 @@
       <xbl:style src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/css/bootstrap-datepicker.css"/>
     </xbl:resources>
 
-    <xbl:template xxbl:transform="oxf:xslt">
-      <xsl:transform version="2.0">
-        <xsl:template match="/*">
+    <xbl:template>
+      <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
+      <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
+      <xf:var name="prepopulation-value-path" value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/', $model-path)"/>
+      <xf:var name="prepopulation-date-path" value="xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/@date"/>
+      <xf:var name="history-date" value="$prepopulation-date-path"/>
+      <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
+      <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
+      <xf:var name="binding" value="xxf:binding('cta-prepopulation-date')"/>
+
+      <xf:var name="view" value="xxf:is-control-readonly('cta-prepopulation-date')"/>
           <xf:group id="&self;-group">
             <xf:model id="&self;-model">
               <!-- TODO Potentially common model -->
-              <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
-              <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
-              <xf:var name="history-mode" value="fr:component-param-value('history-mode')"/>
-              <xf:var name="model-path"
-                      value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-              <xf:var name="history-value-path"
-                      value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[', $history-entry, ']/', $model-path)"/>
-              <xf:var name="history-date-path"
-                      value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[', $history-entry, ']/@date')"/>
+
               <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
               <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
               <xf:var name="items"
@@ -120,12 +103,6 @@
                       return
                           $translated
                   "/>
-              <xf:instance id="cta-prepopulation-control-mode">
-                <control>
-                  <current-mode/>
-                  <current-value/>
-                </control>
-              </xf:instance>
               <xf:instance id="cta-form-resources" xxf:readonly="true">
                 <resources>
                   <resource xml:lang="en">
@@ -134,88 +111,28 @@
                   </resource>
                 </resources>
               </xf:instance>
-              <!-- Binds cannot ref cta-form-history-instance: These only seem to bind to the default data. -->
-              <xf:bind id="&self;-control-mode-bind" name="&self;-current-mode"
-                       ref="instance('cta-prepopulation-control-mode')/current-mode"/>
-
-              <xf:bind id="ro-binding" ref="xxf:evaluate($history-value-path)" readonly="true()"/>
-
-              <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
-              <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
-                <xf:setvalue ref="instance('cta-prepopulation-control-mode')/current-value" value="event('xxf:value')"/>
-              </xf:action>
-
-              <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
-                         fr:keep-if-design-time="false">
-                <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
-                <!-- Clear the field value. -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="()"/>
-                <!-- Remove existing annotations. -->
-                <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
-                <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
-                <!-- Add annotations for notcollected/unchanged if appropriate. -->
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
-                <!-- Toggle the UI case RO/RW. -->
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-              </xf:action>
 
               <!-- Initialise the internal model and bootstrap the form model if needed. -->
               <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-                <!-- Copy in the current value, if any. -->
-                <xf:setvalue ref="instance('cta-prepopulation-control-mode')/current-value" value="xxf:binding('&self;')"/>
-
-                <!-- Set the internal mode to match the state of the data. -->
-                <xf:setvalue bind="&self;-control-mode-bind"
-                             value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
-                                    else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
-                                    else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
-                                    else &changed;"/>
-
-                <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
+                    <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
                 <xf:insert context="xxf:binding('&self;')"
                            origin="xxf:attribute('notcollected', &set;)"
                            if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged))
                                and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
-              </xf:action>
-
-              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the
-              container for the read-only field. This fires an event back to the component side. -->
-              <xf:action type="javascript" ev:event="xforms-model-construct-done">
-                <xf:param name="clientId" value="xxf:client-id('&self;')"/>
-                <xf:param name="compsep" value="'&compsep;'"/>
-                <xf:body>
-                  ORBEON.jQuery(`#${clientId}${compsep}ro-input`).on('click', function() {
-                  ORBEON.xforms.Document.dispatchEvent(clientId, "cta-click-to-edit");
-                  });
-                </xf:body>
-              </xf:action>
-
-              <!--
-              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because
-              setting the mode control does not in turn fire the
-              -->
-              <xf:action ev:event="xforms-ready">
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
               </xf:action>
             </xf:model>
 
             <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
               <!-- Read-only value. -->
               <xh:span class="cta-prepopulation-control__history-wrapper">
-                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
-                <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
-                <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
                 <xh:span class="cta-prepopulation-control__history-label">
                   <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                  <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]: ') else ''"/>
-                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y] ')"/>
+                  <xf:output ref="format-dateTime(xs:dateTime($prepopulation-date-path), '[D,2]/[M,2]/[Y]: ')"/>
+                  <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]') else ''"/>
                  </xh:span>
               </xh:span>
             </xh:div>
           </xf:group>
-        </xsl:template>
-      </xsl:transform>
     </xbl:template>
   </xbl:binding>
 </xbl:xbl>
