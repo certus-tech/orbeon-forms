@@ -117,7 +117,7 @@
             </resources>
           </xf:instance>
 
-          <xf:action ev:event="xforms-value-changed" ev:observer="xxf:instance('cta-form-prepopulation-instance')">
+          <xf:action ev:event="xforms-value-changed" ev:observer="cta-form-prepopulation-instance">
             <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
             <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="$history-value"/>
           </xf:action>
