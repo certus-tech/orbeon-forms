@@ -36,7 +36,7 @@
     id="&self;"
     element="cta|prepopulation-date"
     xxbl:mode="lhha binding value focus external-value"
-    xxf:external-events="cta-click-to-edit"
+    xxf:external-events="cta-set-formprepopulation"
     >
 
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
@@ -69,7 +69,9 @@
       <xbl:style src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/css/bootstrap-datepicker.css"/>
     </xbl:resources>
 
-    <xbl:template>
+    <xbl:template xxbl:transform="oxf:xslt">
+      <xsl:transform version="2.0">
+        <xsl:template match="/*">
       <xf:group id="&self;-group">
         <xf:model id="&self;-model">
           <!-- TODO Potentially common model -->
@@ -121,6 +123,10 @@
             <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
             <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="$history-value"/>
           </xf:action>
+          <xf:action ev:event="cta-set-formprepopulation" ev:observer="cta-form-prepopulation-instance">
+            <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
+            <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="$history-value"/>
+          </xf:action>
           <xf:action ev:event="xforms-model-construct-done">
             <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
             <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="$history-value"/>
@@ -138,6 +144,8 @@
           </xh:span>
         </xh:div>
       </xf:group>
+        </xsl:template>
+      </xsl:transform>
     </xbl:template>
   </xbl:binding>
 </xbl:xbl>

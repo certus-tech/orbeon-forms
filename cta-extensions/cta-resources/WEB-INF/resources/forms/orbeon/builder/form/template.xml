@@ -12,24 +12,24 @@
   The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
 -->
 <xh:html
-  xmlns:xh="http://www.w3.org/1999/xhtml"
-  xmlns:xf="http://www.w3.org/2002/xforms"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:ev="http://www.w3.org/2001/xml-events"
-  xmlns:xi="http://www.w3.org/2001/XInclude"
-  xmlns:xxi="http://orbeon.org/oxf/xml/xinclude"
-  xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
-  xmlns:map="http://www.w3.org/2005/xpath-functions/map"
-  xmlns:array="http://www.w3.org/2005/xpath-functions/array"
-  xmlns:exf="http://www.exforms.org/exf/1-0"
-  xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
-  xmlns:saxon="http://saxon.sf.net/"
-  xmlns:sql="http://orbeon.org/oxf/xml/sql"
-  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-  xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
-  xmlns:cta="http://www.certus-tech.com/xbl"
-  xmlns:ctao="http://www.certus-tech.com/orbeon">
+        xmlns:xh="http://www.w3.org/1999/xhtml"
+        xmlns:xf="http://www.w3.org/2002/xforms"
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+        xmlns:xxi="http://orbeon.org/oxf/xml/xinclude"
+        xmlns:xxf="http://orbeon.org/oxf/xml/xforms"
+        xmlns:map="http://www.w3.org/2005/xpath-functions/map"
+        xmlns:array="http://www.w3.org/2005/xpath-functions/array"
+        xmlns:exf="http://www.exforms.org/exf/1-0"
+        xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
+        xmlns:saxon="http://saxon.sf.net/"
+        xmlns:sql="http://orbeon.org/oxf/xml/sql"
+        xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
+        xmlns:cta="http://www.certus-tech.com/xbl"
+        xmlns:ctao="http://www.certus-tech.com/orbeon">
   <xh:head>
     <xh:title/>
     <xf:model id="fr-form-model" xxf:expose-xpath-types="true" xxf:analysis.calculate="true">
@@ -89,25 +89,25 @@
         <!-- 
           Add form information
         -->
-        <xf:setvalue ref="instance('cta-form-context-parameters')/app" 
-                     value="fr:app-name()"/> 
-        <xf:setvalue ref="instance('cta-form-context-parameters')/form" 
-                     value="fr:form-name()"/> 
+        <xf:setvalue ref="instance('cta-form-context-parameters')/app"
+                     value="fr:app-name()"/>
+        <xf:setvalue ref="instance('cta-form-context-parameters')/form"
+                     value="fr:form-name()"/>
         <xf:setvalue ref="instance('cta-form-context-parameters')/documentid"
-                     value="fr:document-id()"/> 
+                     value="fr:document-id()"/>
 
         <!-- 
           Add context from query strings 
         -->
         <xf:setvalue ref="xxf:instance('cta-form-context-parameters')/principal"
-                     value="xxf:get-request-parameter('ct-principal')"/> 
+                     value="xxf:get-request-parameter('ct-principal')"/>
         <xf:setvalue ref="instance('cta-form-context-parameters')/objectId"
-                     value="xxf:get-request-parameter('ct-objectId')"/> 
+                     value="xxf:get-request-parameter('ct-objectId')"/>
         <xf:setvalue ref="instance('cta-form-context-parameters')/objectType"
                      value="xxf:get-request-parameter('ct-objectType')"/>
         <xf:setvalue ref="instance('cta-form-context-parameters')/service"
                      value="xxf:get-request-parameter('ct-service')"/>
-        
+
         <!-- 
           Pre-populate the form
         -->
@@ -119,7 +119,7 @@
         -->
         <xf:send  if="(instance('fr-form-metadata')/ctao:use-history = true()) and not(fr:is-readonly-mode()) 
                   and not(fr:is-design-time())" submission="cta-form-history-submission"/>
-        
+
         <!-- 
           Add as attributes to the form instance
         -->
@@ -202,11 +202,11 @@
       <xf:bind id="cta-form-history-binds"
                ref="instance('cta-form-history-instance')"
                readonly="true()"/>
-      
+
       <!--
         Feature to set fields with ct-readonly attribute set to true to 
       -->
-      <xf:bind ref="//*[@ct-readonly='true']" 
+      <xf:bind ref="//*[@ct-readonly='true']"
                readonly="xxf:property('cta.readonly.attribute')"/>
       <!--
         Load prepopulation data when form is loaded, if enabled in the metadata instance & not running
@@ -240,6 +240,10 @@
                      ref="instance('cta-form-prepopulation-parameters')"
                      replace="instance"
                      instance="cta-form-prepopulation-instance">
+        <xf:dispatch
+                ev:event="cta-set-formprepopulation"
+                name="cta-set-formprepopulation" targetid="cta-form-prepopulation-instance">
+        </xf:dispatch>
         <xf:action event="xforms-submit-error">
           <xf:message>Prepopulation load failed</xf:message>
         </xf:action>
