@@ -70,27 +70,25 @@
     </xbl:resources>
 
     <xbl:template>
-      <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
-      <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-      <xf:var name="prepopulation-value-path" value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/', $model-path)"/>
-      <xf:var name="prepopulation-date-path" value="xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/@date"/>
-      <xf:var name="history-date" value="$prepopulation-date-path"/>
-      <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
-      <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
-      <xf:var name="binding" value="xxf:binding('cta-prepopulation-date')"/>
+      <xf:group id="&self;-group">
+        <xf:model id="&self;-model">
+          <!-- TODO Potentially common model -->
+          <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
+          <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
+          <xf:var name="prepopulation-value-path" value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/', $model-path)"/>
+          <xf:var name="prepopulation-date-path" value="xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/@date"/>
+          <xf:var name="history-date" value="$prepopulation-date-path"/>
+          <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
+          <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
+          <xf:var name="binding" value="xxf:binding('cta-prepopulation-date')"/>
+          <xf:var name="view" value="xxf:is-control-readonly('cta-prepopulation-date')"/>
 
-      <xf:var name="view" value="xxf:is-control-readonly('cta-prepopulation-date')"/>
-          <xf:group id="&self;-group">
-            <xf:model id="&self;-model">
-              <!-- TODO Potentially common model -->
-
-              <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
-              <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
-              <xf:var name="items"
-                      value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
-              <!-- Create placeholder from Orbeon Forms input format
-                   https://doc.orbeon.com/configuration/properties/xforms#for-xf-input -->
-              <xf:var name="placeholder" value="
+          <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
+          <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
+          <xf:var name="items" value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
+          <!-- Create placeholder from Orbeon Forms input format
+          https://doc.orbeon.com/configuration/properties/xforms#for-xf-input -->
+          <xf:var name="placeholder" value="
                       let $format      := xxf:property('oxf.xforms.format.input.date'),
                           $cleaned     := translate($format, '[01]', ''),
                           $duplicate   := replace(replace(replace($cleaned,
@@ -103,36 +101,38 @@
                       return
                           $translated
                   "/>
-              <xf:instance id="cta-form-resources" xxf:readonly="true">
-                <resources>
-                  <resource xml:lang="en">
-                    <history-not-collected>Not previously collected</history-not-collected>
-                    <history-collected-on>As collected on </history-collected-on>
-                  </resource>
-                </resources>
-              </xf:instance>
+          <xf:bind id="ro-binding" ref="$history-value" readonly="true()"/>
+          <xf:instance id="cta-form-resources" xxf:readonly="true">
+            <resources>
+              <resource xml:lang="en">
+                <history-not-collected>Not previously collected</history-not-collected>
+                <history-collected-on>As collected on </history-collected-on>
+              </resource>
+            </resources>
+          </xf:instance>
 
-              <!-- Initialise the internal model and bootstrap the form model if needed. -->
-              <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-                    <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
-                <xf:insert context="xxf:binding('&self;')"
+          <!-- Initialise the internal model and bootstrap the form model if needed. -->
+          <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
+          <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
+            <xf:insert context="xxf:binding('&self;')"
                            origin="xxf:attribute('notcollected', &set;)"
                            if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged))
                                and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
-              </xf:action>
-            </xf:model>
+          </xf:action>
+        </xf:model>
 
-            <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
-              <!-- Read-only value. -->
-              <xh:span class="cta-prepopulation-control__history-wrapper">
-                <xh:span class="cta-prepopulation-control__history-label">
-                  <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                  <xf:output ref="format-dateTime(xs:dateTime($prepopulation-date-path), '[D,2]/[M,2]/[Y]: ')"/>
-                  <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]') else ''"/>
-                 </xh:span>
-              </xh:span>
-            </xh:div>
-          </xf:group>
+        <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
+          <!-- Read-only value. -->
+          <xh:span class="cta-prepopulation-control__history-wrapper">
+            <xh:span class="cta-prepopulation-control__history-label">
+              <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
+              <xf:output ref="format-dateTime(xs:dateTime($prepopulation-date-path), '[D,2]/[M,2]/[Y]: ')"/>
+              <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]') else ''"/>
+              <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input"/>
+            </xh:span>
+          </xh:span>
+        </xh:div>
+      </xf:group>
     </xbl:template>
   </xbl:binding>
 </xbl:xbl>
