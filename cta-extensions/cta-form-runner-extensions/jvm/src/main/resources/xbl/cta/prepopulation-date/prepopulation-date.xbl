@@ -101,7 +101,13 @@
                       return
                           $translated
                   "/>
-          <xf:bind id="ro-binding" ref="$history-value" readonly="true()"/>
+          <xf:instance id="cta-enhanced-control-mode">
+            <control>
+              <current-value/>
+            </control>
+          </xf:instance>
+
+          <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
           <xf:instance id="cta-form-resources" xxf:readonly="true">
             <resources>
               <resource xml:lang="en">
@@ -111,13 +117,8 @@
             </resources>
           </xf:instance>
 
-          <!-- Initialise the internal model and bootstrap the form model if needed. -->
-          <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-          <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
-            <xf:insert context="xxf:binding('&self;')"
-                           origin="xxf:attribute('notcollected', &set;)"
-                           if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged))
-                               and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
+          <xf:action ev:event="xforms-model-construct-done" >
+            <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="$history-value"/>
           </xf:action>
         </xf:model>
 
