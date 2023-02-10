@@ -54,6 +54,7 @@
       <xf:instance id="fr-form-metadata" xxf:readonly="true" xxf:exclude-result-prefixes="#all">
         <metadata>
           <ctao:use-history>false</ctao:use-history>
+          <ctao:use-prepopulation>false</ctao:use-prepopulation>
           <application-name/>
           <form-name/>
           <title xml:lang=""/>
@@ -86,7 +87,7 @@
         Populate the cta-form-context-parameters.
       -->
       <xf:action event="xforms-ready">
-        <!--
+        <!-- 
           Add form information
         -->
         <xf:setvalue ref="instance('cta-form-context-parameters')/app"
@@ -96,8 +97,8 @@
         <xf:setvalue ref="instance('cta-form-context-parameters')/documentid"
                      value="fr:document-id()"/>
 
-        <!--
-          Add context from query strings
+        <!-- 
+          Add context from query strings 
         -->
         <xf:setvalue ref="xxf:instance('cta-form-context-parameters')/principal"
                      value="xxf:get-request-parameter('ct-principal')"/>
@@ -108,7 +109,7 @@
         <xf:setvalue ref="instance('cta-form-context-parameters')/service"
                      value="xxf:get-request-parameter('ct-service')"/>
 
-        <!--
+        <!-- 
           Pre-populate the form
         -->
         <xf:send  if="(xxf:property('cta.prepopulation') = true())" submission="cta-form-prepopulation-submission"/>
@@ -117,10 +118,10 @@
           Load history data when form is loaded, if enabled in the metadata instance & not readonly or running
           in the form designer. You must replace the PLACEHOLDER URL on the submission below before enabling history.
         -->
-        <xf:send  if="(instance('fr-form-metadata')/ctao:use-history = true()) and not(fr:is-readonly-mode())
+        <xf:send  if="(instance('fr-form-metadata')/ctao:use-history = true()) and not(fr:is-readonly-mode()) 
                   and not(fr:is-design-time())" submission="cta-form-history-submission"/>
 
-        <!--
+        <!-- 
           Add as attributes to the form instance
         -->
         <xf:insert context="instance('fr-form-instance')"
@@ -150,15 +151,15 @@
       </xf:action>
 
 
-      <!--
+      <!-- 
         Contains side-loaded history
       -->
       <xf:instance id="cta-form-history-instance" xxf:readonly="true" xxf:exclude-result-prefixes="#all">
         <history/>
       </xf:instance>
 
-      <!--
-        Populated with details of the form and submitted in order to side-load the history instance
+      <!-- 
+        Populated with details of the form and submitted in order to side-load the history instance 
       -->
       <xf:instance xxf:readonly="false" id="cta-form-context-parameters" xxf:exclude-result-prefixes="#all">
         <history-parameters>
@@ -172,7 +173,7 @@
         </history-parameters>
       </xf:instance>
 
-      <!--
+      <!-- 
         Calls the pre-population endpoint to pre-populate the form.
       -->
       <xf:submission id="cta-form-prepopulation-submission" method="get"
@@ -185,7 +186,7 @@
         </xf:action>
       </xf:submission>
 
-      <!--
+      <!-- 
         Side-loads the history instance. You must replace the PLACEHOLDER URL below before enabling history.
       -->
       <xf:submission id="cta-form-history-submission" method="get"
@@ -204,7 +205,7 @@
                readonly="true()"/>
 
       <!--
-        Feature to set fields with ct-readonly attribute set to true to
+        Feature to set fields with ct-readonly attribute set to true to 
       -->
       <xf:bind ref="//*[@ct-readonly='true']"
                readonly="xxf:property('cta.readonly.attribute')"/>
