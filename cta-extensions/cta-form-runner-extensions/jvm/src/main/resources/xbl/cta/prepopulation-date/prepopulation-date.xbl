@@ -117,22 +117,6 @@
             </resources>
           </xf:instance>
 
-          <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-          <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
-                    <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
-                    <xf:var name="prepopulation-value-path" value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/', $model-path)"/>
-                    <xf:var name="prepopulation-date-path" value="xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/@date"/>
-                    <xf:var name="history-date" value="$prepopulation-date-path"/>
-                    <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
-            <xf:message>value changed<xf:output value="$history-value"/></xf:message>
-             <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
-          </xf:action>
-          <xf:action ev:event="xforms-model-construct-done">
-          <xf:message>Construct done</xf:message>
-            <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
-            <xf:message>value changed<xf:output value="$history-value"/></xf:message>
-            <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="$history-value"/>
-          </xf:action>
         </xf:model>
         <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
           <!-- Read-only value. -->
