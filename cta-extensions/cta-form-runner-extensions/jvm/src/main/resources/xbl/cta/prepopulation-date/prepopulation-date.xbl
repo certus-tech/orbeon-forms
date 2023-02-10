@@ -60,7 +60,43 @@
             <xf:var name="c" value="."/>
             <xf:setvalue ref="$c" value="instance()/@*[name() = name($c)]"/>
           </xf:action>
+          <xf:instance id="local" xxf:exclude-result-prefixes="#all">
+            <local>
+              <field-width/>
+            </local>
+          </xf:instance>
         </xf:model>
+                <fr:grid xmlns="" id="fb-editor-&self;-grid">
+                    <xh:tr>
+                        <xh:td colspan="6">
+                            <xf:select1 ref="instance('local')/field-width" appearance="full xxf:horizontal" id="field-width-control">
+                                <xf:label ref="xxf:r('xbl-control-settings.field-width', '|fr-form-resources|')"/>
+                                <xf:item>
+                                    <xf:label ref="xxf:r('xbl-control-settings.default', '|fr-form-resources|')"/>
+                                    <xf:value/>
+                                </xf:item>
+                                <xf:item>
+                                    <xf:label ref="xxf:r('xbl-control-settings.full', '|fr-form-resources|')"/>
+                                    <xf:value>full</xf:value>
+                                </xf:item>
+                                <xf:item>
+                                    <xf:label ref="xxf:r('xbl-control-settings.natural', '|fr-form-resources|')"/>
+                                    <xf:value>natural</xf:value>
+                                </xf:item>
+                            </xf:select1>
+                        </xh:td>
+                    </xh:tr>
+                </fr:grid>
+        <!-- Update the control attribute corresponding to the observed fields below, on change. -->
+        <xf:action
+          id="fb-editor-&self;-action"
+          event="xforms-value-changed"
+          observer="field-width-control">
+          <xf:var name="name" value="name(event('xxf:binding'))"/>
+          <xf:var name="new-value" value="string(event('xxf:binding'))"/>
+          <xf:insert context="instance()" if="xxf:non-blank($new-value)" origin="xf:attribute($name, $new-value)"/>
+          <xf:delete if="xxf:is-blank($new-value)" ref="instance()/@*[name() = $name]"/>
+        </xf:action>
       </control-details>
     </metadata>
 
@@ -69,9 +105,8 @@
       <xbl:style src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/css/bootstrap-datepicker.css"/>
     </xbl:resources>
 
-    <xbl:template xxbl:transform="oxf:xslt">
-      <xsl:transform version="2.0">
-        <xsl:template match="/*">
+    <xbl:template>
+          <xf:var name="field-width" value="fr:component-param-value('field-width')"/>
       <xf:group id="&self;-group">
         <xf:model id="&self;-model">
           <!-- TODO Potentially common model -->
@@ -81,9 +116,10 @@
           <xf:var name="prepopulation-date-path" value="xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/@date"/>
           <xf:var name="history-date" value="$prepopulation-date-path"/>
           <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
-          <xf:var name="history-set" value="exists($history-date) and exists($history-value)"/>
+          <xf:var name="history-set" value="exists($history-date) and $history-value != ''"/>
           <xf:var name="binding" value="xxf:binding('cta-prepopulation-date')"/>
           <xf:var name="view" value="xxf:is-control-readonly('cta-prepopulation-date')"/>
+          <xf:var name="calendarClass" value="if ($history-set) then 'add-on' else 'xforms-hidden'"/>
 
           <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
           <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
@@ -118,21 +154,26 @@
           </xf:instance>
 
         </xf:model>
-        <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
+        <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline xbl-fr-date">
           <!-- Read-only value. -->
           <xh:span class="cta-prepopulation-control__history-wrapper">
             <xh:span class="cta-prepopulation-control__history-label">
-              <xf:input class="cta-enhanced-control__ro-input" ref="xs:date($history-value)" readonly="true()"
-              xxf:format="format-date(xs:date($history-value), xxf:property('oxf.xforms.format.input.date'),
-                                      fr:lang(),(), ())"/>
-              <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-              <xf:output ref="format-dateTime(xs:dateTime($prepopulation-date-path), '[D,2]/[M,2]/[Y]')"/>
+              <xh:div class="input-append date fr-field-width-{$field-width}">
+                <xf:input type="text"
+                placeholder="{$placeholder}"
+                class="cta-enhanced-control__ro-input"
+                ref="format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]')"
+                readonly="true()"/>
+                <xh:span class="{$calendarClass}">
+                                        <xh:i class="fa fa-fw fa-calendar"/>
+                </xh:span>
+              </xh:div>
+            <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
+            <xf:output if="$history-set" ref="if ($history-set) then format-dateTime(xs:dateTime($prepopulation-date-path), '[D,2]/[M,2]/[Y]') else ''"/>
             </xh:span>
           </xh:span>
         </xh:div>
       </xf:group>
-        </xsl:template>
-      </xsl:transform>
     </xbl:template>
   </xbl:binding>
 </xbl:xbl>
