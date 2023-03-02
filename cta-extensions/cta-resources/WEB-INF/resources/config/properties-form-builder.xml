@@ -123,6 +123,7 @@ The full text of the license is available at http://www.gnu.org/copyleft/lesser.
     oxf:/xbl/cta/enhanced-date/enhanced-date.xbl
     oxf:/xbl/cta/group-field-history/group-field-history.xbl
     oxf:/xbl/cta/prepopulation-date/prepopulation-date.xbl
+    oxf:/xbl/cta/prepopulation-number/prepopulation-number.xbl
   </property>
 
 
