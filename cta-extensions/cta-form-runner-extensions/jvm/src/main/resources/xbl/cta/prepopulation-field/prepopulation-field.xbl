@@ -1,10 +1,14 @@
 <!DOCTYPE xbl [
-<!ENTITY self "cta-prepopulation-number">
+<!ENTITY self "cta-prepopulation-field">
 <!-- value to set when an annotation on the instance data is 'on' -->
 <!ENTITY set "1">
 <!-- Orbeon uses this to separate components in IDs. \u2261 IDENTICAL TO. -->
 <!ENTITY compsep "&#8801;">
 ]>
+<!--
+ A pre-population field for all types of fields. This pulls data from a source form/field and populates a read-only
+ input field.
+-->
 <xbl:xbl xmlns:xh="http://www.w3.org/1999/xhtml"
          xmlns:xf="http://www.w3.org/2002/xforms"
          xmlns:xs="http://www.w3.org/2001/XMLSchema"
@@ -21,24 +25,24 @@
 
   <xbl:binding
     id="&self;"
-    element="cta|prepopulation-number"
+    element="cta|prepopulation-field"
     xxbl:mode="lhha binding value focus external-value"
     xxf:external-events="cta-set-formprepopulation"
     >
 
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
-      <display-name lang="en">Pre-population Number</display-name>
+      <display-name lang="en">Pre-population Field</display-name>
       <icon>
-        <icon-class>fa fa-fw fa-calendar</icon-class>
+        <icon-class>fa fa-fw fa-history</icon-class>
       </icon>
       <templates>
         <view>
-          <cta:prepopulation-number prefix="" suffix="" field-width="">
+          <cta:prepopulation-field prefix="" suffix="" field-width="">
             <xf:label  ref=""/>
             <xf:hint   ref=""/>
             <xf:help   ref=""/>
             <xf:alert  ref=""/>
-          </cta:prepopulation-number>
+          </cta:prepopulation-field>
         </view>
       </templates>
       <control-details>
@@ -99,8 +103,8 @@
           <xf:var name="history-date" value="$prepopulation-date-path"/>
           <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
           <xf:var name="history-set" value="exists($history-date) and $history-value != ''"/>
-          <xf:var name="binding" value="xxf:binding('cta-prepopulation-number')"/>
-          <xf:var name="view" value="xxf:is-control-readonly('cta-prepopulation-number')"/>
+          <xf:var name="binding" value="xxf:binding('cta-prepopulation-field')"/>
+          <xf:var name="view" value="xxf:is-control-readonly('cta-prepopulation-field')"/>
 
           <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
           <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
@@ -135,11 +139,11 @@
           </xf:instance>
 
         </xf:model>
-        <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline xbl-fr-number">
+        <xh:div class="cta-prepopulation-control__wrapper cta-prepopulation-control__wrapper--inline">
           <!-- Read-only value. -->
           <xh:span class="cta-prepopulation-control__history-wrapper">
             <xh:span class="cta-prepopulation-control__history-label">
-              <xh:div class="input-append number fr-field-width-{$field-width}">
+              <xh:div class="input-append fr-field-width-{$field-width}">
                 <xf:input type="text"
                 placeholder="{$placeholder}"
                 ref="$history-value"
