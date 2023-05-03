@@ -95,12 +95,14 @@
       <xf:var name="field-width" value="fr:component-param-value('field-width')"/>
       <xf:group id="&self;-group">
         <xf:model id="&self;-model">
-          <!-- TODO Potentially common model -->
           <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
           <xf:var name="model-path" value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
           <xf:var name="prepopulation-value-path" value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/', $model-path)"/>
-          <xf:var name="prepopulation-date-path" value="xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/@date"/>
-          <xf:var name="history-date" value="$prepopulation-date-path"/>
+          <!-- The prepopulation date is expected to be on the field as an attribute @date.-->
+          <xf:var name="model-date-path" value="concat(string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/'), '/@date')"/>
+          <xf:var name="prepopulation-date-path" value="concat('xxf:instance(&#34;cta-form-prepopulation-instance&#34;)/form[last()]/', $model-date-path)"/>
+
+          <xf:var name="history-date" value="xxf:evaluate($prepopulation-date-path)"/>
           <xf:var name="history-value" value="xxf:evaluate($prepopulation-value-path)"/>
           <xf:var name="history-set" value="exists($history-date) and $history-value != ''"/>
           <xf:var name="binding" value="xxf:binding('cta-prepopulation-field')"/>
@@ -151,7 +153,7 @@
                 readonly="true()"/>
               </xh:div>
             <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-            <xf:output if="$history-set" ref="if ($history-set) then format-dateTime(xs:dateTime($prepopulation-date-path), '[D,2]/[M,2]/[Y]') else ''"/>
+            <xf:output if="$history-set" ref="if ($history-set) then format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]') else ''"/>
             </xh:span>
           </xh:span>
         </xh:div>
