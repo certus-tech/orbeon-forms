@@ -1,4 +1,4 @@
-<!DOCTYPE xbl [ 
+<!DOCTYPE xbl [
 <!ENTITY self "cta-enhanced-yesno">
 <!-- names for the internal field states/modes -->
 <!ENTITY not-collected "1">
@@ -51,7 +51,7 @@
     <xi:include
       xmlns:fb="http://orbeon.org/oxf/xml/form-builder"
       href="/xbl/orbeon/number/number.xbl"
-      xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->            
+      xpointer="xpath(/xbl:xbl/xbl:binding/fb:metadata/fb:control-details)"/>-->
       <control-details>
         <xf:model xmlns="" id="fb-&self;-model">
           <xf:action event="xforms-model-construct-done" iterate="instance('local')/*">
@@ -81,7 +81,7 @@
             </resources>
           </xf:instance>
         </xf:model>
-    
+
         <fr:grid xmlns="" id="fb-editor-&self;-grid">
           <xh:tr>
             <xh:td colspan="6">
@@ -132,11 +132,10 @@
     <xbl:resources>
       <xbl:style src="/xbl/cta/enhanced-fields/enhanced-fields.css"/>
     </xbl:resources>
-    
+
     <xbl:handlers>
       <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
       <xbl:handler event="cta-click-to-edit" phase="target">
-        <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"/>
         <xf:setfocus event="DOMActivate" control="html-input"/>
       </xbl:handler>
     </xbl:handlers>
@@ -160,34 +159,34 @@
               <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
               <xf:var name="items"
                       value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
-              
+
               <xf:instance id="cta-enhanced-control-mode">
                 <control>
                   <current-mode/>
                   <current-value/>
                   <available-modes-all>
                     <mode>
-                      <label>Not collected</label>
-                      <value>&not-collected;</value>
+                      <label>Changed</label>
+                      <value>&changed;</value>
                     </mode>
                     <mode>
                       <label>Unchanged</label>
                       <value>&unchanged;</value>
                     </mode>
                     <mode>
-                      <label>Changed</label>
-                      <value>&changed;</value>
+                      <label>Not collected</label>
+                      <value>&not-collected;</value>
                     </mode>
                   </available-modes-all>
                   <available-modes-not-unchanged>
                     <mode>
-                      <label>Not collected</label>
-                      <value>&not-collected;</value>
-                    </mode>
-                    <mode>
                       <label>Changed</label>
                       <value>&changed;</value>
                     </mode>
+                    <mode>
+                  <label>Not collected</label>
+                  <value>&not-collected;</value>
+                </mode>
                   </available-modes-not-unchanged>
                 </control>
               </xf:instance>
@@ -204,19 +203,30 @@
               <!-- Binds cannot ref cta-form-history-instance: These only seem to bind to the default data. -->
               <xf:bind id="&self;-control-mode-bind" name="&self;-current-mode"
                        ref="instance('cta-enhanced-control-mode')/current-mode"/>
-              
+
               <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
-              
+
               <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
-              <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
+              <!-- When a value is entered into the field, set the meta/mode value to changed -->
+            <xf:action ev:event="xforms-value-changed" ev:observer="html-input" >
                 <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
-              </xf:action>
-              
+                <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
+                <!-- Note radio buttons so once clicked to true/false can't remove data  -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&changed;" if="xxf:binding('&self;')/text() != '' "/>
+                <!-- Change to Not collected if there is no data in the current value and meta is NOT Unchanged  -->
+                <!-- So that both Not collected and changed will point to Not Collected -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&not-collected;"
+                             if="( (not(xxf:binding('&self;')/text())) or
+                                   (xxf:binding('&self;')/text() = '')
+                                 ) and
+                                 ($mode = (&changed;, &not-collected;))"/>
+            </xf:action>
+
               <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
                          fr:keep-if-design-time="false">
                 <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
-                <!-- Clear the field value. -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="()"/>
+                <!-- Clear the field value IF we are selecting NotCollected or Unchanged -->
+                <xf:setvalue ref="xxf:binding('&self;')" value="()" if="$mode = (&not-collected;, &unchanged;)" />
                 <!-- Remove existing annotations. -->
                 <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
                 <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
@@ -230,24 +240,24 @@
 
               <!-- Initialise the internal model and bootstrap the form model if needed. -->
               <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-                <!-- Copy in the current value, if any. -->     
+                <!-- Copy in the current value, if any. -->
                 <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
-                
+
                 <!-- Set the internal mode to match the state of the data. -->
                 <xf:setvalue bind="&self;-control-mode-bind"
                              value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
                                     else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
                                     else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
                                     else &changed;"/>
-                                    
+
                 <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
-                <xf:insert context="xxf:binding('&self;')" 
+                <xf:insert context="xxf:binding('&self;')"
                            origin="xxf:attribute('notcollected', &set;)"
-                           if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged)) 
+                           if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged))
                                and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
               </xf:action>
-              
-              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the 
+
+              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the
               container for the read-only field. This fires an event back to the component side. -->
               <xf:action type="javascript" ev:event="xforms-model-construct-done">
                 <xf:param name="clientId" value="xxf:client-id('&self;')"/>
@@ -258,18 +268,21 @@
                   });
                 </xf:body>
               </xf:action>
-              
+
               <!--
-              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because 
-              setting the mode control does not in turn fire the 
+              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because
+              setting the mode control does not in turn fire the
               -->
               <xf:action ev:event="xforms-ready">
                 <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-                <xf:toggle case="writable"  if="$mode = &changed;" />
+                <!--  setting the default to be writable regardless of meta, then changing to NotCollected / Unchanged will change to Read-only-->
+                <!--  if meta is changed to  &not-collected;, &unchanged; fields will become RO -->
+                <!--  if meta is changed to  &changed; fields will remain writeable -->
+                <!--  if data is entered, then this fires off code to set the mode to changed -->
+                <xf:toggle case="writable"  if="$mode = (&changed;, &not-collected;, &unchanged;)" />
               </xf:action>
             </xf:model>
-            
+
             <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--grid">
               <xh:span class="input cta-enhanced-control__input-wrapper">
                 <xh:div class="cta-enhanced-select-layout__grid">
@@ -291,9 +304,10 @@
                       <xf:item>
                         <xf:label/>
                         <xf:value>false</xf:value>
-                      </xf:item>                
+                      </xf:item>
                     </xf:select1>
                   </xh:div>
+
                   <xh:div class="cta-enhanced-select-layout__cell">
                     <xh:span class="cta-enhanced-control__cap"><xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/></xh:span>
                     <xf:switch id="&self;-view-switch">
@@ -307,7 +321,7 @@
                           <xf:item>
                             <xf:label>No</xf:label>
                             <xf:value>false</xf:value>
-                          </xf:item>                
+                          </xf:item>
                         </xf:select1>
                       </xf:case>
                       <xf:case id="writable">
@@ -320,11 +334,12 @@
                           <xf:item>
                             <xf:label>No</xf:label>
                             <xf:value>false</xf:value>
-                          </xf:item>                
+                          </xf:item>
                         </xf:select1>
                       </xf:case>
                     </xf:switch>
                   </xh:div>
+
                   <xh:div class="cta-enhanced-select-layout__cell">
                     <xh:span class="cta-enhanced-control__cap">&#xA0;</xh:span>
                     <xh:span class="cta-enhanced-control__mode-wrapper">
@@ -343,6 +358,6 @@
         </xsl:template>
       </xsl:transform>
     </xbl:template>
-    
+
   </xbl:binding>
 </xbl:xbl>

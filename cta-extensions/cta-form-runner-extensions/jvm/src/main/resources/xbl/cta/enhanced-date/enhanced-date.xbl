@@ -159,7 +159,6 @@
     <xbl:handlers>
       <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
       <xbl:handler event="cta-click-to-edit" phase="target">
-        <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"/>
         <xf:setfocus event="DOMActivate" control="html-input"/>
       </xbl:handler>
     </xbl:handlers>
@@ -209,27 +208,27 @@
                   <current-value/>
                   <available-modes-all>
                     <mode>
-                      <label>Not collected</label>
-                      <value>&not-collected;</value>
+                      <label>Changed</label>
+                      <value>&changed;</value>
                     </mode>
                     <mode>
                       <label>Unchanged</label>
                       <value>&unchanged;</value>
                     </mode>
                     <mode>
-                      <label>Changed</label>
-                      <value>&changed;</value>
+                      <label>Not collected</label>
+                      <value>&not-collected;</value>
                     </mode>
                   </available-modes-all>
                   <available-modes-not-unchanged>
                     <mode>
-                      <label>Not collected</label>
-                      <value>&not-collected;</value>
-                    </mode>
-                    <mode>
                       <label>Changed</label>
                       <value>&changed;</value>
                     </mode>
+                    <mode>
+                  <label>Not collected</label>
+                  <value>&not-collected;</value>
+                </mode>
                   </available-modes-not-unchanged>
                 </control>
               </xf:instance>
@@ -248,15 +247,25 @@
               <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
 
               <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
-              <xf:action ev:event="xforms-value-changed" ev:observer="html-input" fr:keep-if-design-time="false">
+              <!-- When a value is entered into the field, set the meta/mode value to changed -->
+            <xf:action ev:event="xforms-value-changed" ev:observer="html-input" >
                 <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
-              </xf:action>
+                <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
+                <xf:setvalue bind="&self;-control-mode-bind" value="&changed;" if="xxf:binding('&self;')/text() != '' "/>
+                <!-- Change to Not collected if there is no data in the current value and meta is NOT Unchanged  -->
+                <!-- So that both Not collected and changed will point to Not Collected -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&not-collected;"
+                             if="( (not(xxf:binding('&self;')/text())) or
+                                   (xxf:binding('&self;')/text() = '')
+                                 ) and
+                                 ($mode = (&changed;, &not-collected;))"/>
+            </xf:action>
 
               <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
                          fr:keep-if-design-time="false">
                 <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
-                <!-- Clear the field value. -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="()"/>
+                <!-- Clear the field value IF we are selecting NotCollected or Unchanged -->
+                <xf:setvalue ref="xxf:binding('&self;')" value="()" if="$mode = (&not-collected;, &unchanged;)" />
                 <!-- Remove existing annotations. -->
                 <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
                 <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
@@ -278,7 +287,7 @@
                              value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
                                     else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
                                     else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
-                                    else &changed;"/>
+                                    else &not-collected;"/>
 
                 <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
                 <xf:insert context="xxf:binding('&self;')"
@@ -305,8 +314,11 @@
               -->
               <xf:action ev:event="xforms-ready">
                 <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-                <xf:toggle case="writable"  if="$mode = &changed;" />
+                <!--  setting the default to be writable regardless of meta, then changing to NotCollected / Unchanged will change to Read-only-->
+                <!--  if meta is changed to  &not-collected;, &unchanged; fields will become RO -->
+                <!--  if meta is changed to  &changed; fields will remain writeable -->
+                <!--  if data is entered, then this fires off code to set the mode to changed -->
+                <xf:toggle case="writable"  if="$mode = (&changed;, &not-collected;, &unchanged;)" />
               </xf:action>
             </xf:model>
 
