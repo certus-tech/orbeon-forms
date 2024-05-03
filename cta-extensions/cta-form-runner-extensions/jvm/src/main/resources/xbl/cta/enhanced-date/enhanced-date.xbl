@@ -232,6 +232,13 @@
                   </available-modes-not-unchanged>
                 </control>
               </xf:instance>
+              <xf:instance id="orbeon-resources" xxf:readonly="true">
+                <resources>
+                  <resource xml:lang="en"><format>MDY</format></resource>
+                  <resource xml:lang="fr"><format>MJA</format></resource>
+                  <resource xml:lang="de"><format>MTJ</format></resource>
+                </resources>
+              </xf:instance>
               <xf:instance id="cta-form-resources" xxf:readonly="true">
                 <resources>
                   <resource xml:lang="en">
