@@ -37,8 +37,7 @@
       </icon>
       <templates>
         <view>
-          <cta:enhanced-number history-entry="last()" history-mode="available-modes-all"
-                               prefix="" suffix="" digits-after-decimal="" decimal-separator="" grouping-separator="">
+          <cta:enhanced-number prefix="" suffix="" digits-after-decimal="" decimal-separator="" grouping-separator="">
             <xf:label ref=""/>
             <xf:hint ref=""/>
             <xf:help ref=""/>
@@ -61,8 +60,6 @@
 
           <xf:instance id="local" xxf:exclude-result-prefixes="#all">
             <local>
-              <history-entry>last()</history-entry>
-              <history-mode>available-modes-all</history-mode>
               <prefix/>
               <suffix/>
               <decimal-separator/>
@@ -77,15 +74,6 @@
           <xf:instance id="fr-form-resources" xxf:readonly="true">
             <resources>
               <resource xml:lang="en">
-                <history-entry>History entry</history-entry>
-                <history-entry-hint>Which value from the history to display, based on history XML order. An XPath predicate to match one form from the history.</history-entry-hint>
-                <history-entry-first>First</history-entry-first>
-                <history-entry-last>Last</history-entry-last>
-                <history-mode>History mode</history-mode>
-                <history-mode-hint>Which history controls to be available</history-mode-hint>
-                <history-mode-all>All</history-mode-all>
-                <history-mode-not-unchanged>Not unchanged</history-mode-not-unchanged>
-                <history-collected-on>, collected on:&#160;</history-collected-on>
                 <!-- Copied from fr:number. -->
                 <prefix>Prefix</prefix>
                 <suffix>Suffix</suffix>
@@ -105,38 +93,6 @@
         </xf:model>
 
         <fr:grid xmlns="" id="fb-editor-&self;-grid">
-          <xh:tr>
-            <xh:td colspan="6">
-              <fr:open-select1 xxf-type="xs:integer" ref="instance('local')/history-entry" appearance="minimal" id="history-entry-control">
-                <xf:label ref="xxf:r('history-entry')"/>
-                <xf:hint ref="xxf:r('history-entry-hint')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-entry-first')"/>
-                  <xf:value>1</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-entry-last')"/>
-                  <xf:value>last()</xf:value>
-                </xf:item>
-              </fr:open-select1>
-            </xh:td>
-          </xh:tr>
-          <xh:tr>
-            <xh:td colspan="6">
-              <xf:select1 xxf-type="xs:string" ref="instance('local')/history-mode" appearance="minimal" id="history-mode-control">
-                <xf:label ref="xxf:r('history-mode')"/>
-                <xf:hint ref="xxf:r('history-mode-hint')"/>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-mode-all')"/>
-                  <xf:value>available-modes-all</xf:value>
-                </xf:item>
-                <xf:item>
-                  <xf:label ref="xxf:r('history-mode-not-unchanged')"/>
-                  <xf:value>available-modes-not-unchanged</xf:value>
-                </xf:item>
-              </xf:select1>
-            </xh:td>
-          </xh:tr>
           <!-- Fields below here copied from fr:number with colspans adjusted. -->
           <xh:tr>
             <xh:td colspan="3">
@@ -220,9 +176,7 @@
         <xf:action
           id="fb-editor-&self;-action"
           event="xforms-value-changed"
-          observer="history-entry-control
-                    history-mode-control
-                    prefix-control
+          observer="prefix-control
                     suffix-control
                     digits-after-decimal-control
                     decimal-separator-control
@@ -255,8 +209,8 @@
             <xf:model id="&self;-model">
               <!-- TODO Potentially common model -->
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
-              <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
-              <xf:var name="history-mode" value="fr:component-param-value('history-mode')"/>
+              <xf:var name="history-entry">last()</xf:var>
+              <xf:var name="history-mode">available-modes-all</xf:var>
               <xf:var name="model-path"
                       value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
               <xf:var name="history-value-path"
