@@ -187,21 +187,7 @@
               <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
               <xf:var name="items"
                       value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
-              <!-- Create placeholder from Orbeon Forms input format
-                   https://doc.orbeon.com/configuration/properties/xforms#for-xf-input -->
-              <xf:var name="placeholder" value="
-                      let $format      := xxf:property('oxf.xforms.format.input.date'),
-                          $cleaned     := translate($format, '[01]', ''),
-                          $duplicate   := replace(replace(replace($cleaned,
-                                          'M', 'MM'),
-                                          'D', 'DD'),
-                                          'Y', 'YYYY'),
-                          $format-en   := instance('orbeon-resources')/resource[@xml:lang = 'en']/format,
-                          $format-lang := xxf:r('format'),
-                          $translated  := translate($duplicate, $format-en, $format-lang)
-                      return
-                          $translated
-                  "/>
+
               <xf:instance id="cta-enhanced-control-mode">
                 <control>
                   <current-mode/>
@@ -233,12 +219,12 @@
                 </control>
               </xf:instance>
               <xf:instance id="orbeon-resources" xxf:readonly="true">
-                <resources>
-                  <resource xml:lang="en"><format>MDY</format></resource>
-                  <resource xml:lang="fr"><format>MJA</format></resource>
-                  <resource xml:lang="de"><format>MTJ</format></resource>
-                </resources>
-              </xf:instance>
+                      <resources>
+                          <resource xml:lang="en"><format>MDY</format></resource>
+                          <resource xml:lang="fr"><format>MJA</format></resource>
+                          <resource xml:lang="de"><format>MTJ</format></resource>
+                      </resources>
+                  </xf:instance>
               <xf:instance id="cta-form-resources" xxf:readonly="true">
                 <resources>
                   <resource xml:lang="en">
@@ -253,12 +239,30 @@
 
               <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
 
-              <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
-              <!-- When a value is entered into the field, set the meta/mode value to changed -->
-            <xf:action ev:event="xforms-value-changed" ev:observer="html-input" >
+             <xf:action ev:event="xforms-value-changed" ev:observer="html-input">
+                <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
                 <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
+
+                <!-- Easy way to access status of history meta -->
                 <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <xf:setvalue bind="&self;-control-mode-bind" value="&changed;" if="xxf:binding('&self;')/text() != '' "/>
+
+                <!-- If value entered into a history field, change meta from not collected (or unchanged) to changed -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"
+                            if="(xxf:binding('&self;')/text() != '' ) and
+                                not(xxf:binding('&self;')/@tempnotchanged) and
+                                not(xxf:binding('&self;')/@tempnotcollected)"/>
+
+
+                <!-- set metadata to unchanged if the custom tempnotchanged attribute is passed in
+                     from the cta:group-field-history field -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
+                             if="(xxf:binding('&self;')/@tempnotchanged=&set;)"/>
+
+                <!-- set metadata to unchanged if the custom tempnotcollected attribute is passed in
+                     from the cta:group-field-history field -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
+                             if="(xxf:binding('&self;')/@tempnotcollected=&set;)"/>
+
                 <!-- Change to Not collected if there is no data in the current value and meta is NOT Unchanged  -->
                 <!-- So that both Not collected and changed will point to Not Collected -->
                 <xf:setvalue bind="&self;-control-mode-bind" value="&not-collected;"
@@ -266,7 +270,7 @@
                                    (xxf:binding('&self;')/text() = '')
                                  ) and
                                  ($mode = (&changed;, &not-collected;))"/>
-            </xf:action>
+              </xf:action>
 
               <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
                          fr:keep-if-design-time="false">
@@ -276,6 +280,9 @@
                 <!-- Remove existing annotations. -->
                 <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
                 <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
+                <xf:delete ref="xxf:binding('&self;')/@tempnotcollected"/>
+                <xf:delete ref="xxf:binding('&self;')/@tempnotchanged"/>
+
                 <!-- Add annotations for notcollected/unchanged if appropriate. -->
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>

@@ -267,13 +267,30 @@
 
               <xf:bind id="ro-binding" ref="instance('cta-enhanced-control-mode')/current-value" readonly="true()"/>
 
-              <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
-              <!-- When a value is entered into the field, set the meta/mode value to changed -->
-            <xf:action ev:event="xforms-value-changed" ev:observer="html-input" >
-                 <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
-                 <xf:setfocus event="DOMActivate" control="html-input"/>
+             <xf:action ev:event="xforms-value-changed" ev:observer="html-input">
+                <!-- Keep the internal 'current value' in sync with the real value (even if the RO control is shown). -->
+                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="event('xxf:value')"/>
+
+                <!-- Easy way to access status of history meta -->
                 <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <xf:setvalue bind="&self;-control-mode-bind" value="&changed;" if="xxf:binding('&self;')/text() != '' "/>
+
+                <!-- If value entered into a history field, change meta from not collected (or unchanged) to changed -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"
+                            if="(xxf:binding('&self;')/text() != '' ) and
+                                not(xxf:binding('&self;')/@tempnotchanged) and
+                                not(xxf:binding('&self;')/@tempnotcollected)"/>
+
+
+                <!-- set metadata to unchanged if the custom tempnotchanged attribute is passed in
+                     from the cta:group-field-history field -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
+                             if="(xxf:binding('&self;')/@tempnotchanged=&set;)"/>
+
+                <!-- set metadata to unchanged if the custom tempnotcollected attribute is passed in
+                     from the cta:group-field-history field -->
+                <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
+                             if="(xxf:binding('&self;')/@tempnotcollected=&set;)"/>
+
                 <!-- Change to Not collected if there is no data in the current value and meta is NOT Unchanged  -->
                 <!-- So that both Not collected and changed will point to Not Collected -->
                 <xf:setvalue bind="&self;-control-mode-bind" value="&not-collected;"
@@ -281,7 +298,7 @@
                                    (xxf:binding('&self;')/text() = '')
                                  ) and
                                  ($mode = (&changed;, &not-collected;))"/>
-            </xf:action>
+              </xf:action>
 
               <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
                          fr:keep-if-design-time="false">
@@ -292,6 +309,9 @@
                 <!-- Remove existing annotations. -->
                 <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
                 <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
+                <xf:delete ref="xxf:binding('&self;')/@tempnotcollected"/>
+                <xf:delete ref="xxf:binding('&self;')/@tempnotchanged"/>
+
                 <!-- Add annotations for notcollected/unchanged if appropriate. -->
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
