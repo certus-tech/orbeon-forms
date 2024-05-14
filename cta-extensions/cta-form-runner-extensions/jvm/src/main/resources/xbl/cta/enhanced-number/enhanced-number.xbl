@@ -300,70 +300,78 @@
                                  ($mode = (&changed;, &not-collected;))"/>
               </xf:action>
 
-              <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
-                         fr:keep-if-design-time="false">
-                <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
-                <!-- Clear the field value IF we are selecting NotCollected or Unchanged -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="()" if="$mode = (&not-collected;, &unchanged;)"/>
+                <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
+                           fr:keep-if-design-time="false">
+                  <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
 
-                <!-- Remove existing annotations. -->
-                <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
-                <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
-                <xf:delete ref="xxf:binding('&self;')/@tempnotcollected"/>
-                <xf:delete ref="xxf:binding('&self;')/@tempnotchanged"/>
+                  <!-- Clear the field value IF we are selecting NotCollected or Unchanged -->
+                  <xf:setvalue ref="xxf:binding('&self;')" value="()" if="$mode = (&not-collected;, &unchanged;)"/>
+                  <!-- Remove existing annotations. -->
+                  <xf:delete ref="xxf:binding('&self;')/@changed"/>
+                  <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
+                  <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
+                  <xf:delete ref="xxf:binding('&self;')/@tempnotcollected"/>
+                  <xf:delete ref="xxf:binding('&self;')/@tempnotchanged"/>
 
-                <!-- Add annotations for notcollected/unchanged if appropriate. -->
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
-                <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
-                <!-- Toggle the UI case RO/RW. -->
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-                <xf:toggle case="writable"  if="$mode = &changed;" />
-              </xf:action>
+                  <!-- Add annotations for notcollected/unchanged if appropriate. -->
+                  <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('changed', &set;)" if="$mode = &changed;"/>
+                  <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
+                  <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
+                  <!-- Toggle the UI case RO/RW. -->
+                  <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
+                  <xf:toggle case="writable"  if="$mode = &changed;" />
+                </xf:action>
 
-              <!-- Initialise the internal model and bootstrap the form model if needed. -->
-              <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
-                <!-- Copy in the current value, if any. -->
-                <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
+                <!-- Initialise the internal model and bootstrap the form model if needed. -->
+                <xf:action ev:event="xforms-model-construct-done" ev:observer="&self;-model" fr:keep-if-design-time="false">
+                  <!-- Copy in the current value, if any. -->
+                  <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="xxf:binding('&self;')"/>
 
-                <!-- Set the internal mode to match the state of the data. -->
-                <xf:setvalue bind="&self;-control-mode-bind"
-                             value="if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
-                                    else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
-                                    else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
-                                    else &changed;"/>
+                  <!-- Set the internal mode to match the state of the data. -->
+                  <xf:setvalue bind="&self;-control-mode-bind"
+                               value="if (xs:int(xxf:binding('&self;')/@changed) = &set;) then &changed;
+                                      else if (xs:int(xxf:binding('&self;')/@notcollected) = &set;) then &not-collected;
+                                      else if (xs:int(xxf:binding('&self;')/@notchanged) = &set;) then &unchanged;
+                                      else if (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0) then &not-collected;
+                                      else &changed;"/>
 
-                <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
-                <xf:insert context="xxf:binding('&self;')"
-                           origin="xxf:attribute('notcollected', &set;)"
-                           if="empty((xxf:binding('&self;')/@notcollected, xxf:binding('&self;')/@notchanged))
-                               and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
-              </xf:action>
+                  <!-- If the binding node is empty and does not have any attrs, initialise it with not collected. -->
+                  <xf:insert context="xxf:binding('&self;')"
+                             origin="xxf:attribute('notcollected', &set;)"
+                             if="empty(
+                                 (xxf:binding('&self;')/@notcollected,
+                                 xxf:binding('&self;')/@notchanged,
+                                 xxf:binding('&self;')/@changed)
+                                 )
+                                 and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
+                </xf:action>
 
-              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the
-              container for the read-only field. This fires an event back to the component side. -->
-              <xf:action type="javascript" ev:event="xforms-model-construct-done">
-                <xf:param name="clientId" value="xxf:client-id('&self;')"/>
-                <xf:param name="compsep" value="'&compsep;'"/>
-                <xf:body>
-                  ORBEON.jQuery(`#${clientId}${compsep}ro-input`).on('click', function() {
-                  ORBEON.xforms.Document.dispatchEvent(clientId, "cta-click-to-edit");
-                  });
-                </xf:body>
-              </xf:action>
+                <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the
+                container for the read-only field. This fires an event back to the component side. -->
+                <xf:action type="javascript" ev:event="xforms-model-construct-done">
+                  <xf:param name="clientId" value="xxf:client-id('&self;')"/>
+                  <xf:param name="compsep" value="'&compsep;'"/>
+                  <xf:body>
+                    ORBEON.jQuery(`#${clientId}${compsep}ro-input`).on('click', function() {
+                    ORBEON.xforms.Document.dispatchEvent(clientId, "cta-click-to-edit");
+                    });
+                  </xf:body>
+                </xf:action>
 
-              <!--
-              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because
-              setting the mode control does not in turn fire the
-              -->
-              <xf:action ev:event="xforms-ready">
-                <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <!--  setting the default to be writable regardless of meta, then changing to NotCollected / Unchanged will change to Read-only-->
-                <!--  if meta is changed to  &not-collected;, &unchanged; fields will become RO -->
-                <!--  if meta is changed to  &changed; fields will remain writeable -->
-                <!--  if data is entered, then this fires off code to set the mode to changed -->
-                <xf:toggle case="writable"  if="$mode = (&changed;, &not-collected;, &unchanged;)" />
-              </xf:action>
-            </xf:model>
+                <!--
+                Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because
+                setting the mode control does not in turn fire the
+                -->
+                <xf:action ev:event="xforms-ready">
+                  <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
+                  <!--  setting the default to be writable regardless of meta, then changing to NotCollected / Unchanged will change to Read-only-->
+                  <!--  if meta is changed to  &not-collected;, &unchanged; fields will become RO -->
+                  <!--  if meta is changed to  &changed; fields will remain writeable -->
+                  <!--  if data is entered, then this fires off code to set the mode to changed -->
+                  <xf:toggle case="writable"  if="$mode = (&changed;, &not-collected;, &unchanged;)" />
+                </xf:action>
+
+              </xf:model>
 
             <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
               <xh:span class="cta-enhanced-control__mode-wrapper">
