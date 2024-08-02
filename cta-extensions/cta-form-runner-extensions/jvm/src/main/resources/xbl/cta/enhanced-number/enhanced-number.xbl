@@ -216,7 +216,7 @@
               <xf:var name="history-value-path"
                       value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path)"/>
               <xf:var name="history-date-path"
-                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/@date')"/>
+                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path,'@date')"/>
               <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
               <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
               <xf:var name="items"
