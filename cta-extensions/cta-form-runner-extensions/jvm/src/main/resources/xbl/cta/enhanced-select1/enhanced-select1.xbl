@@ -175,8 +175,9 @@
                       value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
               <xf:var name="history-value-path"
                       value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path)"/>
+              <!-- model path has a '/' ending as a character -->
               <xf:var name="history-date-path"
-                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path,'@date')"/>
+                      value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path,'/@date')"/>
               <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
               <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
               <xf:var name="items"
@@ -238,14 +239,14 @@
                 <!-- If value entered into a history field, change meta from not collected (or unchanged) to changed -->
                 <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"
                             if="(xxf:binding('&self;')/text() != '' ) and
-                                not(xxf:binding('&self;')/@tempnotchanged) and
+                                not(xxf:binding('&self;')/@tempchanged) and
                                 not(xxf:binding('&self;')/@tempnotcollected)"/>
 
 
-                <!-- set metadata to unchanged if the custom tempnotchanged attribute is passed in
+                <!-- set metadata to unchanged if the custom tempchanged attribute is passed in
                      from the cta:group-field-history field -->
                 <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
-                             if="(xxf:binding('&self;')/@tempnotchanged=&set;)"/>
+                             if="(xxf:binding('&self;')/@tempchanged=&set;)"/>
 
                 <!-- set metadata to unchanged if the custom tempnotcollected attribute is passed in
                      from the cta:group-field-history field -->
@@ -272,7 +273,7 @@
                 <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
                 <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
                 <xf:delete ref="xxf:binding('&self;')/@tempnotcollected"/>
-                <xf:delete ref="xxf:binding('&self;')/@tempnotchanged"/>
+                <xf:delete ref="xxf:binding('&self;')/@tempchanged"/>
 
                 <!-- Add annotations for notcollected/unchanged if appropriate. -->
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('changed', &set;)" if="$mode = &changed;"/>
