@@ -331,19 +331,6 @@
                 </xf:body>
               </xf:action>
 
-              <!--
-              Toggle the UI presentation once the form is ready; avoids getting stuck in 'Changed' but RO because
-              setting the mode control does not in turn fire the
-              -->
-              <xf:action ev:event="xforms-ready">
-                <xf:var name="mode" value="instance('cta-enhanced-control-mode')/current-mode"/>
-                <!--  setting the default to be writable regardless of meta, then changing to NotCollected / Unchanged will change to Read-only-->
-                <!--  if meta is changed to  &not-collected;, &unchanged; fields will become RO -->
-                <!--  if meta is changed to  &changed; fields will remain writeable -->
-                <!--  if data is entered, then this fires off code to set the mode to changed -->
-                <xf:toggle case="writable"  if="$mode = (&changed;, &not-collected;, &unchanged;)" />
-              </xf:action>
-
             </xf:model>
 
             <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
@@ -359,16 +346,16 @@
               <!-- Input field to enter the date. -->
               <xh:span class="input cta-enhanced-control__input-wraper">
                 <xf:switch id="&self;-view-switch">
-                  <xf:case id="read-only">
-                    <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
+                  <xf:case id="writable">
+                    <fr:date id="html-input" ref="xxf:binding('&self;')">
                       <xsl:attribute name="prefix" select="@prefix"/>
                       <xsl:attribute name="suffix" select="@suffix"/>
                       <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
                       <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
                     </fr:date>
                   </xf:case>
-                  <xf:case id="writable">
-                    <fr:date id="html-input" ref="xxf:binding('&self;')">
+                  <xf:case id="read-only">
+                    <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
                       <xsl:attribute name="prefix" select="@prefix"/>
                       <xsl:attribute name="suffix" select="@suffix"/>
                       <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
