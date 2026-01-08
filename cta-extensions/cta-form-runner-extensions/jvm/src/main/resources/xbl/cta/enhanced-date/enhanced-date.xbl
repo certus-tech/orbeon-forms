@@ -40,8 +40,7 @@
     id="&self;"
     element="cta|enhanced-date"
     xxbl:mode="lhha binding value focus external-value"
-    xxf:external-events="cta-click-to-edit"
-    >
+  >
 
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
       <display-name lang="en">Enhanced Date</display-name>
@@ -173,6 +172,12 @@
         <xsl:template match="/*">
           <xf:group id="&self;-group">
             <xf:model id="&self;-model">
+
+              <xf:var name="binding" value="xxf:binding('&self;')"/>
+
+              <xf:var name="is-readonly"
+                        value="($binding/@notchanged='&set;') or
+                        (($binding/@notcollected = '&set;') and not($binding/@init))"/>
               <!-- TODO Potentially common model -->
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
               <xf:var name="history-entry" value="fr:component-param-value('history-entry')"/>
@@ -249,20 +254,7 @@
 
                 <!-- If value entered into a history field, change meta from not collected (or unchanged) to changed -->
                 <xf:setvalue bind="&self;-control-mode-bind" value="&changed;"
-                            if="(xxf:binding('&self;')/text() != '' ) and
-                                not(xxf:binding('&self;')/@tempchanged) and
-                                not(xxf:binding('&self;')/@tempnotcollected)"/>
-
-
-                <!-- set metadata to unchanged if the custom tempchanged attribute is passed in
-                     from the cta:group-field-history field -->
-                <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
-                             if="(xxf:binding('&self;')/@tempchanged=&set;)"/>
-
-                <!-- set metadata to unchanged if the custom tempnotcollected attribute is passed in
-                     from the cta:group-field-history field -->
-                <xf:setvalue bind="&self;-control-mode-bind" value="&unchanged;"
-                             if="(xxf:binding('&self;')/@tempnotcollected=&set;)"/>
+                            if="(xxf:binding('&self;')/text() != '' )"/>
 
                 <!-- Change to Not collected if there is no data in the current value and meta is NOT Unchanged  -->
                 <!-- So that both Not collected and changed will point to Not Collected -->
@@ -273,26 +265,28 @@
                                  ($mode = (&changed;, &not-collected;))"/>
               </xf:action>
 
+
               <xf:action ev:event="xforms-value-changed" ev:observer="&self;-mode-control"
                          fr:keep-if-design-time="false">
                 <xf:variable name="mode" value="xs:int(event('xxf:value'))"/>
 
-                <!-- Clear the field value IF we are selecting NotCollected or Unchanged -->
-                <xf:setvalue ref="xxf:binding('&self;')" value="()" if="$mode = (&not-collected;, &unchanged;)"/>
+                  <!-- Clear the field value IF we are selecting NotCollected or Unchanged -->
+                    <xf:action if="$mode = (&not-collected;, &unchanged;)">
+                        <xf:setvalue ref="xxf:binding('&self;')" value="''"/>
+                        <xf:setvalue ref="instance('cta-enhanced-control-mode')/current-value" value="''"/>
+                    </xf:action>
                 <!-- Remove existing annotations. -->
                 <xf:delete ref="xxf:binding('&self;')/@changed"/>
                 <xf:delete ref="xxf:binding('&self;')/@notcollected"/>
                 <xf:delete ref="xxf:binding('&self;')/@notchanged"/>
-                <xf:delete ref="xxf:binding('&self;')/@tempnotcollected"/>
-                <xf:delete ref="xxf:binding('&self;')/@tempchanged"/>
+                <xf:delete ref="xxf:binding('&self;')/@init"/>
 
                 <!-- Add annotations for notcollected/unchanged if appropriate. -->
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('changed', &set;)" if="$mode = &changed;"/>
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notcollected', &set;)" if="$mode = &not-collected;"/>
                 <xf:insert context="xxf:binding('&self;')" origin="xxf:attribute('notchanged', &set;)" if="$mode = &unchanged;"/>
-                <!-- Toggle the UI case RO/RW. -->
-                <xf:toggle case="read-only" if="$mode = (&not-collected;, &unchanged;)" />
-                <xf:toggle case="writable"  if="$mode = &changed;" />
+
+                <!--we are no longer using switch statements to change between writable to read-only status -->
               </xf:action>
 
               <!-- Initialise the internal model and bootstrap the form model if needed. -->
@@ -317,18 +311,12 @@
                                xxf:binding('&self;')/@changed)
                                )
                                and (empty(xxf:binding('&self;')/*) and string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
-              </xf:action>
-
-              <!-- Run some custom code when the model is built, with which a click listener is hooked up onto the
-              container for the read-only field. This fires an event back to the component side. -->
-              <xf:action type="javascript" ev:event="xforms-model-construct-done">
-                <xf:param name="clientId" value="xxf:client-id('&self;')"/>
-                <xf:param name="compsep" value="'&compsep;'"/>
-                <xf:body>
-                  ORBEON.jQuery(`#${clientId}${compsep}ro-input`).on('click', function() {
-                  ORBEON.xforms.Document.dispatchEvent(clientId, "cta-click-to-edit");
-                  });
-                </xf:body>
+                <!-- We have added an initial flag for history with no contents and set to notcollected at form launch. -->
+                <!-- This is so we can control these fields to NOT be read-only at launch, and then ANY interaction will change to default behaviour -->
+                <xf:insert context="xxf:binding('&self;')"
+                           origin="xxf:attribute('init', &set;)"
+                           if="(xs:int(xxf:binding('&self;')/@notcollected) = &set;)
+                               and (string-length(normalize-space(xxf:binding('&self;')/text())) = 0)"/>
               </xf:action>
 
             </xf:model>
@@ -343,28 +331,40 @@
                   </xf:itemset>
                 </xf:select1>
               </xh:span>
-              <!-- Input field to enter the date. -->
+
+          <!-- input control -->
               <xh:span class="input cta-enhanced-control__input-wraper">
-                <xf:switch id="&self;-view-switch">
-                  <xf:case id="writable">
-                    <fr:date id="html-input" ref="xxf:binding('&self;')">
-                      <xsl:attribute name="prefix" select="@prefix"/>
-                      <xsl:attribute name="suffix" select="@suffix"/>
-                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
-                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                    </fr:date>
-                  </xf:case>
-                  <xf:case id="read-only">
-                    <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
-                      <xsl:attribute name="prefix" select="@prefix"/>
-                      <xsl:attribute name="suffix" select="@suffix"/>
-                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
-                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                    </fr:date>
-                  </xf:case>
-                </xf:switch>
+
+              <!-- Using essentially an if/then clause to select whether field id normal or read only mode. This AVOIDS the slow case/switch method -->
+                  <xf:group ref="$binding[not($is-readonly)]">
+                      <fr:date id="html-input" ref="xxf:binding('&self;')">
+                          <xsl:attribute name="prefix" select="@prefix"/>
+                          <xsl:attribute name="suffix" select="@suffix"/>
+                          <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
+                          <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
+                      </fr:date>
+                  </xf:group>
+
+                  <xf:group ref="$binding[$is-readonly]">
+
+                      <!-- Hook that catches group-field remote field change to unchanged -->
+                      <xf:action event="xforms-enabled">
+                          <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
+                                      bind="&self;-control-mode-bind"
+                                      value="'&unchanged;'"/>
+                      </xf:action>
+
+                      <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
+                          <xsl:attribute name="prefix" select="@prefix"/>
+                          <xsl:attribute name="suffix" select="@suffix"/>
+                          <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
+                          <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
+                      </fr:date>
+                  </xf:group>
+
               </xh:span>
-              <!-- Read-only value. -->
+
+                <!-- Read-only value. -->
               <xh:span class="cta-enhanced-control__history-wrapper">
                 <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
                 <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>

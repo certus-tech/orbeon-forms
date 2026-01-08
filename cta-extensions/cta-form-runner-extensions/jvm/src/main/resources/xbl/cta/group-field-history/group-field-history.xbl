@@ -22,9 +22,11 @@
          xmlns:cta="http://www.certus-tech.com/xbl">
 
   <!-- @xxbl:mode binding means orbeon will pass in an actual binding, with the @id below, allowing this control to bind to the form's model. -->
-  <xbl:binding id="&self;"
+  <xbl:binding
+    id="&self;"
     element="cta|group-field-history"
-    xxbl:mode="binding custom-lhha value selection">
+    xxbl:mode="binding custom-lhha value selection"
+  >
     <metadata xmlns="http://orbeon.org/oxf/xml/form-builder">
       <display-name lang="en">'No changes' toggle</display-name>
       <icon lang="en">
@@ -113,46 +115,23 @@
                     </data>
                   </xf:instance>
 
-
                   <xf:bind id="&self;-toggle-bind" ref="xxf:instance('internal')/toggle" type="xf:boolean"/>
 
-                  <!-- Action triggers when clicked to true only -->
                   <xf:action event="xforms-value-changed"
-                             observer="&self;-toggle"
-                             if = "xxf:instance('internal')/toggle/text() = 'true'"
-                             fr:keep-if-design-time="false"
-                             iterate="xxf:instance('fr-form-instance')//xxf:evaluate(xxf:binding('&self;')/../name())/*">
-
-                    <!-- Variables used in the iterations of each field in the section -->
-                    <xf:var name="name" value="name()"/>
-                    <xf:var name="entry" value="fr:component-param-value('history-entry')"/>
-                    <xf:var name="ancestors" value="xxf:instance('fr-form-instance')//*[name()=$name]/ancestor-or-self::*[not(local-name() = 'form')]"/>
-                    <!-- history fields will return a node whether or not data is included -->
-                    <xf:var name="history_path" value="concat('xxf:instance(&quot;cta-form-history-instance&quot;)/form[', $entry, ']/', string-join( $ancestors/local-name(), '/'))"/>
-                    <xf:var name="binding_node" value="xxf:instance('fr-form-instance')//*[name()=$name]"/>
-
-                    <!-- Take all CHANGED history fields and set to unchanged -->
-                    <!-- passes the tempchanged attribute to assist this process  -->
-                    <xf:insert if="boolean(xxf:evaluate($history_path)) and (boolean($binding_node/@changed))"
-                                context="$binding_node" origin="xxf:attribute('tempchanged', &set;)"/>
-                    <xf:delete if="boolean(xxf:evaluate($history_path)) and (boolean($binding_node/@changed))"
-                                ref="$binding_node/@changed"/>
-
-                    <!-- Note not($binding_node/text()) is required to access data via date select / single select button which is not type in like input/number -->
-                    <xf:setvalue if="(boolean(xxf:evaluate($history_path))) and (boolean($binding_node/@tempchanged))" ref="$binding_node" value="''"/>
-                    <xf:setvalue if="(boolean(xxf:evaluate($history_path))) and (boolean($binding_node/@tempchanged))" ref="$binding_node" value="'__temp_changed__'"/>
-
-                    <!-- Take all NOT COLLECTED history fields and set to unchanged -->
-                    <!-- passes the tempnotcollected attribute to assist this process  -->
-                    <!-- separate method required to inject data to invoke the  <xf:action ev:event="xforms-value-changed" ev:observer="html-input"> -->
-                    <xf:insert if="( (boolean(xxf:evaluate($history_path))) and (boolean($binding_node/@notcollected)) )"
-                            context="$binding_node" origin="xxf:attribute('tempnotcollected', &set;)"/>
-                    <xf:delete if="( (boolean(xxf:evaluate($history_path))) and (boolean($binding_node/@notcollected)) )"
-                                ref="$binding_node/@notcollected"/>
-                    <xf:setvalue  if="( (boolean(xxf:evaluate($history_path))) and (boolean($binding_node/@tempnotcollected)) )"
-                                  ref="$binding_node" value="&set;"/>
-
+                               observer="&self;-toggle"
+                               fr:keep-if-design-time="false"
+                               if="xxf:instance('internal')/toggle/text() = 'true'">
+                    <!-- single check for button being clicked to true triggers the iteration action below. -->
+                    <!-- We can treat Changed and NotCollected in same loop -->
+                    <!-- fields pre-set to unchanged are excluded from next loop and section wide processing -->
+                    <!-- only history fields are picked up due to attribute search -->
+                    <xf:action iterate="xxf:binding('&self;')/../*[@changed='1' or @notcollected='1']">
+                        <xf:insert context="." origin="xxf:attribute('notchanged', '1')"/>
+                        <!-- inserting @notchanged triggers field mode changed to unchanged. then, -->
+                        <!-- @changed, @notcollected, and removed when processing field mode changed from changed/notcollected to unchanged  -->
+                    </xf:action>
                   </xf:action>
+
                 </xf:model>
 
                 <xh:div>
