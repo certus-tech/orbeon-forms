@@ -216,8 +216,13 @@
 
               <!-- TODO Potentially common model -->
               <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
+
+              <!-- Note these vars are set here in config, and not in field settings in the form builder for the other field types. -->
+              <!-- Assume reason is that numerical controls like prefix/suffix separators etc are higher priority for the UI -->
+              <!-- There is not yet a use case for history-entry to be first(), should revise ehanced-number if this changes -->
               <xf:var name="history-entry">last()</xf:var>
               <xf:var name="history-mode">available-modes-all</xf:var>
+
               <xf:var name="model-path"
                       value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
               <xf:var name="history-value-path"
@@ -361,8 +366,10 @@
               </xh:span>
 
               <!-- Using essentially an if/then clause to select whether field id normal or read only mode. This AVOIDS the slow case/switch method -->
+              <!-- Min-width is to force an non-zero sized input box. Issue arises when using prefix/suffix and width collapses -->
+              <!-- Only other suffix in use is enhanced-date's date selector which does not have this issue -->
               <xf:group ref="$binding[not($is-readonly)]">
-                  <xh:span class="input cta-enhanced-control__input-wraper">
+                  <xh:div class="input cta-enhanced-control__input-wraper" style="flex: 1; min-width: 150px;">
                     <fr:number id="html-input" ref="xxf:binding('&self;')">
                       <xsl:attribute name="prefix" select="@prefix"/>
                       <xsl:attribute name="suffix" select="@suffix"/>
@@ -372,7 +379,7 @@
                       <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
                       <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
                     </fr:number>
-                  </xh:span>
+                  </xh:div>
               </xf:group>
 
               <xf:group ref="$binding[$is-readonly]">
@@ -384,7 +391,8 @@
                                    value="'&unchanged;'"/>
                   </xf:action>
 
-                  <xh:span class="input cta-enhanced-control__input-wraper">
+                  <!-- Min-width is to force an non-zero sized input box. Issue arises when using prefix/suffix and width collapses -->
+                  <xh:div class="input cta-enhanced-control__input-wraper" style="flex: 1; min-width: 150px;">
                     <fr:number id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
                       <xsl:attribute name="prefix" select="@prefix"/>
                       <xsl:attribute name="suffix" select="@suffix"/>
@@ -394,7 +402,7 @@
                       <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
                       <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
                     </fr:number>
-                  </xh:span>
+                  </xh:div>
               </xf:group>
 
               <xh:span class="cta-enhanced-control__history-wrapper">
