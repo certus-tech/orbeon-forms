@@ -31,6 +31,7 @@
     <xbl:script src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/locales/bootstrap-datepicker.no.min.js"/>
     <xbl:script src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/locales/bootstrap-datepicker.ru.min.js"/>
     <xbl:script src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/locales/bootstrap-datepicker.pl.min.js"/>
+    <xbl:script src="/xbl/orbeon/date/date-readonly-fix.js"/>
 
     <xbl:binding
         id="fr-date"
@@ -127,6 +128,45 @@
         <xbl:resources>
             <xbl:style src="/xbl/orbeon/date/date.css"/>
             <xbl:style src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/css/bootstrap-datepicker.css"/>
+
+            <xbl:style>
+                /* Force the input to be interactive when visible.
+                   This overrides any "stuck" read-only styles from the parent wrapper.
+                */
+                .xbl-fr-date .input-append.date input[type="text"] {
+                    background-color: #ffffff !important;
+                    color: #000000 !important;
+                    cursor: text !important;
+                    pointer-events: auto !important; /* Forces the mouse to work */
+                    border: 1px solid #cccccc;       /* standard border */
+                }
+
+                /* Proper readonly styling - only applied when component has xforms-readonly class */
+                .xbl-fr-date.xforms-readonly .input-append.date input[type="text"] {
+                    background-color: #eeeeee !important; /* Grey background */
+                    color: #777777 !important;           /* Dimmed text */
+                    border-color: #ccc !important;        /* Dimmed border */
+                    pointer-events: none !important;      /* Prevents clicking/focusing */
+                    cursor: not-allowed !important;       /* Show 'forbidden' cursor */
+                    box-shadow: none;
+                }
+
+                /* Ensure the editable input is always visible when not readonly */
+                .xbl-fr-date:not(.xforms-readonly) .input-append.date input[type="text"] {
+                    background-color: #ffffff !important;
+                    color: #000000 !important;
+                    pointer-events: auto !important;
+                    cursor: text !important;
+                }
+
+                /* Extra: Force removal of readonly-related styles when not readonly */
+                .xbl-fr-date:not(.xforms-readonly) .input-append.date input[type="text"][readonly],
+                .xbl-fr-date:not(.xforms-readonly) .input-append.date input[type="text"][disabled] {
+                    pointer-events: auto !important;
+                    cursor: text !important;
+                    opacity: 1 !important;
+                }
+            </xbl:style>
         </xbl:resources>
 
         <xbl:implementation>

@@ -20,6 +20,8 @@
          xmlns:fr="http://orbeon.org/oxf/xml/form-runner"
          xmlns:NumberSupport="java:org.orbeon.xbl.NumberSupportJava">
 
+    <xbl:script src="/xbl/orbeon/number/number-readonly-fix.js"/>
+
     <xbl:binding
             id="fr-number"
             element="
@@ -222,6 +224,45 @@
 
         <xbl:resources>
             <xbl:style src="/xbl/orbeon/number/number.css"/>
+
+            <xbl:style>
+                /* Force the input to be interactive when visible.
+                   This overrides any "stuck" read-only styles from the parent wrapper.
+                */
+                .xbl-fr-number .xbl-fr-number-visible-input {
+                    background-color: #ffffff !important;
+                    color: #000000 !important;
+                    cursor: text !important;
+                    pointer-events: auto !important; /* Forces the mouse to work */
+                    border: 1px solid #cccccc;       /* standard border */
+                }
+
+                /* Proper readonly styling - only applied when component has xforms-readonly class */
+                .xbl-fr-number.xforms-readonly .xbl-fr-number-visible-input {
+                    background-color: #eeeeee !important; /* Grey background */
+                    color: #777777 !important;           /* Dimmed text */
+                    border-color: #ccc !important;        /* Dimmed border */
+                    pointer-events: none !important;      /* Prevents clicking/focusing */
+                    cursor: not-allowed !important;       /* Show 'forbidden' cursor */
+                    box-shadow: none;
+                }
+
+                /* Ensure the editable input is always visible when not readonly */
+                .xbl-fr-number:not(.xforms-readonly) .xbl-fr-number-visible-input {
+                    background-color: #ffffff !important;
+                    color: #000000 !important;
+                    pointer-events: auto !important;
+                    cursor: text !important;
+                }
+
+                /* Extra: Force removal of readonly-related styles when not readonly */
+                .xbl-fr-number:not(.xforms-readonly) .xbl-fr-number-visible-input[readonly],
+                .xbl-fr-number:not(.xforms-readonly) .xbl-fr-number-visible-input[disabled] {
+                    pointer-events: auto !important;
+                    cursor: text !important;
+                    opacity: 1 !important;
+                }
+            </xbl:style>
         </xbl:resources>
 
         <xbl:handlers>
@@ -270,30 +311,24 @@
 
         </xbl:handlers>
 
-        <xbl:template>
+<xbl:template>
+    <xf:var name="binding" value="xxf:binding('fr-number')"/>
 
-            <xf:var
-                name="binding"
-                value="xxf:binding('fr-number')"/>
+    <!-- Determine if we should use static readonly appearance -->
+    <xf:var name="view" value="
+        xxf:is-control-readonly('fr-number') and (
+            property('xxf:readonly-appearance') = 'static' or
+            (: See https://github.com/orbeon/orbeon-forms/issues/3800 :)
+            fr:mode() = 'pdf'
+        )"/>
 
-            <xf:var
-                name="view"
-                value="
-                    xxf:is-control-readonly('fr-number') and (
-                        property('xxf:readonly-appearance') = 'static' or
-                        (: See https://github.com/orbeon/orbeon-forms/issues/3800 :)
-                        fr:mode() = 'pdf'
-                    )"/>
-
-            <!--<xf:dispatch event="xxforms-iteration-moved" name="fr-iteration-moved" targetid="formatted-value"/>-->
-
-            <!-- Readwrite mode -->
-            <xf:group ref="$binding[not($view)]">
+    <!-- Editable input - shown when not in static readonly mode -->
+    <xf:group ref="$binding[not($view)]">
 
 
-                <xf:var name="prefix"      value="fr:component-param-value('prefix')"/>
-                <xf:var name="suffix"      value="fr:component-param-value('suffix')"/>
-                <xf:var name="field-width" value="fr:component-param-value('field-width')"/>
+        <xf:var name="prefix"      value="fr:component-param-value('prefix')"/>
+        <xf:var name="suffix"      value="fr:component-param-value('suffix')"/>
+        <xf:var name="field-width" value="fr:component-param-value('field-width')"/>
 
                 <!-- See also https://github.com/orbeon/orbeon-forms/issues/2495 -->
 
@@ -314,59 +349,61 @@
                         - if a `maxlength` or `xxf:maxlength` is placed on the bound element, that takes precedence
                     - `min`: makes control natively invalid as the user types, if the value cannot be negative
                 -->
-                <xh:span
-                    class="{
-                        (
-                            'input-prepend'[xxf:non-blank($prefix)],
-                            'input-append' [xxf:non-blank($suffix)],
-                            concat('fr-field-width-', $field-width)
-                        )
-                    }">
-                    <xf:group fr:keep-if-param-non-blank="prefix" class="add-on" ref=".[xxf:non-blank($prefix)]"><xf:output value="$prefix"/></xf:group>
-                    <xh:input
-                        id="html-input"
-                        class="xbl-fr-number-visible-input xbl-html-input xforms-input-input"
-                        type="text"
-                        step="any"
-                        pattern="{
-                            if (NumberSupport:isZeroValidationFractionDigitsJava($binding) and
-                                xxf:custom-mip($binding, 'non-negative') = 'true'
-                            ) then
-                                '[0-9]*'
-                            else
-                                '.*'
-                        }"
-                        min="{
-                            if (xxf:custom-mip($binding, 'non-negative') = 'true') then
-                                '0'
-                            else
-                                ''
-                        }"
-                        maxlength="{xs:integer(xxf:custom-mip($binding, 'max-length')[. castable as xs:integer])}"
-                        xbl:attr="tabindex tabindex=navindex maxlength=xxf:maxlength maxlength pattern=xxf:pattern"/>
-                    <xf:group fr:keep-if-param-non-blank="suffix" class="add-on" ref=".[xxf:non-blank($suffix)]"><xf:output value="$suffix"/></xf:group>
-                </xh:span>
-            </xf:group>
-            <!-- Static readonly mode -->
-            <xf:input
-                ref="$binding[$view]"
-                xxf:format="
-                    string-join(
-                        (
-                            fr:component-param-value('prefix'),
-                            NumberSupport:getDisplayAndEditValueJava(
-                                xxf:binding('fr-number'),
-                                fr:component-param-value('decimal-separator'),
-                                fr:component-param-value('grouping-separator'),
-                                fr:component-param-value('prefix'),
-                                fr:component-param-value('digits-after-decimal'),
-                                string(fr:component-param-value('round-when-formatting')) = 'true',
-                                string(fr:component-param-value('round-when-storing'))    = 'true'
-                            )[1],
-                            fr:component-param-value('suffix')
-                        ),
-                        ' '
-                    )"/>
+        <xh:span
+            class="{
+                (
+                    'input-prepend'[xxf:non-blank($prefix)],
+                    'input-append' [xxf:non-blank($suffix)],
+                    concat('fr-field-width-', $field-width)
+                )
+            }">
+            <xf:group fr:keep-if-param-non-blank="prefix" class="add-on" ref=".[xxf:non-blank($prefix)]"><xf:output value="$prefix"/></xf:group>
+            <xh:input
+                id="html-input"
+                class="xbl-fr-number-visible-input xbl-html-input xforms-input-input"
+                type="text"
+                step="any"
+                pattern="{
+                    if (NumberSupport:isZeroValidationFractionDigitsJava($binding) and
+                        xxf:custom-mip($binding, 'non-negative') = 'true'
+                    ) then
+                        '[0-9]*'
+                    else
+                        '.*'
+                }"
+                min="{
+                    if (xxf:custom-mip($binding, 'non-negative') = 'true') then
+                        '0'
+                    else
+                        ''
+                }"
+                maxlength="{xs:integer(xxf:custom-mip($binding, 'max-length')[. castable as xs:integer])}"
+                xbl:attr="tabindex tabindex=navindex maxlength=xxf:maxlength maxlength pattern=xxf:pattern"/>
+            <xf:group fr:keep-if-param-non-blank="suffix" class="add-on" ref=".[xxf:non-blank($suffix)]"><xf:output value="$suffix"/></xf:group>
+        </xh:span>
+    </xf:group>
+
+    <!-- Static readonly display (only shown when readonly-appearance = 'static') -->
+    <!-- This uses xf:input which properly participates in XForms lifecycle -->
+    <xf:input
+        ref="$binding[$view]"
+        xxf:format="
+            string-join(
+                (
+                    fr:component-param-value('prefix'),
+                    NumberSupport:getDisplayAndEditValueJava(
+                        xxf:binding('fr-number'),
+                        fr:component-param-value('decimal-separator'),
+                        fr:component-param-value('grouping-separator'),
+                        fr:component-param-value('prefix'),
+                        fr:component-param-value('digits-after-decimal'),
+                        string(fr:component-param-value('round-when-formatting')) = 'true',
+                        string(fr:component-param-value('round-when-storing'))    = 'true'
+                    )[1],
+                    fr:component-param-value('suffix')
+                ),
+                ' '
+            )"/>
 
         </xbl:template>
     </xbl:binding>
