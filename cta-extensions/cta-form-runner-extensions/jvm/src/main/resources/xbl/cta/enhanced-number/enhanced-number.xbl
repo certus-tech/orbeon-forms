@@ -214,9 +214,6 @@
                         value="($binding/@notchanged='&set;') or
                         (($binding/@notcollected = '&set;') and not($binding/@init))"/>
 
-              <!-- TODO Potentially common model -->
-              <xf:var name="element-name" value="xxf:binding('&self;')/name()"/>
-
               <!-- Note these vars are set here in config, and not in field settings in the form builder for the other field types. -->
               <!-- Assume reason is that numerical controls like prefix/suffix separators etc are higher priority for the UI -->
               <!-- There is not yet a use case for history-entry to be first(), should revise ehanced-number if this changes -->
@@ -224,16 +221,12 @@
               <xf:var name="history-mode">available-modes-all</xf:var>
 
               <xf:var name="model-path"
-                      value="string-join(xxf:instance('fr-form-instance')//*[name()=$element-name]/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
+                      value="string-join(xxf:binding('&self;')/ancestor-or-self::*[not(local-name() = 'form')]/local-name(), '/')"/>
               <xf:var name="history-value-path"
                       value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path)"/>
               <!-- model path has a '/' ending as a character -->
               <xf:var name="history-date-path"
                       value="concat('xxf:instance(&#34;cta-form-history-instance&#34;)/form[', $history-entry, ']/', $model-path,'/@date')"/>
-              <!-- Items won't be used/makes no sense for non-select controls. N.b. xxf:itemset does not appear to work here. -->
-              <!-- TODO using resource[1] is a hack which can not support multi-lingual forms. -->
-              <xf:var name="items"
-                      value="xxf:instance('fr-form-resources')/resource[1]/*[name()=$element-name]/item"/>
 
               <xf:instance id="cta-enhanced-control-mode">
 
