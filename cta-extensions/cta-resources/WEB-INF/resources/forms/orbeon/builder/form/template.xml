@@ -108,7 +108,8 @@
                      value="xxf:get-request-parameter('ct-objectType')"/>
         <xf:setvalue ref="instance('cta-form-context-parameters')/service"
                      value="xxf:get-request-parameter('ct-service')"/>
-
+        <xf:setvalue ref="instance('cta-form-context-parameters')/context"
+                     value="xxf:get-request-parameter('ct-context')"/>
         <!-- 
           Pre-populate the form
         -->
@@ -136,6 +137,9 @@
         <xf:insert context="instance('fr-form-instance')"
                    if="xxf:get-request-parameter('ct-service')"
                    origin="xxf:attribute('ct-service', xxf:get-request-parameter('ct-service'))"/>
+        <xf:insert context="instance('fr-form-instance')"
+                   if="xxf:get-request-parameter('ct-context')"
+                   origin="xxf:attribute('ct-objectType', xxf:get-request-parameter('ct-context'))"/>        
       </xf:action>
 
       <!--
@@ -170,6 +174,7 @@
           <objectType/>
           <objectId/>
           <service/>
+          <context/>
         </history-parameters>
       </xf:instance>
 
