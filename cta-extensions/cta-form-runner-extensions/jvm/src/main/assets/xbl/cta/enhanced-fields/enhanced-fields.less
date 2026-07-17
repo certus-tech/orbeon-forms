@@ -1,12 +1,105 @@
-// History wrapper contains the history date and possibly previous value, or a placeholder.
+// Styles for the enhanced history fields. Every field renders the same 3-cell
+// layout: [Prior-data box] [Current input] [Metadata radios].
 .cta-enhanced-control__wrapper {
-  .cta-enhanced-control__history-wrapper {
+
+  // Captions ("Now", the non-breaking-space aligner, and the "As collected on …"
+  // label) sit on their own line above their control, so the boxes line up.
+  .cta-enhanced-control__cap,
+  .cta-enhanced-control__history-label {
+    display: block;
     font-size: .8em;
     font-style: italic;
     color: #666;
+    min-height: 1.2em;      // stable caption height keeps the boxes below aligned
+    margin-bottom: .25em;
+    white-space: nowrap;
   }
 
-  // Inline controls use flexbox for layout of the modeswitch, field and history details.
+  &.cta-enhanced-control__wrapper--grid {
+    .cta-enhanced-select-layout__grid {
+      display: flex;
+      align-items: flex-start;
+
+      .cta-enhanced-select-layout__cell {
+        &:not(:last-child) {
+          margin-right: 1em;
+        }
+        // The middle cell (cell 2 = current input) grows to fill the remaining
+        // row width, so the metadata cell starts at the same x in every row
+        // regardless of how wide each input control naturally is. Cell 1 (prior
+        // data) is fixed at 12.5em and cell 3 (metadata) sizes to its radio
+        // content, so the space left over is identical for every field. This
+        // gives all fields the same input-column width and lines the metadata
+        // radios up in a single column across the whole form.
+        &:not(:first-child):not(:last-child) {
+          flex: 1 1 auto;
+        }
+      }
+
+      // Prior-data cell: fixed width so the 'Now' input and metadata columns stay
+      // aligned across every row, even when a row has no history (box hidden).
+      // 12.5em (25% up from the original 10em) to match the text field and give
+      // long values room; uniform across all fields so columns line up.
+      .cta-enhanced-control__history-cell {
+        flex: 0 0 12.5em;
+        width: 12.5em;
+      }
+
+      // Text field only: free-text values can be long, so its prior box wraps
+      // onto multiple lines instead of being ellipsised. Width is shared with
+      // every other field (above), so only the wrapping behaviour is text-specific.
+      .cta-enhanced-control__history-cell--text {
+        .cta-enhanced-control__history-box {
+          overflow: visible;
+          text-overflow: clip;
+          white-space: normal;      // wrap long text instead of truncating
+          overflow-wrap: anywhere;  // break very long unbroken strings
+          word-break: break-word;
+        }
+      }
+
+      // Current-input cell grows to fill the remaining space.
+      .cta-enhanced-control__input-wraper {
+        flex: 1 1 auto;
+        min-width: 150px; // avoid width collapse when prefix/suffix are used
+      }
+
+      // Multi-select prior cell renders icon-only checkboxes (no grey box, no
+      // labels); float them to the right of the cell to match the original look.
+      // Scoped to the history cell so the field's own current-input checkboxes
+      // (cell 2) are left untouched.
+      .cta-enhanced-control__history-cell .xforms-items {
+        float: right;
+      }
+
+      .cta-enhanced-control__mode-wrapper {
+        display: inline-block;
+      }
+    }
+  }
+
+  // The read-only prior-data box: looks like a disabled input, centered text.
+  // Narrow single-line box with ellipsis on overflow by default. The text field
+  // overrides this to wrap long values (see the --text modifier in --grid).
+  .cta-enhanced-control__history-box {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 2em;          // match a normal single-line input height
+    padding: .35em .5em;
+    background: #f2f2f2;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #555;
+    text-align: center;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // Legacy inline layout (no longer used by the enhanced fields, kept so any
+  // remaining consumer is unaffected).
   &.cta-enhanced-control__wrapper--inline {
     display: flex;
     flex-wrap: wrap;
@@ -15,44 +108,19 @@
       flex-grow: 0;
     }
     .cta-enhanced-control__input-wraper {
-      flex-grow: 1; // allow the control to expand to its normal size, e.g. "natural" width numeric fields.
+      flex-grow: 1;
     }
     .cta-enhanced-control__history-wrapper {
-      flex-basis: 100%; // Take enough space that a wrap is forced.
+      flex-basis: 100%;
       flex-grow: 1;
       flex-wrap: wrap;
     }
   }
-
-  &.cta-enhanced-control__wrapper--grid {
-    .cta-enhanced-select-layout__grid {
-      display: flex;
-      .cta-enhanced-select-layout__cell {
-        &:first-child {
-          .xforms-items {
-            float: right;
-          }
-        }
-        &:not(:last-child) {
-          margin-right: 1em;
-        }
-      }
-    }
-
-    .cta-enhanced-control__history-wrapper {
-      float: left;
-    }
-  }
-
-  // The caption displayed above the 'current selections' column on a select control.
-  .cta-enhanced-control__cap {
-    float: left;
-  }
-
-  // Disabled fields don't respond to onclick so disable pointer events on these. The element behind them receives the
-  // event instead (the containing div or span), allowing intercepting the event for click-to-edit.
-  .cta-enhanced-control__ro-input input {
-    pointer-events: none;
-  }
 }
 
+// Disabled/read-only inputs must not swallow clicks: click-to-edit relies on the
+// container receiving the event. Kept un-nested so the prepopulation fields
+// (which use a different wrapper class) also benefit.
+.cta-enhanced-control__ro-input input {
+  pointer-events: none;
+}

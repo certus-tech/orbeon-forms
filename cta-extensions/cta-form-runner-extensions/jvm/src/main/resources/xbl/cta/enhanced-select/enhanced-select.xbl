@@ -312,19 +312,22 @@
             <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--grid">
               <xh:span class="input cta-enhanced-control__input-wrapper">
                 <xh:div class="cta-enhanced-select-layout__grid">
-                  <xh:div class="cta-enhanced-select-layout__cell">
+                  <xh:div class="cta-enhanced-select-layout__cell cta-enhanced-control__history-cell">
                     <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
                     <xf:var name="history-set" value="exists($history-date)"/>
-                    <xh:span class="cta-enhanced-control__history-wrapper">
-                      <xh:span class="cta-enhanced-control__history-label">
-                        <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                      </xh:span>
-                      <xf:output ref="format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]: ')"/>
+                    <xh:span class="cta-enhanced-control__history-label">
+                      <xf:output value="if ($history-set)
+                                          then concat(xxf:r('history-collected-on', 'cta-form-resources'),
+                                                      format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]:'))
+                                          else xxf:r('history-not-collected', 'cta-form-resources')"/>
                     </xh:span>
+                    <!-- Read-only checkbox ICONS only (no item labels, no grey box), floated right
+                         within the cell — the original look. appearance follows the field's own
+                         appearance so a dropdown-configured control keeps its dropdown. -->
                     <xf:select id="history-input" ref="xxf:evaluate($history-value-path)">
                       <xsl:attribute name="appearance" select="(@appearance, 'full')[1]"/>
                       <xf:itemset ref="$items">
-                        <!-- omit setting the labels unless in dropdown mode. -->
+                        <!-- Omit the labels unless in dropdown mode, so only the checkbox icons show. -->
                         <xf:label>
                           <xsl:if test="@appearance = 'dropdown'">
                             <xsl:attribute name="ref">label</xsl:attribute>

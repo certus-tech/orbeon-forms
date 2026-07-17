@@ -165,6 +165,7 @@
     <xbl:resources>
       <xbl:style src="/xbl/orbeon/date/date.css"/>
       <xbl:style src="/xbl/orbeon/date/bootstrap-datepicker-1.8.0-dist/css/bootstrap-datepicker.css"/>
+      <xbl:style src="/xbl/cta/enhanced-fields/enhanced-fields.css"/>
     </xbl:resources>
 
     <xbl:template xxbl:transform="oxf:xslt">
@@ -231,6 +232,7 @@
                   <resource xml:lang="en">
                     <history-not-collected>Not previously collected</history-not-collected>
                     <history-collected-on>As collected on </history-collected-on>
+                    <history-just-changed>Now</history-just-changed>
                   </resource>
                 </resources>
               </xf:instance>
@@ -316,59 +318,84 @@
 
             </xf:model>
 
-            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
-              <!-- Control for the history mode dropdown. -->
-              <xh:span class="cta-enhanced-control__mode-wrapper">
-                <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
-                  <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
-                    <xf:label ref="label"/>
-                    <xf:value ref="value"/>
-                  </xf:itemset>
-                </xf:select1>
-              </xh:span>
+            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--grid">
+              <xh:span class="input cta-enhanced-control__input-wrapper">
+                <xh:div class="cta-enhanced-select-layout__grid">
 
-          <!-- input control -->
-              <xh:span class="input cta-enhanced-control__input-wraper">
+                  <!-- CELL 1: Prior data -->
+                  <xh:div class="cta-enhanced-select-layout__cell cta-enhanced-control__history-cell">
+                    <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
+                    <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
+                    <xf:var name="history-set" value="exists($history-date)"/>
+                    <xh:span class="cta-enhanced-control__history-label">
+                      <xf:output value="if ($history-set)
+                                          then concat(xxf:r('history-collected-on', 'cta-form-resources'),
+                                                      format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]:'))
+                                          else xxf:r('history-not-collected', 'cta-form-resources')"/>
+                    </xh:span>
+                    <!-- Read-only prior-data box, formatted as a date. -->
+                    <xf:group ref="$history-date">
+                      <xh:span class="cta-enhanced-control__history-box">
+                        <xf:output value="format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]')"/>
+                      </xh:span>
+                    </xf:group>
+                  </xh:div>
 
-              <!-- Using essentially an if/then clause to select whether field id normal or read only mode. This AVOIDS the slow case/switch method -->
-                  <xf:group ref="$binding[not($is-readonly)]">
-                      <fr:date id="html-input" ref="xxf:binding('&self;')">
+                  <!-- CELL 2: Current input ("Now") -->
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <!-- Using essentially an if/then clause to select whether field is normal or read only mode. This AVOIDS the slow case/switch method. -->
+                    <xf:group ref="$binding[not($is-readonly)]">
+                      <xh:span class="cta-enhanced-control__cap">
+                        <xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/>
+                      </xh:span>
+                      <!-- Wrapped in a BLOCK input/input-wraper container so fr:date has a real width.
+                           Must be a div (not a span): min-width is ignored on inline elements, which is
+                           why the date collapsed to a sliver. Mirrors fr:number. -->
+                      <xh:div class="input cta-enhanced-control__input-wraper" style="min-width: 150px;">
+                        <fr:date id="html-input" ref="xxf:binding('&self;')">
                           <xsl:attribute name="prefix" select="@prefix"/>
                           <xsl:attribute name="suffix" select="@suffix"/>
                           <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
                           <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                      </fr:date>
-                  </xf:group>
+                        </fr:date>
+                      </xh:div>
+                    </xf:group>
 
-                  <xf:group ref="$binding[$is-readonly]">
-
+                    <xf:group ref="$binding[$is-readonly]">
                       <!-- Hook that catches group-field remote field change to unchanged -->
                       <xf:action event="xforms-enabled">
-                          <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
-                                      bind="&self;-control-mode-bind"
-                                      value="'&unchanged;'"/>
+                        <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
+                                     bind="&self;-control-mode-bind"
+                                     value="'&unchanged;'"/>
                       </xf:action>
-
-                      <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
+                      <xh:span class="cta-enhanced-control__cap">
+                        <xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/>
+                      </xh:span>
+                      <xh:div class="input cta-enhanced-control__input-wraper" style="min-width: 150px;">
+                        <fr:date id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
                           <xsl:attribute name="prefix" select="@prefix"/>
                           <xsl:attribute name="suffix" select="@suffix"/>
                           <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
                           <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                      </fr:date>
-                  </xf:group>
+                        </fr:date>
+                      </xh:div>
+                    </xf:group>
+                  </xh:div>
 
-              </xh:span>
+                  <!-- CELL 3: Metadata -->
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <xh:span class="cta-enhanced-control__cap">&#xA0;</xh:span>
+                    <xh:span class="cta-enhanced-control__mode-wrapper">
+                      <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind" appearance="full">
+                        <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
+                          <xf:label ref="label"/>
+                          <xf:value ref="value"/>
+                        </xf:itemset>
+                      </xf:select1>
+                    </xh:span>
+                  </xh:div>
 
-                <!-- Read-only value. -->
-              <xh:span class="cta-enhanced-control__history-wrapper">
-                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
-                <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
-                <xf:var name="history-set" value="exists($history-date)"/>
-                <xh:span class="cta-enhanced-control__history-label">
-                  <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]: ')"/>
-                  <xf:output value="if ($history-set) then format-date(xs:date($history-value), '[D,2]/[M,2]/[Y]') else ''"/>
-                 </xh:span>
+                </xh:div>
               </xh:span>
             </xh:div>
           </xf:group>

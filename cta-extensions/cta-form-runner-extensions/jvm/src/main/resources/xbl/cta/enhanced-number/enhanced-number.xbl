@@ -193,7 +193,9 @@
       <!-- END of content duped across all history view components -->
     </metadata>
 
-    <xbl:resources/>
+    <xbl:resources>
+      <xbl:style src="/xbl/cta/enhanced-fields/enhanced-fields.css"/>
+    </xbl:resources>
 
     <xbl:handlers>
       <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
@@ -264,6 +266,7 @@
                   <resource xml:lang="en">
                     <history-not-collected>Not previously collected</history-not-collected>
                     <history-collected-on>As collected on </history-collected-on>
+                    <history-just-changed>Now</history-just-changed>
                   </resource>
                 </resources>
               </xf:instance>
@@ -348,73 +351,96 @@
 
               </xf:model>
 
-            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
-              <xh:span class="cta-enhanced-control__mode-wrapper">
-                <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
-                  <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
-                    <xf:label ref="label"/>
-                    <xf:value ref="value"/>
-                  </xf:itemset>
-                </xf:select1>
-              </xh:span>
+            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--grid">
+              <xh:span class="input cta-enhanced-control__input-wrapper">
+                <xh:div class="cta-enhanced-select-layout__grid">
 
-              <!-- Using essentially an if/then clause to select whether field id normal or read only mode. This AVOIDS the slow case/switch method -->
-              <!-- Min-width is to force an non-zero sized input box. Issue arises when using prefix/suffix and width collapses -->
-              <!-- Only other suffix in use is enhanced-date's date selector which does not have this issue -->
-              <xf:group ref="$binding[not($is-readonly)]">
-                  <xh:div class="input cta-enhanced-control__input-wraper" style="flex: 1; min-width: 150px;">
-                    <fr:number id="html-input" ref="xxf:binding('&self;')">
-                      <xsl:attribute name="prefix" select="@prefix"/>
-                      <xsl:attribute name="suffix" select="@suffix"/>
-                      <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
-                      <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
-                      <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
-                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
-                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                    </fr:number>
+                  <!-- CELL 1: Prior data -->
+                  <xh:div class="cta-enhanced-select-layout__cell cta-enhanced-control__history-cell">
+                    <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
+                    <xf:var name="history-value" value="NumberSupport:getDisplayAndEditValueJava(
+                                                                                          xxf:evaluate($history-value-path),
+                                                                                          fr:component-param-value('decimal-separator'),
+                                                                                          fr:component-param-value('grouping-separator'),
+                                                                                          fr:component-param-value('prefix'),
+                                                                                          fr:component-param-value('digits-after-decimal'),
+                                                                                          string(fr:component-param-value('round-when-formatting')) = 'true',
+                                                                                          string(fr:component-param-value('round-when-storing'))    = 'true'
+                                                                                         )"/>
+                    <xf:var name="history-set" value="exists($history-date)"/>
+                    <xh:span class="cta-enhanced-control__history-label">
+                      <xf:output value="if ($history-set)
+                                          then concat(xxf:r('history-collected-on', 'cta-form-resources'),
+                                                      format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]:'))
+                                          else xxf:r('history-not-collected', 'cta-form-resources')"/>
+                    </xh:span>
+                    <!-- Read-only prior-data box, formatted to match the field's number settings. -->
+                    <xf:group ref="$history-date">
+                      <xh:span class="cta-enhanced-control__history-box">
+                        <xf:output value="$history-value"/>
+                      </xh:span>
+                    </xf:group>
                   </xh:div>
-              </xf:group>
 
-              <xf:group ref="$binding[$is-readonly]">
+                  <!-- CELL 2: Current input ("Now") -->
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <!-- Using essentially an if/then clause to select whether field is normal or read only mode. This AVOIDS the slow case/switch method. -->
+                    <xf:group ref="$binding[not($is-readonly)]">
+                      <xh:span class="cta-enhanced-control__cap">
+                        <xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/>
+                      </xh:span>
+                      <!-- Min-width forces a non-zero sized input box; needed when using prefix/suffix or the width collapses. -->
+                      <xh:div class="input cta-enhanced-control__input-wraper" style="min-width: 150px;">
+                        <fr:number id="html-input" ref="xxf:binding('&self;')">
+                          <xsl:attribute name="prefix" select="@prefix"/>
+                          <xsl:attribute name="suffix" select="@suffix"/>
+                          <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
+                          <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
+                          <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
+                          <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
+                          <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
+                        </fr:number>
+                      </xh:div>
+                    </xf:group>
 
-                  <!-- Hook that catches group-field remote field change to unchanged -->
-                  <xf:action event="xforms-enabled">
-                      <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
-                                   bind="&self;-control-mode-bind"
-                                   value="'&unchanged;'"/>
-                  </xf:action>
-
-                  <!-- Min-width is to force an non-zero sized input box. Issue arises when using prefix/suffix and width collapses -->
-                  <xh:div class="input cta-enhanced-control__input-wraper" style="flex: 1; min-width: 150px;">
-                    <fr:number id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
-                      <xsl:attribute name="prefix" select="@prefix"/>
-                      <xsl:attribute name="suffix" select="@suffix"/>
-                      <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
-                      <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
-                      <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
-                      <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
-                      <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
-                    </fr:number>
+                    <xf:group ref="$binding[$is-readonly]">
+                      <!-- Hook that catches group-field remote field change to unchanged -->
+                      <xf:action event="xforms-enabled">
+                        <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
+                                     bind="&self;-control-mode-bind"
+                                     value="'&unchanged;'"/>
+                      </xf:action>
+                      <xh:span class="cta-enhanced-control__cap">
+                        <xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/>
+                      </xh:span>
+                      <xh:div class="input cta-enhanced-control__input-wraper" style="min-width: 150px;">
+                        <fr:number id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input">
+                          <xsl:attribute name="prefix" select="@prefix"/>
+                          <xsl:attribute name="suffix" select="@suffix"/>
+                          <xsl:attribute name="decimal-separator" select="@decimal-separator"/>
+                          <xsl:attribute name="grouping-separator" select="@grouping-separator"/>
+                          <xsl:attribute name="digits-after-decimal" select="@digits-after-decimal"/>
+                          <xsl:attribute name="round-when-storing" select="@round-when-storing"/>
+                          <xsl:attribute name="round-when-formatting" select="@round-when-formatting"/>
+                        </fr:number>
+                      </xh:div>
+                    </xf:group>
                   </xh:div>
-              </xf:group>
 
-              <xh:span class="cta-enhanced-control__history-wrapper">
-                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
-                <xf:var name="history-value" value="NumberSupport:getDisplayAndEditValueJava(
-                                                                               xxf:evaluate($history-value-path),
-                                                                               fr:component-param-value('decimal-separator'),
-                                                                               fr:component-param-value('grouping-separator'),
-                                                                               fr:component-param-value('prefix'),
-                                                                               fr:component-param-value('digits-after-decimal'),
-                                                                               string(fr:component-param-value('round-when-formatting')) = 'true',
-                                                                               string(fr:component-param-value('round-when-storing'))    = 'true'
-                                                                              )"/>
-                <xf:var name="history-set" value="exists($history-date)"/>
-                <xh:span class="cta-enhanced-control__history-label">
-                  <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]: ')"/>
-                  <xf:output value="if ($history-set) then $history-value else ''"/>
-                 </xh:span>
+                  <!-- CELL 3: Metadata -->
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <xh:span class="cta-enhanced-control__cap">&#xA0;</xh:span>
+                    <xh:span class="cta-enhanced-control__mode-wrapper">
+                      <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind" appearance="full">
+                        <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
+                          <xf:label ref="label"/>
+                          <xf:value ref="value"/>
+                        </xf:itemset>
+                      </xf:select1>
+                    </xh:span>
+                  </xh:div>
+
+                </xh:div>
               </xh:span>
             </xh:div>
           </xf:group>

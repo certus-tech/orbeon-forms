@@ -129,8 +129,9 @@
       </control-details>
     </metadata>
 
-    <xbl:resources/>
-
+    <xbl:resources>
+      <xbl:style src="/xbl/cta/enhanced-fields/enhanced-fields.css"/>
+    </xbl:resources>
     <xbl:handlers>
       <!-- Respond to the custom cta-click-to-edit event sent from JS. -->
       <xbl:handler event="cta-click-to-edit" phase="target">
@@ -212,6 +213,7 @@
                   <resource xml:lang="en">
                     <history-not-collected>Not previously collected</history-not-collected>
                     <history-collected-on>As collected on </history-collected-on>
+                    <history-just-changed>Now</history-just-changed>
                   </resource>
                 </resources>
               </xf:instance>
@@ -297,45 +299,69 @@
 
            </xf:model>
 
-            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--inline">
-              <xh:span class="cta-enhanced-control__mode-wrapper">
-                <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind">
-                  <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
-                    <xf:label ref="label"/>
-                    <xf:value ref="value"/>
-                  </xf:itemset>
-                </xf:select1>
-              </xh:span>
+            <xh:div class="cta-enhanced-control__wrapper cta-enhanced-control__wrapper--grid">
+              <xh:span class="input cta-enhanced-control__input-wrapper">
+                <xh:div class="cta-enhanced-select-layout__grid">
 
-              <xh:span class="input cta-enhanced-control__input-wraper">
-                <!-- Using essentially an if/then clause to select whether field id normal or read only mode. This AVOIDS the slow case/switch method -->
-                <xf:group ref="$binding[not($is-readonly)]">
-                    <xf:input id="html-input" ref="xxf:binding('&self;')"/>
-                </xf:group>
+                  <!-- CELL 1: Prior data -->
+                  <!-- The text-cell modifier opts this field into the wider (12.5em) wrapping
+                       prior box; other field types keep the narrow single-line box. -->
+                  <xh:div class="cta-enhanced-select-layout__cell cta-enhanced-control__history-cell cta-enhanced-control__history-cell--text">
+                    <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
+                    <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
+                    <xf:var name="history-set" value="exists($history-date)"/>
+                    <xh:span class="cta-enhanced-control__history-label">
+                      <xf:output value="if ($history-set)
+                                          then concat(xxf:r('history-collected-on', 'cta-form-resources'),
+                                                      format-dateTime(xs:dateTime($history-date), '[D,2]/[M,2]/[Y]:'))
+                                          else xxf:r('history-not-collected', 'cta-form-resources')"/>
+                    </xh:span>
+                    <!-- Read-only prior-data box showing the previously collected text. -->
+                    <xf:group ref="$history-date">
+                      <xh:span class="cta-enhanced-control__history-box">
+                        <xf:output value="$history-value"/>
+                      </xh:span>
+                    </xf:group>
+                  </xh:div>
 
-                <xf:group ref="$binding[$is-readonly]">
+                  <!-- CELL 2: Current input ("Now") -->
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <!-- Using essentially an if/then clause to select whether field is normal or read only mode. This AVOIDS the slow case/switch method. -->
+                    <xf:group ref="$binding[not($is-readonly)]">
+                      <xh:span class="cta-enhanced-control__cap">
+                        <xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/>
+                      </xh:span>
+                      <xf:input id="html-input" ref="xxf:binding('&self;')"/>
+                    </xf:group>
 
-                  <!-- Hook that catches group-field remote field change to unchanged -->
-                  <xf:action event="xforms-enabled">
-                      <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
-                                   bind="&self;-control-mode-bind"
-                                   value="'&unchanged;'"/>
-                  </xf:action>
+                    <xf:group ref="$binding[$is-readonly]">
+                      <!-- Hook that catches group-field remote field change to unchanged -->
+                      <xf:action event="xforms-enabled">
+                        <xf:setvalue ref="xxf:binding('&self;')/@notchanged"
+                                     bind="&self;-control-mode-bind"
+                                     value="'&unchanged;'"/>
+                      </xf:action>
+                      <xh:span class="cta-enhanced-control__cap">
+                        <xf:output value="xxf:r('history-just-changed', 'cta-form-resources')"/>
+                      </xh:span>
+                      <xf:input id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input"/>
+                    </xf:group>
+                  </xh:div>
 
-                    <xf:input id="ro-input" bind="ro-binding" class="cta-enhanced-control__ro-input"/>
-                </xf:group>
-              </xh:span>
+                  <!-- CELL 3: Metadata -->
+                  <xh:div class="cta-enhanced-select-layout__cell">
+                    <xh:span class="cta-enhanced-control__cap">&#xA0;</xh:span>
+                    <xh:span class="cta-enhanced-control__mode-wrapper">
+                      <xf:select1 id="&self;-mode-control" bind="&self;-control-mode-bind" appearance="full">
+                        <xf:itemset ref="instance('cta-enhanced-control-mode')/xxf:evaluate($history-mode)/mode">
+                          <xf:label ref="label"/>
+                          <xf:value ref="value"/>
+                        </xf:itemset>
+                      </xf:select1>
+                    </xh:span>
+                  </xh:div>
 
-
-              <xh:span class="cta-enhanced-control__history-wrapper">
-                <xf:var name="history-date" value="xxf:evaluate($history-date-path)"/>
-                <xf:var name="history-value" value="xxf:evaluate($history-value-path)"/>
-                <xf:var name="history-set" value="exists($history-date)"/>
-                <xh:span class="cta-enhanced-control__history-label">
-                  <xf:output if="$history-set" value="if ($history-set) then xxf:r('history-collected-on', 'cta-form-resources') else xxf:r('history-not-collected', 'cta-form-resources')"/>
-                  <xf:output ref="format-dateTime(xs:dateTime(xxf:evaluate($history-date-path)), '[D,2]/[M,2]/[Y]: ')"/>
-                  <xf:output value="if ($history-set) then $history-value else ''"/>
-                 </xh:span>
+                </xh:div>
               </xh:span>
             </xh:div>
           </xf:group>
