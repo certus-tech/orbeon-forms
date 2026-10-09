@@ -11,23 +11,21 @@
 
     The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
 -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" xmlns="http://jakarta.apache.org/log4j/">
+<Configuration status="WARN">
 
-    <!-- This is the standard log appender to the console (System.out) -->
-    <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
-        <param name="Target" value="System.err"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
-        </layout>
-        <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="INFO" />
-        </filter>
-    </appender>
+    <!-- This is the standard log appender to the console (System.err) -->
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_ERR">
+            <PatternLayout pattern="%d{ISO8601} %-5p %c %x - %m%n"/>
+            <ThresholdFilter level="INFO"/>
+        </Console>
+    </Appenders>
 
     <!-- This is the root logger -->
-    <root>
-        <priority value="info"/>
-        <appender-ref ref="ConsoleAppender"/>
-    </root>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
 
-</log4j:configuration>
+</Configuration>

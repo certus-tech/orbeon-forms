@@ -1,0 +1,25 @@
+status = WARN
+
+appender.console.type = Console
+appender.console.name = CONSOLE
+appender.console.layout.type = PatternLayout
+appender.console.layout.pattern = %d{ISO8601} %-5p [%c{1}] - %m%n
+
+appender.file.type = File
+appender.file.name = FILE
+appender.file.fileName = /var/log/orbeon-embedding.log
+appender.file.layout.type = PatternLayout
+appender.file.layout.pattern = %d{ISO8601} %-5p [%c{1}] - %m%n
+
+rootLogger.level = info
+rootLogger.appenderRef.console.ref = CONSOLE
+rootLogger.appenderRef.file.ref = FILE
+
+logger.apache-http.name = org.orbeon.private.apache.http
+logger.apache-http.level = error
+
+logger.apache-http-wire.name = org.orbeon.private.apache.http.wire
+logger.apache-http-wire.level = error
+
+logger.embedding.name = org.orbeon.embedding
+logger.embedding.level = error

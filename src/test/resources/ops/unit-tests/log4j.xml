@@ -11,27 +11,26 @@
 
     The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
 -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" xmlns="http://jakarta.apache.org/log4j/">
+<Configuration status="WARN">
 
-    <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
-        <param name="Target" value="System.out"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c %x - %m%n"/>
-        </layout>
-        <filter class="org.apache.log4j.varia.LevelRangeFilter">
-            <param name="LevelMin" value="debug"/>
-        </filter>
-    </appender>
+    <Appenders>
+        <!-- This is the standard log appender to the console (System.out) -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} %-5p %c %x - %m%n"/>
+            <ThresholdFilter level="debug"/>
+        </Console>
+    </Appenders>
 
-    <!-- So that these are not too noisy during tests -->
-    <category name="org.orbeon.lifecycle">                        <priority value="warn"/></category>
-    <category name="org.orbeon.oxf.xforms.processor.XFormsServer"><priority value="warn"/></category>
-    <category name="org.orbeon.oxf.webapp.ProcessorService">      <priority value="warn"/></category>
-    <category name="org.orbeon.oxf.processor.DatabaseContext">    <priority value="warn"/></category>
+    <Loggers>
+        <!-- So that these are not too noisy during tests -->
+        <Logger name="org.orbeon.lifecycle" level="warn"/>
+        <Logger name="org.orbeon.oxf.xforms.processor.XFormsServer" level="warn"/>
+        <Logger name="org.orbeon.oxf.webapp.ProcessorService" level="warn"/>
+        <Logger name="org.orbeon.oxf.processor.DatabaseContext" level="warn"/>
 
-    <root>
-        <priority value="info"/>
-        <appender-ref ref="ConsoleAppender"/>
-    </root>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
 
-</log4j:configuration>
+</Configuration>

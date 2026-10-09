@@ -13,11 +13,23 @@
  */
 package org.orbeon.oxf.util;
 
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-import org.apache.log4j.xml.DOMConfigurator;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.ConfigurationSource;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.orbeon.oxf.common.OXFException;
 import org.orbeon.oxf.pipeline.api.PipelineContext;
 import org.orbeon.oxf.processor.DOMSerializer;
@@ -26,52 +38,48 @@ import org.orbeon.oxf.processor.ProcessorImpl;
 import org.orbeon.oxf.properties.Properties;
 import org.orbeon.oxf.properties.PropertySet;
 
+/**
+ * Logging initialization based on log4j 2. Legacy org.apache.log4j calls throughout the codebase
+ * are routed to log4j 2 by the log4j-1.2-api bridge.
+ */
 public class LoggerFactory {
 
     public static final String LOG4J_DOM_CONFIG_PROPERTY = "oxf.log4j-config";
 
-    static
-    {
-    	// 11-22-2004 d : Current log4j tries to load a default config. This is
-    	//                why we are seeing a message about a log4j.properties being
-    	//                loaded from the Axis jar.
-    	//                Since this isn't a behaviour we want we hack around it by
-    	//                specifying a file that doesn't exist.
-        // 2008-05-05 a : It is clear if this solves a problem with an older version of
-        //                Axis we were shipping with Orbeon Forms back in 2004, or a more
-        //                complex interaction with a particular application server.
-        //                We don't think this is relevant anymore and are commenting this out.
-        //                Also see this thread on ops-users:
-        //                http://www.nabble.com/Problem-with-log-in-orbeon-with-multiple-webapp-tt16932990.html
+    public static final org.apache.log4j.Logger logger = LoggerFactory.createLogger(LoggerFactory.class);
 
-        // System.setProperty( "log4j.configuration", "-there-aint-no-such-file-" );
+    public static org.apache.log4j.Logger createLogger(String name) {
+        return org.apache.log4j.Logger.getLogger(name);
     }
 
-    public static final Logger logger = LoggerFactory.createLogger(LoggerFactory.class);
-
-    public static Logger createLogger(String name) {
-        return Logger.getLogger(name);
-    }
-
-    public static Logger createLogger(Class clazz) {
-        return Logger.getLogger(clazz.getName());
+    public static org.apache.log4j.Logger createLogger(Class clazz) {
+        return org.apache.log4j.Logger.getLogger(clazz.getName());
     }
 
     /*
      * Init basic config until resource manager is setup.
      */
     public static void initBasicLogger() {
-        // 2008-07-25 a This has been here for a long time and it is not clear why it was put there. But this doesn't
-        //              seem to be a good idea, and is causing some problem. So: commenting. See discussion in this thread:
-        //              http://discuss.orbeon.com/Problem-with-log-in-orbeon-with-multiple-webapp-td36786.html
-        // LogManager.resetConfiguration();
-        Logger root = Logger.getRootLogger();
-        root.setLevel(Level.INFO);
-        root.addAppender(new ConsoleAppender(new PatternLayout(PatternLayout.DEFAULT_CONVERSION_PATTERN), ConsoleAppender.SYSTEM_ERR));
+        final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+        builder.setConfigurationName("OrbeonBasicLogger");
+        builder.setStatusLevel(Level.ERROR);
+        builder.add(
+            builder.newAppender("ConsoleAppender", "Console")
+                .addAttribute("target", ConsoleAppender.Target.SYSTEM_ERR)
+                .add(
+                    builder.newLayout("PatternLayout")
+                        .addAttribute("pattern", PatternLayout.DEFAULT_CONVERSION_PATTERN)
+                )
+        );
+        builder.add(
+            builder.newRootLogger(Level.INFO)
+                .add(builder.newAppenderRef("ConsoleAppender"))
+        );
+        Configurator.initialize(builder.build());
     }
 
     /**
-     * Init log4j. Needs Orbeon Forms Properties system up and running.
+     * Init logging. Needs Orbeon Forms Properties system up and running.
      */
     public static void initLogger() {
         try {
@@ -99,12 +107,27 @@ public class LoggerFactory {
                 } finally {
                     pipelineContext.destroy(success);
                 }
-                DOMConfigurator.configure(element);
+                configureFromElement(element);
             } else {
                 logger.info("Property " + LOG4J_DOM_CONFIG_PROPERTY + " not set. Skipping logging initialization.");
             }
         } catch (Throwable e) {
             logger.error("Cannot load Log4J configuration. Skipping logging initialization", e);
         }
+    }
+
+    /**
+     * Configure log4j 2 from the given configuration document, loaded through the resource manager.
+     */
+    private static void configureFromElement(org.w3c.dom.Element element) throws Exception {
+        final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        transformer.transform(new DOMSource(element), new StreamResult(outputStream));
+
+        final ConfigurationSource source =
+            new ConfigurationSource(new ByteArrayInputStream(outputStream.toByteArray()));
+
+        final LoggerContext loggerContext = Configurator.initialize(LoggerFactory.class.getClassLoader(), source);
+        loggerContext.start();
     }
 }

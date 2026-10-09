@@ -11,34 +11,25 @@
 
   The full text of the license is available at http://www.gnu.org/copyleft/lesser.html
   -->
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" xmlns="http://jakarta.apache.org/log4j/">
+<Configuration status="WARN">
 
-    <appender name="ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
-        <param name="Target" value="System.err"/>
-        <param name="Encoding" value="UTF-8"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%d{ISO8601} %-5p %c{1} %x - %m%n"/>
-        </layout>
-    </appender>
+    <Appenders>
+        <Console name="ConsoleAppender" target="SYSTEM_ERR">
+            <PatternLayout pattern="%d{ISO8601} %-5p %c{1} %x - %m%n"/>
+        </Console>
+    </Appenders>
 
-    <category name="org.orbeon.oxf.xforms.processor.XFormsServer">
-        <priority value="debug"/>
-    </category>
+    <Loggers>
+        <Logger name="org.orbeon.oxf.xforms.processor.XFormsServer" level="debug"/>
 
-    <!-- Prevent extra display of eXist paging activity -->
-    <category name="org.exist.storage.btree.Paged">
-        <priority value="warn"/>
-    </category>
-    <category name="org.exist.storage.DBBroker">
-        <priority value="warn"/>
-    </category>
-    <category name="org.exist.storage.BrokerPool">
-        <priority value="warn"/>
-    </category>
+        <!-- Prevent extra display of eXist paging activity -->
+        <Logger name="org.exist.storage.btree.Paged" level="warn"/>
+        <Logger name="org.exist.storage.DBBroker" level="warn"/>
+        <Logger name="org.exist.storage.BrokerPool" level="warn"/>
 
-    <root>
-        <priority value="info"/>
-        <appender-ref ref="ConsoleAppender"/>
-    </root>
+        <Root level="info">
+            <AppenderRef ref="ConsoleAppender"/>
+        </Root>
+    </Loggers>
 
-</log4j:configuration>
+</Configuration>
